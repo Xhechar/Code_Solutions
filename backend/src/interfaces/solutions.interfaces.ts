@@ -1,0 +1,129 @@
+import { Badge } from "../enums/enum";
+
+export interface User {
+  UserId: string;
+  FullName: string;
+  Username: string;
+  Email: string;
+  Password: string;
+  ProfileImage: string;
+  IsDeleted: boolean;
+  IsWelcomed: boolean;
+  DateCreated: Date;
+  Badge: Badge;
+  PreviousBadge: Badge;
+  ProblemsCount: number;
+  IsSolver: boolean;
+  Comments?: Comment[];
+  Favourites?: Favourite[];
+  Histories?: History[];
+  Problems?: Problem[];
+  Solutions?: Solution[];
+}
+
+export interface Stack {
+  StackId: string;
+  Name: string;
+  Description: string;
+  Version: string;
+  Problems?: Problem[];
+  ProjectStructures?: ProjectStructure[];
+}
+
+export interface Category {
+  CategoryId: string;
+  Name: string;
+  Description: string;
+  Problems?: Problem[];
+}
+
+export interface Problem {
+  ProblemId: string;
+  Title: string;
+  Description: string;
+  ErrorCode?: string;
+  Context?: string;
+  Environment?: string;
+  Tags?: string[];
+  Reproducibility: boolean;
+  Logs?: string;
+  PriorityLevel?: number;
+  ImagePath?: string;
+  DateCreated: Date;
+  StackId: string;
+  Stack?: Stack;
+  CategoryId: string;
+  Category?: Category;
+  Solutions?: Solution[];
+  Comments?: Comment[];
+  Favourites?: Favourite[];
+  Histories?: History[];
+  UserId: string;
+  User?: User;
+  ProjectStructure?: ProjectStructure[];
+}
+
+export interface Solution {
+  SolutionId: string;
+  Description: string;
+  Steps: string;
+  CodeSamples?: string;
+  ImagePath?: string;
+  VideoLink?: string;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  ProblemId: string;
+  Problem?: Problem;
+  UserId: string;
+  User?: User;
+  ProjectStructure?: ProjectStructure[];
+}
+
+export interface Comment {
+  CommentId: string;
+  Content: string;
+  DatePosted: Date;
+  UserId: string;
+  User?: User;
+  ProblemId: string;
+  Problem?: Problem;
+}
+
+export interface Favourite {
+  FavouriteId: string;
+  UserId: string;
+  User?: User;
+  ProblemId: string;
+  Problem?: Problem;
+}
+
+export interface History {
+  HistoryId: string;
+  UserId: string;
+  User?: User;
+  ProblemId: string;
+  Problem?: Problem;
+  AccessedAt: Date;
+}
+
+export interface ProjectStructure {
+  ProjectId: string;
+  Title: string;
+  Description: string;
+  StackId: string;
+  Stack?: Stack;
+  DateCreated: Date;
+  LastUpdated: Date;
+  PSG?: PSG[];
+}
+
+export interface PSG {
+  PSGId: string;
+  Title: string;
+  ProjectId: string;
+  PictorialGuide?: string;
+  TextInstructions: string;
+  Project?: ProjectStructure;
+  RelatedProblems?: Problem[];
+  RelatedSolutions?: Solution[];
+}

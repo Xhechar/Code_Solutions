@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  UserId      String     @id @unique
+  FullName    String
+  Username    String     @unique
+  Email       String     @unique
+  Password    String
+  ProfileImage    String
+  IsDeleted   Boolean    @default(false)
+  Notified   Boolean    @default(false)
+  IsWelcomed   Boolean    @default(false)
+  DateCreated DateTime   @default(now())
+  Badge       String  @default("NORMAL")
+  PreviousBadge   String  @default("NORMAL")
+  ProblemsCount   Int   @default(0)
+  IsSolver    Boolean    @default(false)
+  Comments    Comment[]
+  Favourites  Favourite[]
+  Histories   History[]
+  Problems    Problem[] 
+  Solutions   Solution[]
+}
+
+model Stack {
+  StackId     String    @id @unique
+  Name        String    @unique
+  Description String
+  Version     String
+  Problems    Problem[]
+  ProjectStructures ProjectStructure[]
+}
+
+model Category {
+  CategoryId  String    @id @unique
+  Name        String    @unique
+  Description String
+  Problems    Problem[]
+}
+
+model Problem {
+  ProblemId       String     @id @unique
+  Title           String
+  Description     String
+  ErrorCode       String?
+  Context         String?
+  Environment     String?
+  Tags            String
+  Reproducibility Boolean
+  Logs            String?
+  PriorityLevel   Int?
+  ImagePath       String?
+  DateCreated     DateTime    @default(now())
+  Stack           Stack       @relation(fields: [StackId], references: [StackId], onDelete: NoAction, onUpdate: NoAction)
+  StackId         String
+  Category        Category    @relation(fields: [CategoryId], references: [CategoryId], onDelete: Cascade, onUpdate: NoAction)
+  CategoryId      String
+  Solutions       Solution[]
+  Comments        Comment[]
+  Favourites      Favourite[]
+  Histories       History[]
+  User            User        @relation(fields: [UserId], references: [UserId], onDelete: Cascade, onUpdate: NoAction)
+  UserId          String
+  PSGId           String?
+  PSG             PSG?       @relation(fields: [PSGId], references: [PSGId], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Solution {
+  SolutionId  String     @id @unique
+  Description String
+  Steps       String 
+  CodeSamples String?
+  ImagePath   String?
+  VideoLink   String?
+  CreatedAt   DateTime    @default(now())
+  UpdatedAt   DateTime    @updatedAt
+  Problem     Problem     @relation(fields: [ProblemId], references: [ProblemId], onDelete: NoAction, onUpdate: NoAction)
+  ProblemId   String
+  User        User        @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  UserId      String
+  PSGId       String?
+  PSG         PSG?       @relation(fields: [PSGId], references: [PSGId], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Comment {
+  CommentId  String    @id @unique
+  Content    String
+  DatePosted DateTime  @default(now())
+  User       User      @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  UserId     String
+  Problem    Problem   @relation(fields: [ProblemId], references: [ProblemId], onDelete: NoAction, onUpdate: NoAction)
+  ProblemId  String
+}
+
+model Favourite {
+  FavouriteId String    @id @unique
+  User        User      @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  UserId      String
+  Problem     Problem   @relation(fields: [ProblemId], references: [ProblemId], onDelete: NoAction, onUpdate: NoAction)
+  ProblemId   String
+}
+
+model History {
+  HistoryId  String    @id @unique
+  User       User      @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
+  UserId     String
+  Problem    Problem   @relation(fields: [ProblemId], references: [ProblemId], onDelete: NoAction, onUpdate: NoAction)
+  ProblemId  String
+  AccessedAt DateTime  @default(now())
+}
+
+model ProjectStructure {
+  ProjectId          String     @id @unique
+  Title              String
+  Description        String
+  Stack              Stack      @relation(fields: [StackId], references: [StackId], onDelete: Cascade, onUpdate: NoAction)
+  StackId            String
+  DateCreated        DateTime   @default(now())
+  LastUpdated        DateTime   @updatedAt
+  PSG PSG[]
+}
+
+model PSG {
+  PSGId           String     @id @unique
+  Title           String
+  ProjectId     String
+  PictorialGuide  String?
+  TextInstructions String
+  RelatedProblems    Problem[]
+  RelatedSolutions   Solution[]
+  Project   ProjectStructure  @relation(fields: [ProjectId], references: [ProjectId], onDelete: Cascade, onUpdate: NoAction)
+}
