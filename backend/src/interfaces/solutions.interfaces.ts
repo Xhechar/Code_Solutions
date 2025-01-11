@@ -8,11 +8,13 @@ export interface User {
   Password: string;
   ProfileImage: string;
   IsDeleted: boolean;
+  Notified: boolean;
   IsWelcomed: boolean;
   DateCreated: Date;
   Badge: Badge;
   PreviousBadge: Badge;
   ProblemsCount: number;
+  Role: string,
   IsSolver: boolean;
   Comments?: Comment[];
   Favourites?: Favourite[];
@@ -126,4 +128,33 @@ export interface PSG {
   Project?: ProjectStructure;
   RelatedProblems?: Problem[];
   RelatedSolutions?: Solution[];
+}
+
+export interface LoginDetails {
+  Email: string;
+  Password: string;
+}
+
+export interface RecoveryDetails {
+  Email: string,
+  RecoveryCode: string,
+  NewPassword: string
+}
+
+export interface MailConfigurations {
+  service: string,
+  host: string,
+  port: number,
+  requireTLS: boolean,
+  auth: {
+    user: string,
+    pass: string
+  }
+}
+
+export interface MessageOptions {
+  from: string,
+  to: string,
+  subject: string,
+  html: string
 }

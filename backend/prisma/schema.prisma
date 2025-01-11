@@ -28,6 +28,7 @@ model User {
   PreviousBadge   String  @default("NORMAL")
   ProblemsCount   Int   @default(0)
   IsSolver    Boolean    @default(false)
+  Role        String    @default("user")
   Comments    Comment[]
   Favourites  Favourite[]
   Histories   History[]
@@ -142,4 +143,11 @@ model PSG {
   RelatedProblems    Problem[]
   RelatedSolutions   Solution[]
   Project   ProjectStructure  @relation(fields: [ProjectId], references: [ProjectId], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Recovery {
+  RecoveryId String @id @unique
+  Email     String
+  RecoveryCode  String
+  Date      DateTime @default(now())
 }
