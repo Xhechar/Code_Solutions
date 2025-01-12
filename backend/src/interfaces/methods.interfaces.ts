@@ -1,5 +1,5 @@
-import { PrismaClient, Recovery } from "@prisma/client";
-import { Category, Comment, Favourite, LoginDetails, Problem, ProjectStructure, PSG, RecoveryDetails, Solution, Stack, User } from "./solutions.interfaces";
+import { PrismaClient, Problem, PSG, Recovery, Solution } from "@prisma/client";
+import { Category, Comment, Favourite, LoginDetails, ProjectStructure, RecoveryDetails, Stack, User } from "./solutions.interfaces";
 
 export interface UserInterface {
   prisma: PrismaClient;
@@ -35,18 +35,22 @@ export interface CategoryInterface {
 
 export interface ProblemInterface {
   prisma: PrismaClient;
-  createProblem(problem: Problem): Promise<{ success: boolean; message?: string; error?: string }>;
-  updateProblem(ProblemId: string, problem: Partial<Problem>): Promise<{ success: boolean; message?: string; error?: string }>;
-  deleteProblem(ProblemId: string): Promise<{ success: boolean; message?: string; error?: string }>;
+  createProblem(UserId : string, problem: Problem): Promise<{ success: boolean; message?: string; error?: string }>;
+  updateProblem(UserId: string, ProblemId: string, problem: Partial<Problem>): Promise<{ success: boolean; message?: string; error?: string }>;
+  deleteProblem(UserId: string, ProblemId: string): Promise<{ success: boolean; message?: string; error?: string }>;
+  approveProblem(UserId: string, ProblemId: string): Promise<{ success: boolean; message?: string; error?: string }>;
   getAllProblems(): Promise<{ success: boolean; message?: string; error?: string; problems?: Problem[] }>;
+  getApprovedProblems(): Promise<{ success: boolean; message?: string; error?: string; problems?: Problem[] }>;
+  getAdminProblems(UserId: string): Promise<{ success: boolean; message?: string; error?: string; problems?: Problem[] }>;
   getSingleProblem(ProblemId: string): Promise<{ success: boolean; message?: string; error?: string; problem?: Problem }>;
+  getUserProblems(UserId: string): Promise<{ success: boolean; message?: string; error?: string; problems?: Problem[] }>;
 }
 
 export interface SolutionInterface {
   prisma: PrismaClient;
-  createSolution(ProblemId: string, solution: Solution): Promise<{ success: boolean; message?: string; error?: string }>;
-  updateSolution(SolutionId: string, solution: Partial<Solution>): Promise<{ success: boolean; message?: string; error?: string }>;
-  deleteSolution(SolutionId: string): Promise<{ success: boolean; message?: string; error?: string }>;
+  createSolution(UserId: string, ProblemId: string, solution: Solution): Promise<{ success: boolean; message?: string; error?: string }>;
+  updateSolution(UserId: string, SolutionId: string, solution: Partial<Solution>): Promise<{ success: boolean; message?: string; error?: string }>;
+  deleteSolution(UserId: string, SolutionId: string): Promise<{ success: boolean; message?: string; error?: string }>;
   getAllSolutions(): Promise<{ success: boolean; message?: string; error?: string; solutions?: Solution[] }>;
   getSolutionsByProblem(ProblemId: string): Promise<{ success: boolean; message?: string; error?: string; solutions?: Solution[] }>;
 }
@@ -85,7 +89,7 @@ export interface ProjectStructureInterface {
 
 export interface PSGInterface {
   prisma: PrismaClient;
-  createPSG(psg: PSG): Promise<{ success: boolean; message?: string; error?: string }>;
+  createPSG(ProjectId: string, psg: PSG): Promise<{ success: boolean; message?: string; error?: string }>;
   updatePSG(PSGId: string, psg: Partial<PSG>): Promise<{ success: boolean; message?: string; error?: string }>;
   deletePSG(PSGId: string): Promise<{ success: boolean; message?: string; error?: string }>;
   getPSGsByProject(ProjectId: string): Promise<{ success: boolean; message?: string; error?: string; psgs?: PSG[] }>;

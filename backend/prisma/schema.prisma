@@ -69,6 +69,7 @@ model Problem {
   StackId         String
   Category        Category    @relation(fields: [CategoryId], references: [CategoryId], onDelete: Cascade, onUpdate: NoAction)
   CategoryId      String
+  IsApproved      Boolean     @default(false)
   Solutions       Solution[]
   Comments        Comment[]
   Favourites      Favourite[]
@@ -87,6 +88,7 @@ model Solution {
   ImagePath   String?
   VideoLink   String?
   CreatedAt   DateTime    @default(now())
+  IsApproved  Boolean     @default(false)
   UpdatedAt   DateTime    @updatedAt
   Problem     Problem     @relation(fields: [ProblemId], references: [ProblemId], onDelete: NoAction, onUpdate: NoAction)
   ProblemId   String

@@ -46,7 +46,7 @@ export interface Problem {
   ErrorCode?: string;
   Context?: string;
   Environment?: string;
-  Tags?: string[];
+  Tags?: string;
   Reproducibility: boolean;
   Logs?: string;
   PriorityLevel?: number;
@@ -157,4 +157,11 @@ export interface MessageOptions {
   to: string,
   subject: string,
   html: string
+}
+
+export interface TokenDetails {
+  DateCreated: Date;
+  UserId: string;
+  Email: string;
+  Role: string;
 }

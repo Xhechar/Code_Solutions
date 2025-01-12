@@ -1,26 +1,263 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Solution } from "@prisma/client";
 import { SolutionInterface } from "../interfaces/methods.interfaces";
-import { Solution } from "../interfaces/solutions.interfaces";
+import { v4 } from "uuid";
 
 export class SolutionService implements SolutionInterface {
   prisma = new PrismaClient({
     log: ["error"]
   });
 
-  async createSolution(ProblemId: string, solution: Solution): Promise<{ success: boolean; message?: string; error?: string; }> {
-    throw new Error("Method not implemented.");
+  async createSolution(userId: string, problemId: string, solution: Solution): Promise<{ success: boolean; message?: string; error?: string; }> {
+    
+    let userExists = await this.prisma.user.findUnique({
+      where: {
+        UserId: userId
+      }
+    });
+
+    if (userExists == null) {
+      return {
+        'success': false,
+        'error': 'User not found.'
+      }
+    }
+
+    if (userExists.IsDeleted) {
+      return {
+        'success': false,
+        'error': 'Sorry, the user account has been deactivated.'
+      }
+    }
+
+    let problemExists = await this.prisma.problem.findUnique({
+      where: {
+        ProblemId: problemId,
+        UserId: userId
+      }
+    });
+
+    if (problemExists == null) {
+      return {
+        'success': false,
+        'error': 'You do not have permission to create solution for this problem.'
+      }
+    }
+
+    let create = await this.prisma.solution.create({
+      data: {
+        SolutionId: v4(),
+        Description: solution.Description,
+        Steps: solution.Steps,
+        CodeSamples: solution.CodeSamples,
+        ImagePath: solution.ImagePath,
+        VideoLink: solution.VideoLink,
+        ProblemId: problemId,
+        UserId: userId
+      }
+    });
+
+    if (create == null) {
+      return {
+        'success': false,
+        'error': 'Failed to create solution.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'Solution created successfully.'
+      }
+    }
   }
-  async updateSolution(SolutionId: string, solution: Partial<Solution>): Promise<{ success: boolean; message?: string; error?: string; }> {
-    throw new Error("Method not implemented.");
+  async updateSolution(UserId: string, SolutionId: string, solution: Partial<Solution>): Promise<{ success: boolean; message?: string; error?: string; }> {
+    
+    let userExists = await this.prisma.user.findUnique({
+      where: {
+        UserId
+      }
+    });
+
+    if (userExists == null) {
+      return {
+        'success': false,
+        'error': 'User not found.'
+      }
+    }
+
+    if (userExists.IsDeleted) {
+      return {
+        'success': false,
+        'error': 'Sorry, the user account has been deactivated.'
+      }
+    }
+
+    let solutionExists = await this.prisma.solution.findUnique({
+      where: {
+        SolutionId: SolutionId,
+        UserId
+      }
+    });
+
+    if (solutionExists == null) {
+      return {
+        'success': false,
+        'error': 'Solution not found.'
+      }
+    }
+
+    if (userExists.Role == 'user' && solutionExists.IsApproved) {
+      return {
+        'success': false,
+        'error': 'You cannot update an approved solution.'
+      }
+    }
+
+    let update = await this.prisma.solution.update({
+      where: {
+        SolutionId: SolutionId,
+        UserId
+      },
+      data: {
+        Description: solution.Description?? solutionExists.Description,
+        Steps: solution.Steps?? solutionExists.Steps,
+        CodeSamples: solution.CodeSamples?? solutionExists.CodeSamples,
+        ImagePath: solution.ImagePath?? solutionExists.ImagePath,
+        VideoLink: solution.VideoLink?? solutionExists.VideoLink,
+        UpdatedAt: new Date()
+      }
+    });
+
+    if (update == null) {
+      return {
+        'success': false,
+        'error': 'Failed to update solution.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'Solution updated successfully.'
+      }
+    }
   }
-  async deleteSolution(SolutionId: string): Promise<{ success: boolean; message?: string; error?: string; }> {
-    throw new Error("Method not implemented.");
+  async deleteSolution(UserId: string, SolutionId: string): Promise<{ success: boolean; message?: string; error?: string; }> {
+    
+    let userExists = await this.prisma.user.findUnique({
+      where: {
+        UserId
+      }
+    });
+
+    if (userExists == null) {
+      return {
+        'success': false,
+        'error': 'User not found.'
+      }
+    }
+
+    if (userExists.IsDeleted) {
+      return {
+        'success': false,
+        'error': 'Sorry, the user account has been deactivated.'
+      }
+    }
+
+    let solutionExists = await this.prisma.solution.findUnique({
+      where: {
+        SolutionId: SolutionId,
+        UserId
+      }
+    });
+
+    if (solutionExists == null) {
+      return {
+        'success': false,
+        'error': 'Solution not found.'
+      }
+    }
+
+    if (userExists.Role == 'user' && solutionExists.IsApproved) {
+      return {
+        'success': false,
+        'error': 'You cannot delete an approved solution.'
+      }
+    }
+
+    let deleteSolution = await this.prisma.solution.delete({
+      where: {
+        SolutionId: SolutionId,
+        UserId
+      }
+    });
+    
+    if (deleteSolution == null) {
+      return {
+        'success': false,
+        'error': 'Unable to delete solution.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'Solution deleted successfully.'
+      }
+    }
   }
   async getAllSolutions(): Promise<{ success: boolean; message?: string; error?: string; solutions?: Solution[]; }> {
-    throw new Error("Method not implemented.");
+    
+    let solutions = await this.prisma.solution.findMany({
+      include: {
+        Problem: true,
+        User: true
+      }
+    });
+
+    if (solutions == null) {
+      return {
+        'success': false,
+        'error': 'Failed to retrieve solutions.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'Solutions retrieved successfully.',
+       'solutions': solutions
+      }
+    }
   }
   async getSolutionsByProblem(ProblemId: string): Promise<{ success: boolean; message?: string; error?: string; solutions?: Solution[]; }> {
-    throw new Error("Method not implemented.");
+    
+    let problemExists = await this.prisma.problem.findUnique({
+      where: {
+        ProblemId
+      }
+    });
+
+    if (problemExists == null) {
+      return {
+        'success': false,
+        'error': 'Problem not found.'
+      }
+    }
+
+    let solutions = await this.prisma.solution.findMany({
+      where: {
+        ProblemId
+      },
+      include: {
+        Problem: true,
+        User: true
+      }
+    });
+
+    if (solutions == null) {
+      return {
+        'success': false,
+        'error': 'Failed to retrieve solutions for the given problem.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'Solutions retrieved successfully for the given problem.',
+        'solutions': solutions
+      }
+    }
   }
-  
 }
