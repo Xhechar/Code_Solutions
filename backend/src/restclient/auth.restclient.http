@@ -1,0 +1,10 @@
+### Login user
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "Email": "johndoe@gmail.com",
+  "Password": "Password@123"
+}
+
+### Create a new product

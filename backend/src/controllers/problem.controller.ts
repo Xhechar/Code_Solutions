@@ -1,34 +1,125 @@
+import { Response } from "express";
+import { ExtendedRequest, getIdFromToken } from "../middlewares/verify.tokens";
 import { ProblemService } from "../services/problem.service";
+import { ProblemSchema } from "../validators/body.input.validators";
 
 const problemService = new ProblemService();
 
 export class ProblemController {
-  async createProblem() {
-    throw new Error("Method not implemented.");
+  async createProblem(req: ExtendedRequest, res: Response) {
+    try {
+
+      let { error } = ProblemSchema.validate(req.body);
+
+      if (error) {
+        res.status(401).json({
+          'error': error.message
+        });
+      }
+      
+      res.status(201).json(await problemService.createProblem(getIdFromToken(req), req.body));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async updateProblem() {
-    throw new Error("Method not implemented.");
+  async updateProblem(req: ExtendedRequest, res: Response) {
+    try {
+
+      let { error } = ProblemSchema.validate(req.body);
+
+      if (error) {
+        res.status(401).json({
+          'error': error.message
+        });
+      }
+      
+      res.status(201).json(await problemService.updateProblem(getIdFromToken(req), req.params.ProblemId, req.body));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async approveProblem() {
-    throw new Error("Method not implemented.");
+  async approveProblem(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.approveProblem(getIdFromToken(req), req.params.ProblemId));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async deleteProblem() {
-    throw new Error("Method not implemented.");
+  async deleteProblem(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.deleteProblem(getIdFromToken(req), req.params.ProblemId));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async getUserProblems() {
-    throw new Error("Method not implemented.");
+  async getUserProblems(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.getUserProblems(getIdFromToken(req)));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async getAllProblems() {
-    throw new Error("Method not implemented.");
+  async getAllProblems(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.getAllProblems());
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async getAdminProblems() {
-    throw new Error("Method not implemented.");
+  async getAdminProblems(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.getAdminProblems(getIdFromToken(req)));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async getApprovedProblems() {
-    throw new Error("Method not implemented.");
+  async getApprovedProblems(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.getApprovedProblems());
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
-  async getSingleProblem() {
-    throw new Error("Method not implemented.");
+  async getSingleProblem(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await problemService.getSingleProblem(req.params.ProblemId));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
   }
   
 }
