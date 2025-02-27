@@ -1,0 +1,363 @@
+<nav class="navbar" [class.scrolled]="isScrolled">
+  <div class="nav-container">
+    <a routerLink="home" class="logo">
+      <div class="logo-text">
+        <span class="logo-code">Co</span>
+        <span class="logo-solutions">de</span>
+      </div>
+    </a>
+    
+    <button class="mobile-menu-btn" 
+            #mobileMenuBtn
+            [class.active]="isMobileMenuActive"
+            (click)="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="nav-links" 
+         #navLinks
+         [class.active]="isMobileMenuActive">
+      <a href="#" class="nav-link">Solutions</a>
+      <a href="#" class="nav-link">Projects</a>
+      <a href="#" class="nav-link">Community</a>
+      <a href="#" class="nav-link">Documentation</a>
+      <div class="auth-buttons">
+        <button class="btn btn-outline" routerLink="/login">Log In</button>
+        <button class="btn btn-primary" routerLink="/register">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="hero-section">
+  <div class="search-container">
+    <h1>Find a solution perfect for you</h1>
+    <p class="subtitle">Search your way to the most perfect solution to your error. Make a click worth it.</p>
+    
+    <div class="search-box">
+      <input type="text" placeholder="Error code, description or Keyword">
+      <div class="location-select">
+        <i class="fa-brands fa-hackerrank"></i>
+        <select>
+          <option>All Errors</option>
+        </select>
+      </div>
+      <button class="search-btn">
+        <i class='bx bx-search bx-tada'></i>
+      </button>
+    </div>
+    
+    <div class="cards-container">
+      <div class="card">
+        <div class="card-icon">
+          <i class='bx bx-bug'></i>
+        </div>
+        <h3>Explore Errors & Solutions</h3>
+        <p>Discover comprehensive guides and solutions for common programming errors and debugging challenges.</p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">
+          <i class='bx bx-folder-open'></i>
+        </div>
+        <h3>Browse Project Structure Guides</h3>
+        <p>Learn best practices for organizing your code and maintaining scalable project architectures.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-container" [ngClass]="{'error': isError, 'success': !isError}">
+    <!-- Header Bar -->
+    <div class="code-header">
+      <span class="language-label">Java</span>
+      <span class="code-label">Code</span>
+    </div>
+  
+    <!-- Code Content -->
+    <div class="code-content">
+      <div class="code-line">
+        <span class="keyword">public class</span>
+        <span class="class-name">CodeSolutions</span>
+        <span class="v">&#123;</span>
+      </div>
+  
+      <div class="code-line indented">
+        <span class="keyword">public</span>
+        <span class="class-name">CodeSolutions</span>
+        <span class="v">(</span>
+        <span class="type">String</span>
+        <span class="variable">algorithm</span>
+        <span class="v">,</span>
+        <span class="type">int</span>
+        <span class="variable">complexity</span>
+        <span class="v">)</span>
+        <span class="v">&#123;</span>
+      </div>
+  
+      <div class="code-line double-indented">
+        <span class="keyword">this</span>
+        <span class="v">.</span>
+        <span class="variable">algorithm</span>
+        <span class="v">=</span>
+        <span class="variable">algorithm</span>
+        <span class="v">;</span>
+      </div>
+  
+      <div class="code-line double-indented">
+        <span class="keyword">this</span>
+        <span class="v">.</span>
+        <span class="variable">complexity</span>
+        <span class="v">=</span>
+        <span class="variable">complexity</span>
+        <span class="v">;</span>
+      </div>
+  
+      <div class="code-line indented">
+        <span class="v">&#125;</span>
+      </div>
+  
+      <div class="code-line indented">
+        <span class="keyword">public</span>
+        <span class="type">void</span>
+        <span class="method">findSolution</span>
+        <span class="v">()</span>
+        <span class="v">&#123;</span>
+      </div>
+  
+      <div class="code-line double-indented">
+        <span class="comment">// Solution implementation</span>
+      </div>
+  
+      <div class="code-line indented">
+        <span class="v">&#125;</span>
+      </div>
+  
+      <div class="code-line">
+        <span class="v">&#125;</span>
+      </div>
+  
+      <div class="code-line method-usage">
+        <div class="comment">// Main method</div>
+        <div class="code-line">
+          <span class="keyword">public static void</span>
+          <span class="method">main</span>
+          <span class="v">(</span>
+          <span class="type">String</span>
+          <span class="v">[]</span>
+          <span class="variable">args</span>
+          <span class="v">)</span>
+          <span class="v">&#123;</span>
+        </div>
+  
+        <div class="code-line indented">
+          <span class="keyword">CodeSolutions solutions = new CodeSolutions("quicksort", 1) ;</span>
+        </div>
+  
+        <div class="typewriter-container">
+          <span class="typewriter-text" [class.typing]="isTyping">{{currentCode}}</span>
+          <span class="cursor" [class.typing]="isTyping"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--list of errors -->
+
+<div class="category-section">
+  <h2>Browse Error Categories</h2>
+  <p>Find and explore solutions by category</p>
+
+  <div class="slider-container">
+    <div class="slider" id="slider">
+      <!-- Card 1 -->
+      <div class="error-card">
+        <div class="icon-container">
+          <i class='bx bx-code-block'></i>
+        </div>
+        <h3>Runtime Errors</h3>
+        <div class="error-preview">
+          <div class="error-log">
+            <pre>TypeError: Cannot read property 'length' of undefined</pre>
+          </div>
+          <div class="error-details">
+            <span class="error-code">ERR_001</span>
+            <p>Common JavaScript runtime errors and solutions</p>
+            <div class="tags">
+              <span>JavaScript</span>
+              <span>Runtime</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="error-card">
+        <div class="icon-container">
+          <i class='bx bx-data'></i>
+        </div>
+        <h3>Database Errors</h3>
+        <div class="error-preview">
+          <div class="error-log">
+            <pre>Error: Connection refused at Database.connect</pre>
+          </div>
+          <div class="error-details">
+            <span class="error-code">ERR_002</span>
+            <p>Database connection and query errors</p>
+            <div class="tags">
+              <span>Database</span>
+              <span>SQL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="error-card">
+        <div class="icon-container">
+          <i class='bx bx-server'></i>
+        </div>
+        <h3>API Errors</h3>
+        <div class="error-preview">
+          <div class="error-log">
+            <pre>404 Not Found: API endpoint /users not found</pre>
+          </div>
+          <div class="error-details">
+            <span class="error-code">ERR_003</span>
+            <p>Common API and HTTP request errors</p>
+            <div class="tags">
+              <span>API</span>
+              <span>HTTP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-controls">
+      <button class="direction-btn left" onclick="changeDirection('left')">←</button>
+      <button class="direction-btn right" onclick="changeDirection('right')">→</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-container">
+  <div class="title-container">
+    <div class="title-content">
+      <i class="fas fa-comments title-icon"></i>
+      <h1 class="title-text">Coders Oval</h1>
+    </div>
+  </div>
+
+  <div class="chat-container" (click)="onDocumentClicks($event)">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <img [src]="'/api/placeholder/45/45'" alt="Design Team">
+        <div class="chat-header-text">
+          <h3>{{ groupName }}</h3>
+          <p>{{ members.length }} members.</p>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <div class="action-btn"><i class="fas fa-phone"></i></div>
+        <div class="action-btn"><i class="fas fa-video"></i></div>
+        <div class="action-btn"><i class="fas fa-info-circle"></i></div>
+      </div>
+    </div>
+    
+    <!-- Messages Container -->
+    <div class="messages-container" #messagesContainer>
+      <div class="date-separator">Today, {{ currentDate | date:'MMMM d' }}</div>
+      
+      <!-- Message Items -->
+      <div *ngFor="let message of messages; let i = index" 
+           class="message" 
+           [ngClass]="{'message-outgoing': message.isOutgoing, 'message-incoming': !message.isOutgoing}"
+           [@messageAnimation]="'in'">
+        
+        <ng-container *ngIf="!message.isOutgoing">
+          <img [src]="message.avatarUrl" [alt]="message.sender" class="message-avatar">
+        </ng-container>
+        
+        <div class="message-bubble">
+          <div class="message-content">
+            <div *ngIf="!message.isOutgoing" class="message-sender">{{ message.sender }}</div>
+            
+            <img *ngIf="message.imageUrl" 
+                 [src]="message.imageUrl" 
+                 alt="Shared Image" 
+                 class="message-img"
+                 (click)="openImageOverlay(message.imageUrl)">
+                 
+            <div class="message-text">{{ message.text }}</div>
+            
+            <div class="message-meta">
+              <div class="message-time">{{ message.time }}</div>
+              <div *ngIf="message.isOutgoing" class="message-status">
+                <i class="fas" [ngClass]="message.isRead ? 'fa-check-double' : 'fa-check'"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Typing indicator -->
+      <div *ngIf="isInTyping" class="typing-indicator">
+        <img [src]="typingUser?.avatarUrl" [alt]="typingUser?.name" class="typing-avatar">
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Input Container -->
+    <div class="input-container">
+      <div class="input-emoji" id="emoji-btn" (click)="toggleEmojiPicker()">
+        <i class="far fa-smile"></i>
+      </div>
+      <div class="input-file">
+        <i class="fas fa-paperclip"></i>
+      </div>
+      <input 
+        type="text" 
+        class="input-text" 
+        placeholder="Type a message..."
+        [(ngModel)]="currentMessage"
+        (keydown)="handleKeyPress($event)"
+        #messageInput>
+      <div class="input-send" (click)="sendMessage()" [class.btn-anim]="false">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+    </div>
+    
+    <!-- Emoji Picker -->
+    <div class="emoji-picker" [class.active]="showEmojiPicker" [@fadeIn]="showEmojiPicker ? 'in' : 'out'">
+      <div class="emoji-categories">
+        <div *ngFor="let category of emojiCategories" 
+             class="emoji-category"
+             [class.active]="activeEmojiCategory === category"
+             (click)="setActiveEmojiCategory(category)">
+          {{ category }}
+        </div>
+      </div>
+      <div class="emoji-grid">
+        <div *ngFor="let emoji of emojis" 
+             class="emoji"
+             (click)="selectEmoji(emoji)">
+          {{ emoji }}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Media Overlay -->
+  <div class="media-overlay" [class.active]="mediaOverlayActive" [@fadeIn]="mediaOverlayActive ? 'in' : 'out'">
+    <div class="close-overlay" (click)="closeImageOverlay()">
+      <i class="fas fa-times"></i>
+    </div>
+    <img [src]="selectedImage" alt="Full size media">
+  </div>
+</div>

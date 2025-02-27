@@ -1,0 +1,138 @@
+<div class="signup-container">
+  <div class="form-card">
+    <!-- Left Section with Image -->
+    <div class="image-section">
+      <img src="https://i.pinimg.com/236x/3b/7e/04/3b7e042c078f19d1bda37b50067b07bf.jpg" alt="Developer coding" class="background-image">
+      <div class="overlay">
+        <h2 class="image-title">Build Something Amazing</h2>
+        <p class="image-tagline">Join thousands of developers creating the future</p>
+        <div class="quote-container">
+          <i class="fa fa-code quote-icon"></i>
+          <p class="image-quote">"while(alive) &#123; keepCoding(); &#125;"</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Section with Form -->
+    <div class="form-section">
+      <div class="form-header">
+        <h1 class="title">Code Solutions</h1>
+        <p class="tagline">&lt;Join the developer community/&gt;</p>
+      </div>
+      
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <div class="input-with-icon">
+            <i class="fa fa-user input-icon"></i>
+            <input
+              type="text"
+              id="fullName"
+              formControlName="fullName"
+              placeholder="John Doe"
+              [ngClass]="{'invalid': isFieldInvalid('fullName')}"
+            >
+          </div>
+          <div *ngIf="isFieldInvalid('fullName')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Full name is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-with-icon">
+            <i class="fa fa-at input-icon"></i>
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="dev_ninja"
+              [ngClass]="{'invalid': isFieldInvalid('username')}"
+            >
+          </div>
+          <div *ngIf="isFieldInvalid('username')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Username is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <i class="fa fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              [ngClass]="{'invalid': isFieldInvalid('email')}"
+            >
+          </div>
+          <div *ngIf="isFieldInvalid('email')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Valid email is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-icon password-container">
+            <i class="fa fa-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••"
+              [ngClass]="{'invalid': isFieldInvalid('password')}"
+            >
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          <div *ngIf="isFieldInvalid('password')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Password must be at least 8 characters
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="profileImage">Profile Image</label>
+          <div class="file-upload">
+            <div class="file-preview" [ngClass]="{'has-image': imagePreview}">
+              <div *ngIf="!imagePreview" class="upload-icon">
+                <i class="fa fa-user-circle"></i>
+              </div>
+              <img *ngIf="imagePreview" [src]="imagePreview" alt="Profile preview">
+            </div>
+            <label for="profileImage" class="upload-button">
+              <i class="fa fa-cloud-upload"></i> Choose Image
+            </label>
+            <input
+              type="file"
+              id="profileImage"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              hidden
+            >
+          </div>
+        </div>
+        
+        <div class="form-footer">
+          <button type="submit" [disabled]="signupForm.invalid" class="submit-button">
+            <i class="fa fa-code"></i> Start Coding
+          </button>
+
+          <p class="login-text">
+            Already have an account? <a [routerLink]="'/login'" class="login-link">Login</a>
+          </p>
+
+          <p class="terms-text">
+            By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="login-container">
+  <div class="form-card">
+    <!-- Left Section with Image -->
+    <div class="image-section">
+      <img src="https://i.pinimg.com/236x/3b/7e/04/3b7e042c078f19d1bda37b50067b07bf.jpg" alt="Developer coding" class="background-image">
+      <div class="overlay">
+        <h2 class="image-title">Welcome Back</h2>
+        <p class="image-tagline">Continue your coding journey</p>
+        <div class="quote-container">
+          <i class="fa fa-code quote-icon"></i>
+          <p class="image-quote">"function login() &#123; return success; &#125;"</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Section with Form -->
+    <div class="form-section">
+      <div class="form-header">
+        <h1 class="title">Code Solutions</h1>
+        <p class="tagline">&lt;Developer Login/&gt;</p>
+      </div>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <i class="fa fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              [ngClass]="{'invalid': isFieldInvalid('email')}"
+            >
+          </div>
+          <div *ngIf="isFieldInvalid('email')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Valid email is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-icon password-container">
+            <i class="fa fa-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••"
+              [ngClass]="{'invalid': isFieldInvalid('password')}"
+            >
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          <div *ngIf="isFieldInvalid('password')" class="error-message">
+            <i class="fa fa-exclamation-circle"></i> Please enter your password
+          </div>
+        </div>
+        
+        <div class="remember-forgot">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" formControlName="rememberMe">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        
+        <div class="form-footer">
+          <button type="submit" [disabled]="loginForm.invalid" class="submit-button">
+            <i class="fa fa-sign-in"></i> Login
+          </button>
+          
+          <div class="divider">
+            <span>or</span>
+          </div>
+          
+          <div class="social-login">
+            <button type="button" class="social-btn github">
+              <i class="fa fa-github"></i>
+            </button>
+            <button type="button" class="social-btn google">
+              <i class="fa fa-google"></i>
+            </button>
+            <button type="button" class="social-btn twitter">
+              <i class="fa fa-twitter"></i>
+            </button>
+          </div>
+          
+          <p class="signup-text">
+            Don't have an account? <a [routerLink]="'/register'" class="signup-link">Sign up</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
