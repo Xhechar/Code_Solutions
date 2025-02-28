@@ -1,1 +1,101 @@
-<p>stacks works!</p>
+<!-- create-stack-form.component.html -->
+<div class="form-container">
+  <form #stackForm="ngForm" (ngSubmit)="onSubmit()" class="form">
+    <h2>Create New Stack</h2>
+    <p class="form-description">Fill in the details to create a new technology stack</p>
+    
+    <div class="form-group">
+      <label for="name">Stack Name</label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        [(ngModel)]="stack.Name" 
+        #name="ngModel" 
+        required
+        minlength="3"
+        maxlength="50"
+        placeholder="Enter stack name (e.g., MERN, LAMP)">
+      
+      <div *ngIf="name.invalid && (name.dirty || name.touched)" class="error-messages">
+        <p *ngIf="name.errors?.['required']">Stack name is required</p>
+        <p *ngIf="name.errors?.['minlength']">Stack name must be at least 3 characters</p>
+        <p *ngIf="name.errors?.['maxlength']">Stack name cannot exceed 50 characters</p>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="version">Version</label>
+      <input 
+        type="text" 
+        id="version" 
+        name="version" 
+        [(ngModel)]="stack.Version" 
+        #version="ngModel" 
+        required
+        pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.([0-9]\d*))?$"
+        placeholder="Enter version (e.g., 1.0.0)">
+      
+      <div *ngIf="version.invalid && (version.dirty || version.touched)" class="error-messages">
+        <p *ngIf="version.errors?.['required']">Version is required</p>
+        <p *ngIf="version.errors?.['pattern']">Please enter a valid semantic version (e.g., 1.0.0)</p>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea 
+        id="description" 
+        name="description" 
+        [(ngModel)]="stack.Description" 
+        #description="ngModel" 
+        required
+        minlength="10"
+        maxlength="500"
+        rows="4"
+        placeholder="Describe this technology stack and its use cases"></textarea>
+      
+      <div *ngIf="description.invalid && (description.dirty || description.touched)" class="error-messages">
+        <p *ngIf="description.errors?.['required']">Description is required</p>
+        <p *ngIf="description.errors?.['minlength']">Description must be at least 10 characters</p>
+        <p *ngIf="description.errors?.['maxlength']">Description cannot exceed 500 characters</p>
+      </div>
+      <div class="char-count" [ngClass]="{'warning': description.value?.length > 450}">
+        {{description.value?.length || 0}}/500
+      </div>
+    </div>
+    
+    <div class="form-group project-structures">
+      <label>Project Structures <span class="optional">(Optional)</span></label>
+      <div class="structures-container">
+        <div *ngFor="let structure of projectStructures; let i = index" class="structure-item" [@slideIn]>
+          <input 
+            type="text" 
+            [name]="'structure_' + i" 
+            [(ngModel)]="structure.name" 
+            required
+            placeholder="Enter folder/file structure">
+          <button type="button" class="btn-remove" (click)="removeStructure(i)" title="Remove structure">
+            ✕
+          </button>
+        </div>
+      </div>
+      
+      <button type="button" class="btn-add" (click)="addStructure()">
+        <span class="btn-icon">+</span>
+        <span class="btn-text">Add Project Structure</span>
+      </button>
+    </div>
+    
+    <div class="form-actions">
+      <button type="button" class="btn-back" (click)="resetForm()">
+        <span class="btn-icon">↺</span>
+        <span class="btn-text">Reset</span>
+      </button>
+      <button type="submit" [disabled]="stackForm.invalid" class="btn-submit">
+        <span class="btn-text">Create Stack</span>
+        <span class="btn-icon">→</span>
+      </button>
+    </div>
+  </form>
+</div>

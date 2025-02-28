@@ -1,1 +1,69 @@
-<p>categories works!</p>
+<!-- create-category-form.component.html -->
+<!-- Trigger Button (for demonstration) -->
+<button class="btn-trigger" (click)="openModal()">Create Category</button>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" [ngClass]="{'active': isModalOpen}" (click)="closeOnOverlay($event)">
+  <!-- Modal Content -->
+  <div class="modal-content" [@modalAnimation]="isModalOpen ? 'open' : 'closed'" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Category</h2>
+      <button type="button" class="btn-close" (click)="closeModal()">✕</button>
+    </div>
+    
+    <form #categoryForm="ngForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="form-group">
+        <label for="name">Category Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          [(ngModel)]="category.Name" 
+          #name="ngModel" 
+          required
+          minlength="3"
+          maxlength="50"
+          placeholder="Enter category name">
+        
+        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="error-messages">
+          <p *ngIf="name.errors?.['required']">Category name is required</p>
+          <p *ngIf="name.errors?.['minlength']">Category name must be at least 3 characters</p>
+          <p *ngIf="name.errors?.['maxlength']">Category name cannot exceed 50 characters</p>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          [(ngModel)]="category.Description" 
+          #description="ngModel" 
+          required
+          minlength="10"
+          maxlength="300"
+          rows="4"
+          placeholder="Describe this category"></textarea>
+        
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="error-messages">
+          <p *ngIf="description.errors?.['required']">Description is required</p>
+          <p *ngIf="description.errors?.['minlength']">Description must be at least 10 characters</p>
+          <p *ngIf="description.errors?.['maxlength']">Description cannot exceed 300 characters</p>
+        </div>
+        <div class="char-count" [ngClass]="{'warning': description.value?.length > 250}">
+          {{description.value?.length || 0}}/300
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeModal()">
+          <span class="btn-text">Cancel</span>
+        </button>
+        <button type="submit" [disabled]="categoryForm.invalid" class="btn-submit">
+          <span class="btn-text">Create Category</span>
+          <span class="btn-icon">✓</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

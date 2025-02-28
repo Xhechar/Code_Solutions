@@ -13,10 +13,17 @@
   --light: hsl(51, 40%, 76%);
   --neutral: hsl(0, 0%, 90%);
   --accent: hsl(110, 59%, 43%);
+  --accent-hover: hsl(110, 59%, 38%);
   --bg-color: hsl(0, 0%, 100%);
   --nav-height: 70px;
   --border-radius: 12px;
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+:host {
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 70px;
+  --transition-speed: 0.3s;
 }
 
 body {
