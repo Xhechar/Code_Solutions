@@ -1,1 +1,113 @@
-<p>u-side-bar works!</p>
+<div class="sidebar" [ngClass]="{'sidebar-collapsed': sidebarCollapsed}">
+  <!-- Logo and Toggler -->
+  <div class="logo-container">
+    <a href="/user/home" class="logo" (mouseenter)="logoHovered = true" (mouseleave)="logoHovered = false">
+      <span class="logo-first" [ngClass]="{'logo-swap': logoHovered}">Co</span><span class="logo-second" [ngClass]="{'logo-swap': logoHovered}">de</span>
+    </a>
+    <button class="sidebar-toggler" (click)="toggleSidebar()">
+      <i class='bx bxs-chevron-right' *ngIf="sidebarCollapsed"></i>
+      <i class='bx bx-x' *ngIf="!sidebarCollapsed"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <ul>
+      <li>
+        <a routerLink="/user/home" routerLinkActive="active">
+          <i class='bx bxs-dashboard'></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      
+      <!-- Contributions Dropdown -->
+      <li class="dropdown" [ngClass]="{'dropdown-open': isDropdownOpen('contributions')}">
+        <a (click)="toggleDropdown('contributions')">
+          <i class='bx bx-code-block'></i>
+          <span>Contributions</span>
+          <i class='bx bx-chevron-down dropdown-icon'></i>
+        </a>
+        <ul class="dropdown-menu" [ngClass]="{'show': isDropdownOpen('contributions')}">
+          <li>
+            <a routerLink="/user/contributions/my-problems" routerLinkActive="active">
+              <i class='bx bx-error-circle'></i>
+              <span>My Problems</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/user/contributions/my-solutions" routerLinkActive="active">
+              <i class='bx bx-check-circle'></i>
+              <span>My Solutions</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Favorites -->
+      <li>
+        <a routerLink="/user/favourites" routerLinkActive="active">
+          <i class='bx bxs-star'></i>
+          <span>Favorites</span>
+        </a>
+      </li>
+      
+      <!-- History -->
+      <li>
+        <a routerLink="/user/history" routerLinkActive="active">
+          <i class='bx bx-history'></i>
+          <span>History</span>
+        </a>
+      </li>
+      
+      <!-- Additional links -->
+      <li>
+        <a routerLink="/browse" routerLinkActive="active">
+          <i class='bx bx-search-alt'></i>
+          <span>Browse Solutions</span>
+        </a>
+      </li>
+      
+      <li>
+        <a routerLink="/settings" routerLinkActive="active">
+          <i class='bx bx-cog'></i>
+          <span>Settings</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
+  <!-- User Profile Section -->
+  <div class="user-profile">
+    <div class="profile-image">
+      <img [src]="user?.profileImage || 'assets/default-avatar.png'" alt="Profile">
+    </div>
+    <div class="user-info" *ngIf="!sidebarCollapsed">
+      <h4 class="user-name">{{ user?.name || 'User Name' }}</h4>
+      <p class="user-email">{{ user?.email || 'user@example.com' }}</p>
+      
+      <!-- Badges -->
+      <div class="badges">
+        <div class="badge" [ngClass]="{'badge-active': user?.primaryBadge}">
+          <i class="fa fa-medal" [style.color]="user?.primaryBadge ? '#FFD700' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.primaryBadge?.description || 'No primary badge earned yet' }}</div>
+        </div>
+        <div class="badge" [ngClass]="{'badge-active': user?.secondaryBadge}">
+          <i class="fa fa-award" [style.color]="user?.secondaryBadge ? '#C0C0C0' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.secondaryBadge?.description || 'No secondary badge earned yet' }}</div>
+        </div>
+        <div class="badge" [ngClass]="{'badge-active': user?.tertiaryBadge}">
+          <i class="fa fa-certificate" [style.color]="user?.tertiaryBadge ? '#CD7F32' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.tertiaryBadge?.description || 'No tertiary badge earned yet' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Logout Button -->
+  <div class="logout-container">
+    <button class="logout-btn" (click)="logout()">
+      <i class='bx bx-log-out'></i>
+      <span *ngIf="!sidebarCollapsed">Logout</span>
+    </button>
+  </div>
+</div>

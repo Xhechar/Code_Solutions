@@ -18,12 +18,21 @@
   --nav-height: 70px;
   --border-radius: 12px;
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-:host {
-  --sidebar-width: 280px;
-  --sidebar-collapsed-width: 70px;
   --transition-speed: 0.3s;
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+
+  --sidebar-bg: hsl(222, 47%, 11%);
+  --sidebar-hover: hsla(222, 47%, 17%, 0.7);
+  --sidebar-active: var(--accent);
+  --text-color: hsl(0, 0%, 90%);
+  --text-muted: hsl(0, 0%, 70%);
+  --active-item-bg: var(--accent);
+  --active-item-color: var(--bg-color);
+  --hover-item-bg: var(--sidebar-hover);
+  --tooltip-bg: hsla(0, 0%, 10%, 0.9);
+  --tooltip-color: var(--text-color);
+  --border-color: hsla(222, 47%, 20%, 1);
 }
 
 body {

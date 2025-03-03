@@ -1,1 +1,83 @@
-<p>a-top-bar works!</p>
+<div class="topbar">
+  <div class="logo-area">
+    <div class="logo">
+      <div class="bug-icon">
+        <i class='bx bxs-bug' ></i>
+      </div>
+      <span class="logo-text">Building Solutions</span>
+    </div>
+  </div>
+  
+  <div class="nav-actions">
+    <button class="action-btn create-btn" (click)="toggleCreateMenu($event)">
+      <i class='bx bxs-folder-plus'></i>
+      <span class="tooltip">Create New</span>
+    </button>
+    
+    <button class="action-btn analytics-btn">
+      <i class='bx bx-bar-chart-square' ></i>
+      <span class="tooltip">Analytics</span>
+    </button>
+    
+    <button class="action-btn solutions-btn">
+      <i class='bx bx-git-repo-forked' ></i>
+      <span class="tooltip">Solutions</span>
+    </button>
+    
+    <button class="action-btn notifications-btn" (click)="toggleNotifications($event)">
+      <i class='bx bxs-bell' ></i>
+      <span class="badge" *ngIf="unreadNotifications > 0">{{unreadNotifications}}</span>
+      <span class="tooltip">Notifications</span>
+    </button>
+    
+    <div class="user-profile">
+      <div class="profile-info">
+        <div class="profile-name">{{user.name}}</div>
+        <div class="profile-role">{{user.role}}</div>
+      </div>
+      <div class="profile-img profile-btn" (click)="toggleProfileMenu($event)">
+        <img src="https://i.pinimg.com/236x/0e/4a/a6/0e4aa6a4ebdc37403fc2c8cfa28b259f.jpg" alt="Admin">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dropdown Menu -->
+<div class="dropdown-menu" [class.active]="showProfileMenu">
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-user"></i>
+    Profile
+  </a>
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-edit"></i>
+    Edit Settings
+  </a>
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-cog"></i>
+    Account Settings
+  </a>
+  <div class="dropdown-divider"></div>
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-sign-out-alt"></i>
+    Sign Out
+  </a>
+</div>
+
+<!-- Notification Panel -->
+<div class="notification-panel" [class.active]="showNotifications">
+  <div class="notification-header">
+    <span class="notification-title">Notifications</span>
+    <button class="mark-read" (click)="markAllAsRead()">Mark all as read</button>
+  </div>
+  <div class="notification-item" *ngFor="let notification of notifications">
+    <div class="notification-icon">
+      <i [class]="notification.iconClass"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-text" [innerHTML]="notification.text"></div>
+      <div class="notification-time">{{notification.time}}</div>
+    </div>
+    <div class="unread-indicator" *ngIf="notification.unread"></div>
+  </div>
+  <a href="#" class="view-all">View all notifications</a>
+</div>

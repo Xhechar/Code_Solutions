@@ -1,17 +1,3 @@
-:root {
-  --sidebar-width: 260px;
-  --sidebar-collapsed-width: 70px;
-  --dark: #1a2030;
-  --light: #f8f9fa;
-  --accent: #4caf50;
-  --accent-rgb: 76, 175, 80;
-  --accent-hover: #3d8b40;
-  --neutral: #b0bec5;
-  --shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
-}
-
 .sidebar-container {
   position: fixed;
   top: 0;
