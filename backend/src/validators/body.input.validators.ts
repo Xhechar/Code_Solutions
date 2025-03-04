@@ -121,7 +121,7 @@ export const ProblemSchema = joi.object({
     "number.min": "Priority level must be at least 0",
     "number.max": "Priority level must not exceed 5"
   }),
-  ImagePath: joi.string().max(500)
+  ImagePath: joi.string()
 });
   
 export const SolutionSchema = joi.object({

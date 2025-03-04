@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 interface Badge {
   id: string;
@@ -24,7 +24,7 @@ interface User {
 @Component({
   selector: 'app-u-side-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './u-side-bar.component.html',
   styleUrl: './u-side-bar.component.css',
   animations: [

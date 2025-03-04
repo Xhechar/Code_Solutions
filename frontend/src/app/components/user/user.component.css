@@ -1,0 +1,6 @@
+.user-contents {
+  margin-left: calc(var(--sidebar-width) + .5rem);
+  margin-top: calc(var(--nav-height) + .5rem);
+  height: 60vh;
+  background-color: var(--accent);
+}

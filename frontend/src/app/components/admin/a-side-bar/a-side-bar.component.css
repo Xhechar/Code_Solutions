@@ -281,7 +281,7 @@
 
 .sidebar-nav i {
   margin-right: 12px;
-  font-size: 16px;
+  font-size: 1rem;
   width: 20px;
   text-align: center;
   transition: margin var(--transition-speed) ease, font-size var(--transition-speed) ease;

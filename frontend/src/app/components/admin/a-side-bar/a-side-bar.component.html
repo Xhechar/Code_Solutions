@@ -1,7 +1,6 @@
-<!-- admin-sidebar.component.html -->
 <div class="sidebar-container" [class.collapsed]="isCollapsed">
   <div class="sidebar-header">
-    <a routerLink="/admin/dashboard" class="logo-link">
+    <a routerLink="dashboard" class="logo-link">
       <div class="logo">
         <span class="logo-part1">Co</span><span class="logo-part2">de</span>
       </div>
@@ -37,7 +36,11 @@
     <ul>
       <!-- Dashboard -->
       <li>
-        <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [attr.aria-label]="'Dashboard'">
+        <a 
+          routerLink="/admin/dashboard" 
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+        >
           <i class="fas fa-chart-line"></i>
           <span class="nav-text">Dashboard</span>
         </a>
@@ -46,43 +49,64 @@
       <!-- Problems -->
       <li>
         <a 
-          (click)="toggleSubmenu('problems')"
-          [class.active]="isSubmenuActive('problems')"
-          [class.parent-active]="isParentOfActiveRoute('problems')"
-          [class.open]="expandedMenus.includes('problems')"
-          [attr.aria-label]="'Problems'"
+          routerLink="/admin/problems" 
+          routerLinkActive="parent-active"
+          [routerLinkActiveOptions]="{exact: false}"
+          (click)="toggleSubmenu('problems', $event)"
         >
           <i class="fas fa-tasks"></i>
           <span class="nav-text">Problems</span>
-          <i class="fas submenu-icon" [ngClass]="expandedMenus.includes('problems') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <i 
+            class="fas submenu-icon" 
+            [class.fa-chevron-down]="expandedMenus.includes('problems')"
+            [class.fa-chevron-right]="!expandedMenus.includes('problems')"
+          ></i>
         </a>
-        <ul class="submenu" [class.expanded]="expandedMenus.includes('problems')" [@submenuAnimation]="expandedMenus.includes('problems') ? 'expanded' : 'collapsed'">
+        <ul 
+          class="submenu" 
+          [class.expanded]="expandedMenus.includes('problems')"
+        >
           <li>
-            <a routerLink="/admin/problems/admin-problems" routerLinkActive="active">
+            <a 
+              routerLink="/admin/problems/admin-problems" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-user-shield"></i>
               <span class="nav-text">Admin Problems</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/problems/all-problems" routerLinkActive="active">
+            <a 
+              routerLink="/admin/problems/all-problems" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-list-alt"></i>
               <span class="nav-text">All Problems</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/problems/approved-problems" routerLinkActive="active">
+            <a 
+              routerLink="/admin/problems/approved-problems" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-check-circle"></i>
               <span class="nav-text">Approved Problems</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/problems/pending-problems" routerLinkActive="active">
+            <a 
+              routerLink="/admin/problems/pending-problems" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-clock"></i>
               <span class="nav-text">Pending Problems</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/problems/users-problems" routerLinkActive="active">
+            <a 
+              routerLink="/admin/problems/users-problems" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-user-edit"></i>
               <span class="nav-text">User Problems</span>
             </a>
@@ -93,31 +117,46 @@
       <!-- Project Structure -->
       <li>
         <a 
-          (click)="toggleSubmenu('project-structure')"
-          [class.active]="isSubmenuActive('project-structure')"
-          [class.parent-active]="isParentOfActiveRoute('project-structure')"
-          [class.open]="expandedMenus.includes('project-structure')"
-          [attr.aria-label]="'Project Structure'"
+          routerLink="/admin/project-structure" 
+          routerLinkActive="parent-active"
+          [routerLinkActiveOptions]="{exact: false}"
+          (click)="toggleSubmenu('project-structure', $event)"
         >
           <i class="fas fa-sitemap"></i>
           <span class="nav-text">Project Structure</span>
-          <i class="fas submenu-icon" [ngClass]="expandedMenus.includes('project-structure') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <i 
+            class="fas submenu-icon" 
+            [class.fa-chevron-down]="expandedMenus.includes('project-structure')"
+            [class.fa-chevron-right]="!expandedMenus.includes('project-structure')"
+          ></i>
         </a>
-        <ul class="submenu" [class.expanded]="expandedMenus.includes('project-structure')" [@submenuAnimation]="expandedMenus.includes('project-structure') ? 'expanded' : 'collapsed'">
+        <ul 
+          class="submenu" 
+          [class.expanded]="expandedMenus.includes('project-structure')"
+        >
           <li>
-            <a routerLink="/admin/project-structure/all-project-structures" routerLinkActive="active">
+            <a 
+              routerLink="/admin/project-structure/all-project-structures" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-folder-tree"></i>
               <span class="nav-text">All Structures</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/project-structure/preview" routerLinkActive="active">
+            <a 
+              routerLink="/admin/project-structure/preview" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-eye"></i>
               <span class="nav-text">Preview</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/project-structure/structure-guides" routerLinkActive="active">
+            <a 
+              routerLink="/admin/project-structure/structure-guides" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-book"></i>
               <span class="nav-text">Structure Guides</span>
             </a>
@@ -127,7 +166,10 @@
 
       <!-- Solutions -->
       <li>
-        <a routerLink="/admin/solutions" routerLinkActive="active" [attr.aria-label]="'Solutions'">
+        <a 
+          routerLink="/admin/solutions" 
+          routerLinkActive="active"
+        >
           <i class="fas fa-lightbulb"></i>
           <span class="nav-text">Solutions</span>
         </a>
@@ -136,25 +178,37 @@
       <!-- Tech Tools -->
       <li>
         <a 
-          (click)="toggleSubmenu('tech-tools')"
-          [class.active]="isSubmenuActive('tech-tools')"
-          [class.parent-active]="isParentOfActiveRoute('tech-tools')"
-          [class.open]="expandedMenus.includes('tech-tools')"
-          [attr.aria-label]="'Tech Tools'"
+          routerLink="/admin/tech-tools" 
+          routerLinkActive="parent-active"
+          [routerLinkActiveOptions]="{exact: false}"
+          (click)="toggleSubmenu('tech-tools', $event)"
         >
           <i class="fas fa-tools"></i>
           <span class="nav-text">Tech Tools</span>
-          <i class="fas submenu-icon" [ngClass]="expandedMenus.includes('tech-tools') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <i 
+            class="fas submenu-icon" 
+            [class.fa-chevron-down]="expandedMenus.includes('tech-tools')"
+            [class.fa-chevron-right]="!expandedMenus.includes('tech-tools')"
+          ></i>
         </a>
-        <ul class="submenu" [class.expanded]="expandedMenus.includes('tech-tools')" [@submenuAnimation]="expandedMenus.includes('tech-tools') ? 'expanded' : 'collapsed'">
+        <ul 
+          class="submenu" 
+          [class.expanded]="expandedMenus.includes('tech-tools')"
+        >
           <li>
-            <a routerLink="/admin/tech-tools/categories" routerLinkActive="active">
+            <a 
+              routerLink="/admin/tech-tools/categories" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-layer-group"></i>
               <span class="nav-text">Categories</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/tech-tools/stacks" routerLinkActive="active">
+            <a 
+              routerLink="/admin/tech-tools/stacks" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-cubes"></i>
               <span class="nav-text">Stacks</span>
             </a>
@@ -165,25 +219,37 @@
       <!-- Users -->
       <li>
         <a 
-          (click)="toggleSubmenu('users')"
-          [class.active]="isSubmenuActive('users')"
-          [class.parent-active]="isParentOfActiveRoute('users')"
-          [class.open]="expandedMenus.includes('users')"
-          [attr.aria-label]="'Users'"
+          routerLink="/admin/users" 
+          routerLinkActive="parent-active"
+          [routerLinkActiveOptions]="{exact: false}"
+          (click)="toggleSubmenu('users', $event)"
         >
           <i class="fas fa-users"></i>
           <span class="nav-text">Users</span>
-          <i class="fas submenu-icon" [ngClass]="expandedMenus.includes('users') ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+          <i 
+            class="fas submenu-icon" 
+            [class.fa-chevron-down]="expandedMenus.includes('users')"
+            [class.fa-chevron-right]="!expandedMenus.includes('users')"
+          ></i>
         </a>
-        <ul class="submenu" [class.expanded]="expandedMenus.includes('users')" [@submenuAnimation]="expandedMenus.includes('users') ? 'expanded' : 'collapsed'">
+        <ul 
+          class="submenu" 
+          [class.expanded]="expandedMenus.includes('users')"
+        >
           <li>
-            <a routerLink="/admin/users/all-users" routerLinkActive="active">
+            <a 
+              routerLink="/admin/users/all-users" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-user-friends"></i>
               <span class="nav-text">All Users</span>
             </a>
           </li>
           <li>
-            <a routerLink="/admin/users/deleted-users" routerLinkActive="active">
+            <a 
+              routerLink="/admin/users/deleted-users" 
+              routerLinkActive="active"
+            >
               <i class="fas fa-user-slash"></i>
               <span class="nav-text">Deleted Users</span>
             </a>
@@ -193,8 +259,11 @@
 
       <!-- Comments -->
       <li>
-        <a routerLink="/admin/comments" routerLinkActive="active" [attr.aria-label]="'Comments'">
-          <i class="fas fa-comments"></i>
+        <a 
+          routerLink="/admin/comments" 
+          routerLinkActive="active"
+        >
+          <i class='bx bxs-chat'></i>
           <span class="nav-text">Comments</span>
         </a>
       </li>

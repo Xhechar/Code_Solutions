@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 interface User {
   name: string;
@@ -19,7 +20,7 @@ interface Notification {
 @Component({
   selector: 'app-a-top-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './a-top-bar.component.html',
   styleUrl: './a-top-bar.component.css'
 })

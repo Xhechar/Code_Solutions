@@ -1,6 +1,5 @@
 .entire-contents {
   max-width: 1200px;
   margin-left: calc(var(--sidebar-width) + .5rem);
-  background-color: var(--accent);
-  margin-top: 5rem;
+  margin-top: calc(var(--nav-height) + .5rem);
 }
