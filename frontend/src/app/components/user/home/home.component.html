@@ -1,1 +1,107 @@
-<p>home works!</p>
+<div class="problems-container">
+    <div class="test-summary">
+        <div class="test-stats">
+            <span class="test-count">{{ testCount }}</span>
+            <span class="test-label">Sharpen Your Coding Skills</span>
+        </div>
+        <div class="test-actions">
+            <button class="test-of-day-btn" (click)="viewTestOfDay()">
+                Test of the Day
+            </button>
+            <div class="test-info-icon">
+                <i class="fas fa-info-circle"></i>
+                <div class="test-tooltip">
+                    Daily challenges to push your coding limits and track your progress!
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <div class="problems-grid">
+        <div *ngFor="let problem of problems" class="problem-card">
+            <div class="problem-header">
+                <!-- User-created Problem Header -->
+                <ng-container *ngIf="problem.Origin === 'user'">
+                    <div class="problem-solver-info">
+                        <img [src]="problem.Solver?.ProfileImage" alt="Solver Profile" class="solver-profile">
+                        <div class="solver-details">
+                            <span class="solver-name">{{ problem.Solver?.FullName }}</span>
+                            <div class="badge-container">
+                                <i *ngIf="problem.Solver?.Badge?.primary" class="fas fa-medal primary-badge"></i>
+                                <i *ngIf="problem.Solver?.Badge?.secondary" class="fas fa-award secondary-badge"></i>
+                                <i *ngIf="problem.Solver?.Badge?.tertiary" class="fas fa-star tertiary-badge"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="solution-source">Code Solutions</span>
+                </ng-container>
+  
+                <!-- Admin-created Problem Header -->
+                <ng-container *ngIf="problem.Origin === 'team'">
+                    <div class="problem-solver-info">
+                        <img src="/assets/cs-team-logo.png" alt="CS Team" class="solver-profile">
+                        <div class="solver-details">
+                            <span class="solver-name">CS Team</span>
+                        </div>
+                    </div>
+                    <span class="solution-source team-source">
+                        <i class="fas fa-users"></i> by Code Solutions
+                    </span>
+                </ng-container>
+            </div>
+  
+            <div class="problem-image-container">
+                <button class="image-nav-btn left-btn" (click)="switchImage(problem, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <img [src]="getCurrentImage(problem)" alt="Problem Illustration" class="problem-image">
+                <button class="image-nav-btn right-btn" (click)="switchImage(problem, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+  
+            <div class="problem-content">
+                <h3 class="problem-title">{{ problem.Title }}</h3>
+                <div class="problem-tags">
+                    <span *ngFor="let tag of problem.Tags" class="tag">{{ tag }}</span>
+                </div>
+                <p class="problem-description">
+                    <i class="fas fa-quote-left description-quote"></i>
+                    {{ problem.Description }}
+                    <i class="fas fa-quote-right description-quote"></i>
+                </p>
+  
+                <div class="problem-actions">
+                    <button class="btn view-problem">
+                        <i class="fas fa-external-link-alt"></i> View Problem
+                    </button>
+                    <div class="problem-action-icons">
+                        <button class="btn add-favourite" (click)="addToFavourites(problem.ProblemId)" data-tooltip="Add to Favorites">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button class="btn add-comment" (click)="openCommentModal(problem)" data-tooltip="Add Comment">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                        <button class="btn dislike-problem" (click)="markNeedsRefinement(problem.ProblemId)" data-tooltip="Needs Refinement">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <!-- Fixed Error Search Box -->
+    <div class="error-search-container">
+        <div class="error-search-wrapper">
+            <i class="fas fa-bug error-icon"></i>
+            <input type="text" class="error-search-input" placeholder="Paste your error message to find solutions..." (keyup.enter)="searchError()">
+            <button class="error-search-btn" (click)="searchError()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="error-search-hint">
+            Having issues? Paste your error and find instant solutions!
+        </div>
+    </div>
+  </div>

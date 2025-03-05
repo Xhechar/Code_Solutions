@@ -1,1 +1,204 @@
-<p>my-problems works!</p>
+<div class="user-problems-container">
+  <!-- Stats and Title Section -->
+  <div class="problems-header">
+    <div class="problems-title">
+      <h1>My Contributions</h1>
+      <p>Track and manage your submitted problems</p>
+    </div>
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ problems.length }}</span>
+          <span class="stat-label">Total Problems</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getApprovedCount() }}</span>
+          <span class="stat-label">Approved</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-medal"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getBadgeLevel() }}</span>
+          <span class="stat-label">Current Badge</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar Section -->
+  <div class="progress-section">
+    <div class="progress-info">
+      <span>Badge Progress: {{ getProgressPercentage() }}%</span>
+      <span>{{ getApprovedCount() }}/{{ getNextBadgeThreshold() }} for next badge</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width.%]="getProgressPercentage()"></div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Search problems..." 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (keyup)="filterProblems()">
+    </div>
+    <div class="filter-buttons">
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'all'"
+        (click)="setFilter('all')">
+        All
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'approved'"
+        (click)="setFilter('approved')">
+        Approved
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'pending'"
+        (click)="setFilter('pending')">
+        Pending
+      </button>
+    </div>
+  </div>
+
+  <!-- Problems Table-like Structure -->
+  <div class="responsive-table">
+    <!-- Table Header -->
+    <div class="table-header">
+      <div class="table-cell cell-id">ID</div>
+      <div class="table-cell cell-title">Title</div>
+      <div class="table-cell cell-category">Category</div>
+      <div class="table-cell cell-date">Date Created</div>
+      <div class="table-cell cell-status">Status</div>
+      <div class="table-cell cell-actions">Actions</div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="filteredProblems.length === 0" class="no-data">
+      <i class="fas fa-search-minus"></i>
+      <p>No problems found. Try adjusting your filters.</p>
+    </div>
+    
+    <!-- Table Rows -->
+    <div 
+      *ngFor="let problem of filteredProblems; let i = index" 
+      class="table-row" 
+      [class.even]="i % 2 === 0"
+      [class.approved]="isApproved(problem)">
+      
+      <div class="table-cell cell-id">
+        <span class="mobile-label">ID:</span>
+        {{ problem.ProblemId.substring(0, 8) }}...
+      </div>
+      
+      <div class="table-cell cell-title">
+        <span class="mobile-label">Title:</span>
+        <div class="problem-title-container">
+          <img *ngIf="problem.ImagePath" [src]="problem.ImagePath" alt="Problem Image" class="problem-thumbnail">
+          <div class="problem-title-text">
+            {{ problem.Title }}
+            <div class="problem-tags">
+              <span *ngFor="let tag of getTagsArray(problem.Tags)" class="tag">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-cell cell-category">
+        <span class="mobile-label">Category:</span>
+        {{ problem.Category?.Name || 'Uncategorized' }}
+      </div>
+      
+      <div class="table-cell cell-date">
+        <span class="mobile-label">Date:</span>
+        {{ problem.DateCreated | date:'mediumDate' }}
+      </div>
+      
+      <div class="table-cell cell-status">
+        <span class="mobile-label">Status:</span>
+        <span 
+          class="status-badge" 
+          [class.status-approved]="isApproved(problem)" 
+          [class.status-pending]="!isApproved(problem)">
+          {{ isApproved(problem) ? 'Approved' : 'Pending' }}
+        </span>
+      </div>
+      
+      <div class="table-cell cell-actions">
+        <span class="mobile-label">Actions:</span>
+        <div class="action-buttons">
+          <button class="action-btn view-btn" (click)="viewProblem(problem)" title="View Problem">
+            <i class="fas fa-eye"></i>
+          </button>
+          
+          <ng-container *ngIf="!isApproved(problem)">
+            <button class="action-btn edit-btn" (click)="editProblem(problem)" title="Edit Problem">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="confirmDelete(problem)" title="Delete Problem">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" *ngIf="showDeleteModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirm Deletion</h2>
+      <button class="close-btn" (click)="showDeleteModal = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete the problem "<strong>{{ problemToDelete?.Title }}</strong>"?</p>
+      <p class="warning-text">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="showDeleteModal = false">Cancel</button>
+      <button class="delete-confirm-btn" (click)="deleteProblem()">Delete</button>
+    </div>
+  </div>
+</div>
