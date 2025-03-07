@@ -1,1 +1,213 @@
-<p>favourites works!</p>
+<div class="user-favorites-container">
+  <!-- Stats and Title Section -->
+  <div class="favorites-header">
+    <div class="favorites-title">
+      <h1>My Favorite Problems</h1>
+      <p>Access your bookmarked programming problems</p>
+    </div>
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-bookmark"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ favorites.length }}</span>
+          <span class="stat-label">Total Favorites</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getCategoryCounts().top.count }}</span>
+          <span class="stat-label">{{ getCategoryCounts().top.name }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getRecentCount() }}</span>
+          <span class="stat-label">Added This Month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Search favorites..." 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (keyup)="filterFavorites()">
+    </div>
+    <div class="filter-buttons">
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'all'"
+        (click)="setFilter('all')">
+        All
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'solved'"
+        (click)="setFilter('solved')">
+        Solved
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'unsolved'"
+        (click)="setFilter('unsolved')">
+        Unsolved
+      </button>
+    </div>
+  </div>
+
+  <!-- Favorites Table-like Structure -->
+  <div class="responsive-table">
+    <!-- Table Header -->
+    <div class="table-header">
+      <div class="table-cell cell-title">Problem</div>
+      <div class="table-cell cell-category">Category</div>
+      <div class="table-cell cell-difficulty">Difficulty</div>
+      <div class="table-cell cell-date">Date Added</div>
+      <div class="table-cell cell-actions">Actions</div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="filteredFavorites.length === 0" class="no-data">
+      <i class="fas fa-heart-broken"></i>
+      <p>No favorite problems found. Try adjusting your filters or add some favorites!</p>
+    </div>
+    
+    <!-- Table Rows -->
+    <div 
+      *ngFor="let favorite of getCurrentPageItems(); let i = index" 
+      class="table-row" 
+      [class.even]="i % 2 === 0"
+      [class.solved]="isSolved(favorite.problem)">
+      
+      <div class="table-cell cell-title">
+        <span class="mobile-label">Problem:</span>
+        <div class="problem-title-container">
+          <img *ngIf="favorite.problem.ImagePath" [src]="favorite.problem.ImagePath" alt="Problem Image" class="problem-thumbnail">
+          <div class="problem-info">
+            <a class="problem-title" (click)="viewProblem(favorite.problem)">
+              {{ favorite.problem.Title }}
+            </a>
+            <div class="problem-preview">{{ getShortDescription(favorite.problem.Description) }}</div>
+            <div class="problem-meta">
+              <ng-container *ngIf="favorite.problem.Tags && favorite.problem.Tags.length > 0">
+                <span class="meta-tag" *ngFor="let tag of favorite.problem.Tags">
+                  {{ tag }}
+                </span>
+              </ng-container>
+              <span *ngIf="favorite.problem.ErrorCode" class="meta-tag error-code">
+                <i class="fas fa-exclamation-circle"></i> {{ favorite.problem.ErrorCode }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-cell cell-category">
+        <span class="mobile-label">Category:</span>
+        <span class="category-badge">{{ favorite.problem.Category?.Name || 'Uncategorized' }}</span>
+      </div>
+      
+      <div class="table-cell cell-difficulty">
+        <span class="mobile-label">Difficulty:</span>
+        <div class="difficulty-indicator">
+          <div class="difficulty-level" [ngClass]="{
+            'easy': favorite.problem.PriorityLevel === 1,
+            'medium': favorite.problem.PriorityLevel === 2,
+            'hard': favorite.problem.PriorityLevel === 3
+          }">
+            {{ getDifficultyLabel(favorite.problem.PriorityLevel) }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-cell cell-date">
+        <span class="mobile-label">Added:</span>
+        {{ favorite.dateAdded | date:'mediumDate' }}
+      </div>
+      
+      <div class="table-cell cell-actions">
+        <span class="mobile-label">Actions:</span>
+        <div class="action-buttons">
+          <button class="action-btn view-btn" (click)="viewProblem(favorite.problem)" title="View Problem">
+            <i class="fas fa-external-link-alt"></i>
+          </button>
+          
+          <button class="action-btn solution-btn" *ngIf="hasSolutions(favorite.problem)" 
+            (click)="viewSolutions(favorite.problem)" title="View Solutions">
+            <i class="fas fa-lightbulb"></i>
+          </button>
+          
+          <button class="action-btn remove-btn" (click)="confirmRemove(favorite)" title="Remove from Favorites">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="totalPages > 1">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Removal Confirmation Modal -->
+<div class="modal" *ngIf="showRemoveModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Remove from Favorites</h2>
+      <button class="close-btn" (click)="showRemoveModal = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to remove this problem from your favorites?</p>
+      <p *ngIf="favoriteToRemove">
+        <strong>{{ favoriteToRemove.problem.Title }}</strong>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="showRemoveModal = false">Cancel</button>
+      <button class="remove-confirm-btn" (click)="removeFavorite()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Toast -->
+<div *ngIf="showNotification" class="notification-toast" [class.error]="notificationIsError">
+  <div class="notification-content">
+    <i class="fas" [class.fa-check-circle]="!notificationIsError" [class.fa-exclamation-circle]="notificationIsError"></i>
+    <span>{{ notificationMessage }}</span>
+  </div>
+  <button class="close-notification" (click)="closeNotification()">
+    <i class="fas fa-times"></i>
+  </button>
+</div>

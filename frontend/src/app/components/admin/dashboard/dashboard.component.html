@@ -1,1 +1,276 @@
-<p>dashboard works!</p>
+<!-- admin-dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="top-nav">
+      <div class="search-container">
+        <i class="fa fa-search"></i>
+        <input type="text" placeholder="Search..." [(ngModel)]="searchQuery" (keyup.enter)="search()">
+      </div>
+      
+      <div class="top-nav-right">
+        <button class="notification-btn" (click)="toggleNotifications()">
+          <i class="fa fa-bell"></i>
+          <span class="badge" *ngIf="notifications.length > 0">{{notifications.length}}</span>
+        </button>
+        
+        <div class="notification-dropdown" *ngIf="showNotifications">
+          <div class="notification-header">
+            <h3>Notifications</h3>
+            <button (click)="markAllAsRead()">Mark all as read</button>
+          </div>
+          <ul class="notification-list">
+            <li *ngFor="let notification of notifications" [ngClass]="{'unread': !notification.read}">
+              <div class="notification-icon" [ngClass]="notification.type">
+                <i [class]="getNotificationIcon(notification.type)"></i>
+              </div>
+              <div class="notification-content">
+                <p>{{notification.message}}</p>
+                <span class="notification-time">{{notification.time | date:'short'}}</span>
+              </div>
+              <button class="mark-read-btn" (click)="markAsRead(notification.id)">
+                <i class="fa fa-check"></i>
+              </button>
+            </li>
+            <li class="no-notifications" *ngIf="notifications.length === 0">
+              <p>No new notifications</p>
+            </li>
+          </ul>
+          <div class="notification-footer">
+            <a (click)="viewAllNotifications()">View all notifications</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Dashboard Content -->
+    <div class="dashboard-content" *ngIf="activeLink === 'dashboard'">
+      <section class="welcome-section">
+        <h1>Welcome, {{currentAdmin?.FullName || 'Admin'}}</h1>
+        <p>Here's what's happening in your platform today</p>
+      </section>
+      
+      <section class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon users">
+            <i class="fa fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Total Users</h3>
+            <span class="stat-value">{{stats.totalUsers}}</span>
+            <div class="stat-change positive" *ngIf="stats.userGrowth > 0">
+              <i class="fa fa-arrow-up"></i>
+              <span>{{stats.userGrowth}}%</span>
+            </div>
+            <div class="stat-change negative" *ngIf="stats.userGrowth < 0">
+              <i class="fa fa-arrow-down"></i>
+              <span>{{stats.userGrowth * -1}}%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon problems">
+            <i class="fa fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Problems</h3>
+            <span class="stat-value">{{stats.totalProblems}}</span>
+            <div class="stat-change positive" *ngIf="stats.problemGrowth > 0">
+              <i class="fa fa-arrow-up"></i>
+              <span>{{stats.problemGrowth}}%</span>
+            </div>
+            <div class="stat-change negative" *ngIf="stats.problemGrowth < 0">
+              <i class="fa fa-arrow-down"></i>
+              <span>{{stats.problemGrowth * -1}}%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon solutions">
+            <i class="fa fa-lightbulb"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Solutions</h3>
+            <span class="stat-value">{{stats.totalSolutions}}</span>
+            <div class="stat-change positive" *ngIf="stats.solutionGrowth > 0">
+              <i class="fa fa-arrow-up"></i>
+              <span>{{stats.solutionGrowth}}%</span>
+            </div>
+            <div class="stat-change negative" *ngIf="stats.solutionGrowth < 0">
+              <i class="fa fa-arrow-down"></i>
+              <span>{{stats.solutionGrowth * -1}}%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon projects">
+            <i class="fa fa-project-diagram"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Projects</h3>
+            <span class="stat-value">{{stats.totalProjects}}</span>
+            <div class="stat-change positive" *ngIf="stats.projectGrowth > 0">
+              <i class="fa fa-arrow-up"></i>
+              <span>{{stats.projectGrowth}}%</span>
+            </div>
+            <div class="stat-change negative" *ngIf="stats.projectGrowth < 0">
+              <i class="fa fa-arrow-down"></i>
+              <span>{{stats.projectGrowth * -1}}%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <div class="dashboard-grid">
+        <section class="chart-section">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Platform Activity</h3>
+              <div class="time-filter">
+                <button [ngClass]="{'active': activityTimeFrame === 'week'}" (click)="setActivityTimeFrame('week')">Week</button>
+                <button [ngClass]="{'active': activityTimeFrame === 'month'}" (click)="setActivityTimeFrame('month')">Month</button>
+                <button [ngClass]="{'active': activityTimeFrame === 'year'}" (click)="setActivityTimeFrame('year')">Year</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="activityChart"></canvas>
+            </div>
+          </div>
+        </section>
+        
+        <section class="top-stacks-section">
+          <div class="stacks-card">
+            <div class="card-header">
+              <h3>Popular Tech Stacks</h3>
+              <button class="view-all-btn" (click)="setActiveLink('stacks')">View All</button>
+            </div>
+            <ul class="stacks-list">
+              <li *ngFor="let stack of topStacks">
+                <div class="stack-info">
+                  <div class="stack-name">{{stack.Name}}</div>
+                  <div class="stack-version">v{{stack.Version}}</div>
+                </div>
+                <div class="stack-stats">
+                  <span class="problem-count">
+                    <i class="fa fa-exclamation-circle"></i> {{stack.problemCount}}
+                  </span>
+                  <span class="solution-count">
+                    <i class="fa fa-lightbulb"></i> {{stack.solutionCount}}
+                  </span>
+                </div>
+                <div class="stack-progress">
+                  <div class="progress-bar" [style.width.%]="(stack.solutionCount / stack.problemCount) * 100"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+        
+        <section class="recent-problems-section">
+          <div class="recent-problems-card">
+            <div class="card-header">
+              <h3>Recent Problems</h3>
+              <button class="view-all-btn" (click)="setActiveLink('problems')">View All</button>
+            </div>
+            <ul class="recent-problems-list">
+              <li *ngFor="let problem of recentProblems">
+                <div class="problem-info">
+                  <h4>{{problem.Title}}</h4>
+                  <p>{{truncateText(problem.Description, 100)}}</p>
+                </div>
+                <div class="problem-meta">
+                  <span class="problem-category">
+                    <i class="fa fa-th-large"></i> {{problem.Category?.Name}}
+                  </span>
+                  <span class="problem-stack">
+                    <i class="fa fa-layer-group"></i> {{problem.Stack?.Name}}
+                  </span>
+                  <span class="problem-date">
+                    <i class="fa fa-calendar-alt"></i> {{problem.DateCreated | date:'mediumDate'}}
+                  </span>
+                </div>
+                <div class="problem-user">
+                  <img [src]="problem.User?.ProfileImage || 'assets/default-avatar.png'" alt="User">
+                  <span>{{problem.User?.FullName}}</span>
+                </div>
+                <div class="problem-actions">
+                  <button class="view-btn" (click)="viewProblem(problem.ProblemId)">View Details</button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+        
+        <section class="new-users-section">
+          <div class="new-users-card">
+            <div class="card-header">
+              <h3>New Users</h3>
+              <button class="view-all-btn" (click)="setActiveLink('users')">View All</button>
+            </div>
+            <ul class="new-users-list">
+              <li *ngFor="let user of newUsers">
+                <div class="user-avatar">
+                  <img [src]="user.ProfileImage || 'assets/default-avatar.png'" alt="User avatar">
+                  <span class="badge-indicator" [ngClass]="getBadgeClass(user.Badge)"></span>
+                </div>
+                <div class="user-info">
+                  <h4>{{user.FullName}}</h4>
+                  <span class="username">{{user.Username}}</span>
+                </div>
+                <div class="user-meta">
+                  <span class="joined-date">
+                    <i class="fa fa-calendar-alt"></i> {{user.DateCreated | date:'mediumDate'}}
+                  </span>
+                  <span class="problems-count" *ngIf="user.ProblemsCount > 0">
+                    <i class="fa fa-exclamation-circle"></i> {{user.ProblemsCount}} problems
+                  </span>
+                  <span class="solutions-count" *ngIf="user.Solutions?.length > 0">
+                    <i class="fa fa-lightbulb"></i> {{user.Solutions?.length}} solutions
+                  </span>
+                </div>
+                <div class="user-actions">
+                  <button class="view-profile-btn" (click)="viewUserProfile(user.UserId)">
+                    <i class="fa fa-user"></i>
+                  </button>
+                  <button class="message-btn" (click)="messageUser(user.UserId)">
+                    <i class="fa fa-envelope"></i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+        
+        <section class="project-structures-section">
+          <div class="project-structures-card">
+            <div class="card-header">
+              <h3>Project Structure Guidelines</h3>
+              <button class="view-all-btn" (click)="setActiveLink('projects')">View All</button>
+            </div>
+            <div class="project-structures-grid">
+              <div class="project-structure-item" *ngFor="let project of recentProjectStructures">
+                <div class="project-structure-header">
+                  <h4>{{project.Title}}</h4>
+                  <span class="project-date">{{project.LastUpdated | date:'mediumDate'}}</span>
+                </div>
+                <p class="project-description">{{truncateText(project.Description, 80)}}</p>
+                <div class="project-meta">
+                  <span class="project-stack">
+                    <i class="fa fa-layer-group"></i> {{project.Stack?.Name}}
+                  </span>
+                  <span class="guide-count">
+                    <i class="fa fa-book"></i> {{project.PSG?.length || 0}} guides
+                  </span>
+                </div>
+                <button class="view-project-btn" (click)="viewProjectStructure(project.ProjectId)">View Guidelines</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>

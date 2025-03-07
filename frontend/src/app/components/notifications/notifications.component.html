@@ -1,1 +1,12 @@
-<p>notifications works!</p>
+<!-- Notification -->
+<div class="notification" 
+     [class.show]="showNotification"
+     [class.error]="notificationIsError"
+     [class.success]="!notificationIsError">
+  <div class="notification-content">
+    <span>{{notificationMessage}}</span>
+    <button class="notification-close" (click)="closeNotification()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>

@@ -1,1 +1,194 @@
-<p>my-solutions works!</p>
+<div class="user-solutions-container">
+  <!-- Stats and Title Section -->
+  <div class="solutions-header">
+    <div class="solutions-title">
+      <h1>My Solutions</h1>
+      <p>Track and manage your submitted solutions</p>
+    </div>
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ solutions.length }}</span>
+          <span class="stat-label">Total Solutions</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getApprovedCount() }}</span>
+          <span class="stat-label">Approved</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ getHelpfulnessRating() }}/5</span>
+          <span class="stat-label">Avg. Helpfulness</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Search solutions..." 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (keyup)="filterSolutions()">
+    </div>
+    <div class="filter-buttons">
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'all'"
+        (click)="setFilter('all')">
+        All
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'approved'"
+        (click)="setFilter('approved')">
+        Approved
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === 'pending'"
+        (click)="setFilter('pending')">
+        Pending
+      </button>
+    </div>
+  </div>
+
+  <!-- Solutions Table-like Structure -->
+  <div class="responsive-table">
+    <!-- Table Header -->
+    <div class="table-header">
+      <div class="table-cell cell-title">Solution</div>
+      <div class="table-cell cell-problem">For Problem</div>
+      <div class="table-cell cell-date">Date Created</div>
+      <div class="table-cell cell-status">Status</div>
+      <div class="table-cell cell-actions">Actions</div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="filteredSolutions.length === 0" class="no-data">
+      <i class="fas fa-search-minus"></i>
+      <p>No solutions found. Try adjusting your filters.</p>
+    </div>
+    
+    <!-- Table Rows -->
+    <div 
+      *ngFor="let solution of filteredSolutions; let i = index" 
+      class="table-row" 
+      [class.even]="i % 2 === 0"
+      [class.approved]="isApproved(solution)">
+      
+      <div class="table-cell cell-title">
+        <span class="mobile-label">Solution:</span>
+        <div class="solution-title-container">
+          <img *ngIf="solution.ImagePath" [src]="solution.ImagePath" alt="Solution Image" class="solution-thumbnail">
+          <div class="solution-info">
+            <div class="solution-preview">{{ getShortDescription(solution.Description) }}</div>
+            <div class="solution-meta">
+              <span *ngIf="solution.CodeSamples" class="meta-tag"><i class="fas fa-code"></i> Code Samples</span>
+              <span *ngIf="solution.VideoLink" class="meta-tag"><i class="fas fa-video"></i> Video Tutorial</span>
+              <span *ngIf="solution.ProjectStructure && solution.ProjectStructure.length > 0" class="meta-tag"><i class="fas fa-folder-tree"></i> Project Structure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-cell cell-problem">
+        <span class="mobile-label">For Problem:</span>
+        <a class="problem-link" (click)="viewRelatedProblem(solution)">
+          {{ solution.Problem?.Title || 'Unknown Problem' }}
+        </a>
+        <div class="problem-category" *ngIf="solution.Problem?.Category">
+          <span class="category-badge">{{ solution.Problem?.Category?.Name }}</span>
+        </div>
+      </div>
+      
+      <div class="table-cell cell-date">
+        <span class="mobile-label">Date:</span>
+        {{ solution.CreatedAt | date:'mediumDate' }}
+      </div>
+      
+      <div class="table-cell cell-status">
+        <span class="mobile-label">Status:</span>
+        <span 
+          class="status-badge" 
+          [class.status-approved]="isApproved(solution)" 
+          [class.status-pending]="!isApproved(solution)">
+          {{ isApproved(solution) ? 'Approved' : 'Pending' }}
+        </span>
+      </div>
+      
+      <div class="table-cell cell-actions">
+        <span class="mobile-label">Actions:</span>
+        <div class="action-buttons">
+          <button class="action-btn view-btn" (click)="viewSolution(solution)" title="View Solution">
+            <i class="fas fa-eye"></i>
+          </button>
+          
+          <ng-container *ngIf="!isApproved(solution)">
+            <button class="action-btn edit-btn" (click)="editSolution(solution)" title="Edit Solution">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="confirmDelete(solution)" title="Delete Solution">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" *ngIf="showDeleteModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirm Deletion</h2>
+      <button class="close-btn" (click)="showDeleteModal = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this solution?</p>
+      <p class="warning-text">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="showDeleteModal = false">Cancel</button>
+      <button class="delete-confirm-btn" (click)="deleteSolution()">Delete</button>
+    </div>
+  </div>
+</div>
