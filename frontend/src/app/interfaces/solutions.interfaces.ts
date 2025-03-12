@@ -14,7 +14,7 @@ export interface User {
   Badge: Badge;
   PreviousBadge: Badge;
   ProblemsCount: number;
-  Role: string,
+  Role: string;
   IsSolver: boolean;
   Comments?: Comment[];
   Favourites?: Favourite[];
@@ -55,6 +55,7 @@ export interface Problem {
   StackId: string;
   Stack?: Stack;
   CategoryId: string;
+  IsApproved: boolean;
   Category?: Category;
   Solutions?: Solution[];
   Comments?: Comment[];
@@ -62,6 +63,7 @@ export interface Problem {
   Histories?: History[];
   UserId: string;
   User?: User;
+  expanded: boolean;
   ProjectStructure?: ProjectStructure[];
 }
 
@@ -78,6 +80,7 @@ export interface Solution {
   Problem?: Problem;
   UserId: string;
   User?: User;
+  editing: boolean;
   ProjectStructure?: ProjectStructure[];
 }
 
@@ -120,6 +123,7 @@ export interface ProjectStructure {
 }
 
 export interface PSG {
+  RelatedProblemIds: any;
   PSGId: string;
   Title: string;
   ProjectId: string;
@@ -136,27 +140,27 @@ export interface LoginDetails {
 }
 
 export interface RecoveryDetails {
-  Email: string,
-  RecoveryCode: string,
-  NewPassword: string
+  Email: string;
+  RecoveryCode: string;
+  NewPassword: string;
 }
 
 export interface MailConfigurations {
-  service: string,
-  host: string,
-  port: number,
-  requireTLS: boolean,
+  service: string;
+  host: string;
+  port: number;
+  requireTLS: boolean;
   auth: {
-    user: string,
-    pass: string
-  }
+    user: string;
+    pass: string;
+  };
 }
 
 export interface MessageOptions {
-  from: string,
-  to: string,
-  subject: string,
-  html: string
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
 }
 
 export interface TokenDetails {

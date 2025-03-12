@@ -13,6 +13,10 @@ export interface Stack {
 }
 
 export interface ProjectStructure {
+  PSG: any;
+  ProjectId: string;
+  DateCreated: Date;
+  LastUpdated: Date;
   id?: string;
   name: string;
 }
@@ -27,34 +31,40 @@ export interface ProjectStructure {
     trigger('slideIn', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate(
+          '300ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
       ]),
       transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
-      ])
-    ])
-  ]
+        animate(
+          '200ms ease-in',
+          style({ opacity: 0, transform: 'translateY(10px)' })
+        ),
+      ]),
+    ]),
+  ],
 })
 export class StacksComponent {
   @Output() stackCreated = new EventEmitter<Stack>();
-  
+
   isModalOpen = false;
-  
+
   stack: Stack = {
-    StackId: '',  // Will be generated on the server
+    StackId: '', // Will be generated on the server
     Name: '',
     Description: '',
     Version: '',
-    ProjectStructures: []
+    ProjectStructures: [],
   };
-  
+
   projectStructures: ProjectStructure[] = [];
-  
+
   openModal(): void {
     this.isModalOpen = true;
     document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
   }
-  
+
   closeModal(event?: Event): void {
     if (event) {
       const target = event.target as HTMLElement;
@@ -63,48 +73,43 @@ export class StacksComponent {
         return;
       }
     }
-    
+
     this.isModalOpen = false;
     document.body.style.overflow = ''; // Restore scrolling
   }
-  
+
   addStructure(): void {
-    this.projectStructures.push({ name: '' });
+    this.projectStructures.push();
   }
-  
+
   removeStructure(index: number): void {
     this.projectStructures.splice(index, 1);
   }
-  
+
   resetForm(): void {
     this.stack = {
       StackId: '',
       Name: '',
       Description: '',
       Version: '',
-      ProjectStructures: []
+      ProjectStructures: [],
     };
     this.projectStructures = [];
   }
-  
+
   onSubmit(): void {
-    // Map the project structures to the stack
-    this.stack.ProjectStructures = this.projectStructures.map(structure => ({
-      id: '', // Will be generated on the server
-      name: structure.name
-    }));
-    
+
     // Generate a random ID for demo purposes
     this.stack.StackId = 'stack_' + Math.random().toString(36).substr(2, 9);
-    
+
     console.log('Stack creation submitted:', this.stack);
-    
+
     // Emit the created stack
-    this.stackCreated.emit({...this.stack});
-    
+    this.stackCreated.emit({ ...this.stack });
+
     // For demo purposes, show success message
     alert('Stack created successfully!');
-    
+
     this.resetForm();
     this.closeModal();
   }

@@ -1,1 +1,300 @@
-<p>all-project-structures works!</p>
+<div class="admin-container">
+  <!-- Header with stats and action buttons -->
+  <header class="admin-header">
+    <div class="stats-container">
+      <div class="stat-card">
+        <span class="stat-value">{{projectStructures.length}}</span>
+        <span class="stat-label">Project Structures</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{getTotalPSGs()}}</span>
+        <span class="stat-label">Structure Guides</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{getTotalRelatedProblems()}}</span>
+        <span class="stat-label">Related Problems</span>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-create" (click)="openNewProjectStructureForm()">
+        <i class="fas fa-plus"></i> New Project Structure
+      </button>
+      <button class="btn-create" [class.disabled]="!selectedProject" (click)="openNewPSGForm()">
+        <i class="fas fa-list-alt"></i> New Structure Guide
+      </button>
+    </div>
+  </header>
+
+  <div class="content-container">
+    <!-- Left sidebar with PSG list -->
+    <div class="sidebar">
+      <h3 class="sidebar-title">Project Structure Guides</h3>
+      
+      <div class="project-selector">
+        <select [(ngModel)]="selectedProjectId" (change)="selectProject()">
+          <option value="">Select Project Structure</option>
+          <option *ngFor="let project of projectStructures" [value]="project.ProjectId">
+            {{project.Title}}
+          </option>
+        </select>
+      </div>
+      
+      <div class="guides-list" *ngIf="selectedProject">
+        <div class="guide-item" *ngFor="let guide of selectedProject.PSG" 
+            [class.active]="selectedPSG && selectedPSG.PSGId === guide.PSGId"
+            (click)="selectPSG(guide)">
+          <div class="guide-content">
+            <h4 class="guide-title">{{guide.Title}}</h4>
+            <p class="guide-preview">{{truncateText(guide.TextInstructions, 50)}}</p>
+            <div class="guide-meta">
+              <span class="related-count" *ngIf="guide.RelatedProblemIds">
+                <i class="fas fa-link"></i> {{getRelatedProblemsCount(guide)}} Problems
+              </span>
+            </div>
+          </div>
+          <div class="guide-actions">
+            <button class="btn-icon" (click)="openEditPSGForm(guide); $event.stopPropagation()">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon btn-danger" (click)="confirmDeletePSG(guide); $event.stopPropagation()">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <button class="btn-add-guide" (click)="openNewPSGForm()">
+          <i class="fas fa-plus"></i> Add New Guide
+        </button>
+      </div>
+    </div>
+
+    <!-- Right content area with detailed view -->
+    <div class="content-area">
+      <div class="structure-header" *ngIf="selectedProject">
+        <form class="structure-form" (submit)="updateProjectStructure()">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" [(ngModel)]="selectedProject.Title" name="title" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea [(ngModel)]="selectedProject.Description" name="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Stack</label>
+            <select [(ngModel)]="selectedProject.StackId" name="stackId" required>
+              <option *ngFor="let stack of stacks" [value]="stack.StackId">{{stack.Name}}</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-update">
+              <i class="fas fa-save"></i> Update Structure
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="documentation-area" *ngIf="selectedProject">
+        <div class="empty-state" *ngIf="!selectedProject.PSG || selectedProject.PSG.length === 0">
+          <div class="empty-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>No guides yet</h3>
+          <p>Start creating guides for this project structure</p>
+          <button class="btn-create" (click)="openNewPSGForm()">
+            <i class="fas fa-plus"></i> Create First Guide
+          </button>
+        </div>
+
+        <div class="guides-documentation" *ngIf="selectedProject.PSG && selectedProject.PSG.length > 0">
+          <div class="guide-section" *ngFor="let guide of selectedProject.PSG; let i = index">
+            <div class="guide-number">Step {{i + 1}}</div>
+            <h2 class="guide-title">{{guide.Title}}</h2>
+            
+            <div class="guide-pictorials" *ngIf="guide.PictorialGuide">
+              <div class="pictorial-gallery">
+                <div class="pictorial-thumbnails">
+                  <div class="thumbnail" *ngFor="let img of getPictorialImages(guide); let j = index"
+                       [class.active]="j === currentImageIndex"
+                       (click)="selectImage(j)">
+                    <img [src]="img" [alt]="'Guide image ' + (j+1)">
+                  </div>
+                </div>
+                <div class="pictorial-main" *ngIf="getPictorialImages(guide).length > 0">
+                  <img [src]="getPictorialImages(guide)[currentImageIndex]" alt="Selected guide image">
+                </div>
+              </div>
+            </div>
+            
+            <div class="guide-instructions">
+              <h3>Instructions</h3>
+              <div class="markdown-content" [innerHTML]="formatInstructions(guide.TextInstructions)"></div>
+            </div>
+            
+            <div class="related-problems" *ngIf="guide.RelatedProblemIds && guide.RelatedProblemIds.length > 0">
+              <h3>Related Problems</h3>
+              <ul class="problem-list">
+                <li *ngFor="let problemId of guide.RelatedProblemIds.split(',')">
+                  <a [routerLink]="['/problems', problemId]">{{getProblemTitle(problemId)}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-screen" *ngIf="!selectedProject">
+        <div class="welcome-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <h2>Project Structure Documentation</h2>
+        <p>Select a project structure from the sidebar or create a new one to get started.</p>
+        <button class="btn-create" (click)="openNewProjectStructureForm()">
+          <i class="fas fa-plus"></i> Create New Project Structure
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for New Project Structure -->
+<div class="modal" *ngIf="showNewProjectModal">
+  <div class="modal-overlay" (click)="cancelNewProject()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Create New Project Structure</h2>
+      <button class="btn-close" (click)="cancelNewProject()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (submit)="createNewProject()">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" [(ngModel)]="newProject.Title" name="title" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newProject.Description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Stack</label>
+          <select [(ngModel)]="newProject.StackId" name="stackId" required>
+            <option *ngFor="let stack of stacks" [value]="stack.StackId">{{stack.Name}}</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="cancelNewProject()">Cancel</button>
+          <button type="submit" class="btn-submit">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for PSG Form (New/Edit) -->
+<div class="modal" *ngIf="showPSGFormModal">
+  <div class="modal-overlay" (click)="cancelPSGForm()"></div>
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+      <h2>{{editingPSG ? 'Edit' : 'Create New'}} Structure Guide</h2>
+      <button class="btn-close" (click)="cancelPSGForm()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (submit)="submitPSGForm()">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" [(ngModel)]="psgForm.Title" name="title" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Pictorial Guides</label>
+          <div class="file-upload-container">
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple #fileInput>
+            <button type="button" class="btn-upload" (click)="fileInput.click()">
+              <i class="fas fa-cloud-upload-alt"></i> Upload Images
+            </button>
+          </div>
+          
+          <div class="image-preview-container" *ngIf="previewImages.length > 0">
+            <div class="image-thumbnails">
+              <div class="image-thumbnail" *ngFor="let img of previewImages; let i = index"
+                   [class.active]="i === selectedImageIndex"
+                   (click)="selectPreviewImage(i)">
+                <img [src]="img" [alt]="'Preview ' + i">
+                <button type="button" class="btn-remove-image" (click)="removeImage(i); $event.stopPropagation()">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="image-main-preview" *ngIf="previewImages.length > 0">
+              <img [src]="previewImages[selectedImageIndex]" alt="Selected image">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Text Instructions</label>
+          <textarea [(ngModel)]="psgForm.TextInstructions" name="textInstructions" required rows="10"></textarea>
+          <small>You can use Markdown formatting</small>
+        </div>
+        
+        <div class="form-group">
+          <label>Related Problems</label>
+          <div class="related-problems-selector">
+            <div class="selected-problems">
+              <div class="problem-tag" *ngFor="let problemId of selectedProblems">
+                <span>{{getProblemTitle(problemId)}}</span>
+                <button type="button" class="btn-remove" (click)="removeProblem(problemId)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn-select" (click)="toggleProblemSelector()">
+              <i class="fas fa-plus"></i> Select Problems
+            </button>
+            
+            <div class="problem-dropdown" *ngIf="showProblemSelector">
+              <div class="dropdown-search">
+                <input type="text" placeholder="Search problems..." [(ngModel)]="problemSearchTerm" name="problemSearch">
+              </div>
+              <div class="problem-list">
+                <div class="problem-item" *ngFor="let problem of filteredProblems()" (click)="addProblem(problem.ProblemId)">
+                  <span class="problem-title">{{problem.Title}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="cancelPSGForm()">Cancel</button>
+          <button type="submit" class="btn-submit">{{editingPSG ? 'Update' : 'Create'}}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal for Delete -->
+<div class="modal" *ngIf="showDeleteConfirmation">
+  <div class="modal-overlay" (click)="cancelDeletePSG()"></div>
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h2>Confirm Deletion</h2>
+      <button class="btn-close" (click)="cancelDeletePSG()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete the guide "{{psgToDelete?.Title}}"?</p>
+      <p class="warning-text">This action cannot be undone.</p>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cancelDeletePSG()">Cancel</button>
+        <button type="button" class="btn-danger" (click)="deletePSG()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

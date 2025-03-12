@@ -1,1 +1,254 @@
-<p>admin-problems works!</p>
+<div class="problems-container">
+  <!-- Stats Section -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <i class='bx bx-list-check'></i>
+      <div class="stat-info">
+        <h3>{{ totalProblems }}</h3>
+        <p>Total Problems</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class='bx bx-check-circle'></i>
+      <div class="stat-info">
+        <h3>{{ approvedProblems }}</h3>
+        <p>Approved</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class='bx bx-time'></i>
+      <div class="stat-info">
+        <h3>{{ pendingProblems }}</h3>
+        <p>Pending</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class='bx bx-user'></i>
+      <div class="stat-info">
+        <h3>{{ userProblems }}</h3>
+        <p>User Submitted</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header and Action Button -->
+  <div class="header-container">
+    <h1>Problem Management</h1>
+    <button class="add-problem-btn" (click)="openCreateProblemModal()">
+      <i class='bx bx-plus'></i> Create Problem
+    </button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-container">
+    <div class="filter-buttons">
+      <button [class.active]="currentFilter === 'all'" (click)="filterProblems('all')">All Problems</button>
+      <button [class.active]="currentFilter === 'user'" (click)="filterProblems('user')">User Problems</button>
+      <button [class.active]="currentFilter === 'admin'" (click)="filterProblems('admin')">Admin Problems</button>
+      <button [class.active]="currentFilter === 'approved'" (click)="filterProblems('approved')">Approved</button>
+      <button [class.active]="currentFilter === 'pending'" (click)="filterProblems('pending')">Pending</button>
+    </div>
+    <div class="search-container">
+      <i class='bx bx-search'></i>
+      <input type="text" placeholder="Search problems..." [(ngModel)]="searchQuery" (input)="searchProblems()">
+    </div>
+  </div>
+
+  <!-- Problems List -->
+  <div class="problems-list">
+    <div *ngFor="let problem of filteredProblems" class="problem-card">
+      <div class="problem-header" (click)="toggleProblem(problem)">
+        <div class="problem-info">
+          <div class="problem-status" [ngClass]="{'approved': problem.IsApproved, 'pending': !problem.IsApproved}">
+            <i class="fa" [ngClass]="{'fa-check-circle': problem.IsApproved, 'fa-clock-o': !problem.IsApproved}"></i>
+            <span>{{ problem.IsApproved ? 'Approved' : 'Pending' }}</span>
+          </div>
+          <div class="problem-title-container">
+            <h2>{{ problem.Title }}</h2>
+            <span class="problem-category">{{ problem.Category?.Name }}</span>
+            <span class="problem-stack">{{ problem.Stack?.Name }} {{ problem.Stack?.Version }}</span>
+          </div>
+        </div>
+        <div class="problem-meta">
+          <div class="problem-user">
+            <img [src]="problem.User?.ProfileImage || 'assets/default-avatar.png'" alt="User Image">
+            <span>{{ problem.User?.FullName }}</span>
+          </div>
+          <div class="problem-date">
+            <i class='bx bx-calendar'></i>
+            <span>{{ problem.DateCreated | date:'mediumDate' }}</span>
+          </div>
+          <div class="problem-actions">
+            <button class="action-btn edit" (click)="editProblem(problem, $event)" data-tooltip="Edit Problem">
+              <i class='bx bx-edit'></i>
+              <span class="tooltip">Edit Problem</span>
+            </button>
+            <button *ngIf="!problem.IsApproved" class="action-btn approve" (click)="approveProblem(problem, $event)" data-tooltip="Approve Problem">
+              <i class='bx bx-check'></i>
+              <span class="tooltip">Approve Problem</span>
+            </button>
+            <button class="action-btn delete" (click)="deleteProblem(problem, $event)" data-tooltip="Delete Problem">
+              <i class='bx bx-trash'></i>
+              <span class="tooltip">Delete Problem</span>
+            </button>
+            <button class="toggle-btn" [class.expanded]="problem.expanded">
+              <i class='bx' [ngClass]="{'bx-chevron-down': !problem.expanded, 'bx-chevron-up': problem.expanded}"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem Description -->
+      <div class="problem-details" *ngIf="problem.expanded">
+        <div class="problem-description">
+          <h3>Problem Description</h3>
+          <p>{{ problem.Description }}</p>
+          
+          <div class="problem-details-grid">
+            <div class="detail-item" *ngIf="problem.ErrorCode">
+              <span class="detail-label">Error Code:</span>
+              <span class="detail-value">{{ problem.ErrorCode }}</span>
+            </div>
+            <div class="detail-item" *ngIf="problem.Context">
+              <span class="detail-label">Context:</span>
+              <span class="detail-value">{{ problem.Context }}</span>
+            </div>
+            <div class="detail-item" *ngIf="problem.Environment">
+              <span class="detail-label">Environment:</span>
+              <span class="detail-value">{{ problem.Environment }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Reproducible:</span>
+              <span class="detail-value">{{ problem.Reproducibility ? 'Yes' : 'No' }}</span>
+            </div>
+            <div class="detail-item" *ngIf="problem.PriorityLevel">
+              <span class="detail-label">Priority:</span>
+              <span class="detail-value">{{ getPriorityLabel(problem.PriorityLevel) }}</span>
+            </div>
+          </div>
+
+          <div class="problem-tags" *ngIf="problem.Tags">
+            <span class="tag" *ngFor="let tag of problem.Tags.split(',')">{{ tag.trim() }}</span>
+          </div>
+
+          <div class="problem-image" *ngIf="problem.ImagePath">
+            <img [src]="problem.ImagePath" alt="Problem Image">
+          </div>
+
+          <div class="problem-logs" *ngIf="problem.Logs">
+            <h4>Logs</h4>
+            <pre>{{ problem.Logs }}</pre>
+          </div>
+        </div>
+
+        <!-- Solutions Section -->
+        <div class="solutions-section">
+          <h3>Solutions ({{ problem.Solutions?.length || 0 }})</h3>
+          <div class="solutions-list">
+            <div *ngFor="let solution of problem.Solutions; let i = index" class="solution-card">
+              <div class="solution-header">
+                <div class="solution-user">
+                  <img [src]="solution.User?.ProfileImage || 'assets/default-avatar.png'" alt="User Image">
+                  <div class="user-info">
+                    <h4>{{ solution.User?.FullName }}</h4>
+                    <span>{{ solution.CreatedAt | date:'medium' }}</span>
+                  </div>
+                </div>
+                <div class="solution-actions">
+                  <button class="action-btn edit" (click)="toggleSolutionEdit(solution)" data-tooltip="Edit Solution">
+                    <i class='bx bx-edit'></i>
+                    <span class="tooltip">Edit Solution</span>
+                  </button>
+                  <button class="action-btn delete" (click)="deleteSolution(solution, problem)" data-tooltip="Delete Solution">
+                    <i class='bx bx-trash'></i>
+                    <span class="tooltip">Delete Solution</span>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="!solution.editing" class="solution-content">
+                <div class="solution-description">
+                  <h4>Description</h4>
+                  <p>{{ solution.Description }}</p>
+                </div>
+
+                <div class="solution-steps">
+                  <h4>Steps to Reproduce</h4>
+                  <div [innerHTML]="solution.Steps"></div>
+                </div>
+
+                <div class="solution-code" *ngIf="solution.CodeSamples">
+                  <h4>Code Samples</h4>
+                  <pre><code>{{ solution.CodeSamples }}</code></pre>
+                </div>
+
+                <div class="solution-media">
+                  <div class="solution-images" *ngIf="solution.ImagePath">
+                    <h4>Images</h4>
+                    <div class="image-container">
+                      <div class="image-wrapper">
+                        <img [src]="solution.ImagePath" alt="Solution Image">
+                        <button class="remove-image-btn" (click)="removeImage(solution, problem)" data-tooltip="Remove Image">
+                          <i class='fa fa-times'></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="solution-video" *ngIf="solution.VideoLink">
+                    <h4>Video Guide</h4>
+                    <div class="video-container">
+                      <a href="{{ solution.VideoLink }}" target="_blank" class="video-link">
+                        <i class='bx bx-video'></i> View Video Guide
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Edit Solution Form -->
+              <form *ngIf="solution.editing" class="edit-solution-form" (ngSubmit)="updateSolution(solution, problem)">
+                <div class="form-group">
+                  <label for="description{{i}}">Description</label>
+                  <textarea id="description{{i}}" name="description" [(ngModel)]="solution.Description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="steps{{i}}">Steps to Reproduce</label>
+                  <textarea id="steps{{i}}" name="steps" [(ngModel)]="solution.Steps" required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="code{{i}}">Code Samples</label>
+                  <textarea id="code{{i}}" name="code" [(ngModel)]="solution.CodeSamples"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="videoLink{{i}}">Video Link</label>
+                  <input type="url" id="videoLink{{i}}" name="videoLink" [(ngModel)]="solution.VideoLink">
+                </div>
+
+                <div class="form-buttons">
+                  <button type="button" class="cancel-btn" (click)="toggleSolutionEdit(solution)">Cancel</button>
+                  <button type="submit" class="update-btn">Update Solution</button>
+                </div>
+              </form>
+            </div>
+
+            <div *ngIf="!problem.Solutions || problem.Solutions.length === 0" class="no-solutions">
+              <i class='bx bx-info-circle'></i>
+              <p>No solutions available for this problem yet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredProblems.length === 0" class="empty-state">
+      <i class='bx bx-search-alt'></i>
+      <h3>No problems found</h3>
+      <p>Try adjusting your filters or search criteria</p>
+    </div>
+  </div>
+</div>
