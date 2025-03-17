@@ -1,1 +1,230 @@
-<p>profile works!</p>
+<div class="profile-container" [ngClass]="{'admin-view': user.Role === 'admin'}">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-image-container">
+            <img [src]="user.ProfileImage || 'assets/images/default-avatar.png'" alt="Profile Image"
+                class="profile-image">
+            <div class="edit-overlay" *ngIf="isCurrentUser" (click)="fileInput.click()">
+                <i class="bx bxs-camera"></i>
+                <input #fileInput type="file" accept="image/*" (change)="onProfileImageChange($event)"
+                    style="display: none">
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <h1 class="user-name">{{user.FullName}}</h1>
+            <p class="username">{{user.Username}}</p>
+            <p class="member-since">Member since {{user.DateCreated | date:'mediumDate'}}</p>
+
+            <div class="action-buttons" *ngIf="isCurrentUser">
+                <button class="btn primary-btn" (click)="toggleEditForm()"><i class="bx bx-edit"></i> Edit
+                    Profile</button>
+                <button class="btn secondary-btn"><i class="bx bx-cog"></i> Settings</button>
+            </div>
+
+            <div class="admin-actions" *ngIf="user.Role === 'admin'">
+                <span class="admin-badge"><i class="bx bxs-crown"></i> Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="edit-profile-form" *ngIf="isCurrentUser && showEditForm">
+        <form #profileForm="ngForm" (ngSubmit)="updateProfile(profileForm.value)" novalidate>
+            <div class="form-header">
+                <h2>Edit Profile Information</h2>
+                <button type="button" class="btn close-btn" (click)="toggleEditForm()">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" class="form-control" [(ngModel)]="userEdit.FullName"
+                    #fullName="ngModel" required minlength="3">
+                <div *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)" class="validation-error">
+                    <span *ngIf="fullName.errors?.['required']">Full name is required</span>
+                    <span *ngIf="fullName.errors?.['minlength']">Full name must be at least 3 characters</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" [(ngModel)]="userEdit.Username"
+                    #username="ngModel" required minlength="3" pattern="^[a-zA-Z0-9_-]+$">
+                <div *ngIf="username.invalid && (username.dirty || username.touched)" class="validation-error">
+                    <span *ngIf="username.errors?.['required']">Username is required</span>
+                    <span *ngIf="username.errors?.['minlength']">Username must be at least 3 characters</span>
+                    <span *ngIf="username.errors?.['pattern']">Username can only contain letters, numbers, underscores
+                        and hyphens</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" [(ngModel)]="userEdit.Email"
+                    #email="ngModel" required email>
+                <div *ngIf="email.invalid && (email.dirty || email.touched)" class="validation-error">
+                    <span *ngIf="email.errors?.['required']">Email is required</span>
+                    <span *ngIf="email.errors?.['email']">Please enter a valid email address</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn secondary-btn" (click)="toggleEditForm()">Cancel</button>
+                <button type="submit" class="btn primary-btn" [disabled]="profileForm.invalid">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="badges-section">
+        <h2>Achievement Badges</h2>
+        <div class="badges-container">
+            <div class="badge-item"
+                [ngClass]="{'obtained': user.Badge === 'Beginner' || user.Badge === 'Intermediate' || user.Badge === 'Expert'}">
+                <div class="badge-icon">
+                    <i class="bx bx-code-alt"></i>
+                </div>
+                <div class="badge-details">
+                    <h3>Basic</h3>
+                    <p>Solved 5+ problems</p>
+                </div>
+            </div>
+
+            <div class="badge-item" [ngClass]="{'obtained': user.Badge === 'Intermediate' || user.Badge === 'Expert'}">
+                <div class="badge-icon">
+                    <i class="bx bx-code-curly"></i>
+                </div>
+                <div class="badge-details">
+                    <h3>Intermediate</h3>
+                    <p>Solved 25+ problems</p>
+                </div>
+            </div>
+
+            <div class="badge-item" [ngClass]="{'obtained': user.Badge === 'Expert'}">
+                <div class="badge-icon">
+                    <i class="bx bxs-graduation"></i>
+                </div>
+                <div class="badge-details">
+                    <h3>Pro</h3>
+                    <p>Solved 50+ problems</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <h2>Activity Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card problems">
+                <div class="stat-icon">
+                    <i class="bx bx-error-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-count">{{user.ProblemsCount}}</h3>
+                    <p class="stat-label">Problems Created</p>
+                </div>
+            </div>
+
+            <div class="stat-card solutions">
+                <div class="stat-icon">
+                    <i class="bx bx-bulb"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-count">{{user.Solutions?.length || 0}}</h3>
+                    <p class="stat-label">Solutions Provided</p>
+                </div>
+            </div>
+
+            <div class="stat-card comments">
+                <div class="stat-icon">
+                    <i class="bx bx-comment"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-count">{{user.Comments?.length || 0}}</h3>
+                    <p class="stat-label">Comments Posted</p>
+                </div>
+            </div>
+
+            <div class="stat-card favorites">
+                <div class="stat-icon">
+                    <i class="bx bx-bookmark"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-count">{{user.Favourites?.length || 0}}</h3>
+                    <p class="stat-label">Favorite Problems</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Tests Section -->
+    <div class="tests-section">
+        <h2>Daily Tests</h2>
+        <div class="tests-progress">
+            <div class="progress-bar">
+                <div class="progress" [style.width]="(completedTestsCount / totalTestsCount) * 100 + '%'"></div>
+            </div>
+            <div class="progress-info">
+                <p><span class="completed">{{completedTestsCount}}</span> / <span
+                        class="total">{{totalTestsCount}}</span> completed</p>
+            </div>
+        </div>
+
+        <div class="tests-calendar">
+            <div class="calendar-day" *ngFor="let day of testDays"
+                [ngClass]="{'completed': day.completed, 'current': day.current}">
+                <span class="day-number">{{day.number}}</span>
+                <span class="status-icon"><i class="bx"
+                        [ngClass]="{'bx-check': day.completed, 'bx-x': !day.completed && day.past, 'bx-dots-horizontal-rounded': !day.past && !day.current}"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity (Admin View Only) -->
+    <div class="recent-activity" *ngIf="user.Role === 'admin'">
+        <h2>Recent Platform Activity</h2>
+        <div class="activity-log">
+            <div class="activity-item" *ngFor="let activity of recentActivities">
+                <div class="activity-icon" [ngClass]="activity.type">
+                    <i class="bx" [ngClass]="getActivityIcon(activity.type)"></i>
+                </div>
+                <div class="activity-details">
+                    <p class="activity-text">{{activity.text}}</p>
+                    <p class="activity-time">{{activity.time | date:'short'}}</p>
+                </div>
+                <div class="activity-actions">
+                    <button class="btn icon-btn"><i class="bx bx-show"></i></button>
+                    <button class="btn icon-btn" *ngIf="activity.type === 'problem'"><i class="bx bx-edit"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User History -->
+    <div class="history-section">
+        <h2>Recently Viewed Problems</h2>
+        <div class="history-list">
+            <div class="history-item" *ngFor="let history of recentHistory">
+                <div class="history-info">
+                    <h3 class="problem-title">{{history.Problem?.Title}}</h3>
+                    <div class="problem-meta">
+                        <span class="stack"><i class="bx bx-code-block"></i> {{history.Problem?.Stack?.Name}}</span>
+                        <span class="category"><i class="bx bx-category"></i> {{history.Problem?.Category?.Name}}</span>
+                        <span class="time"><i class="bx bx-time"></i> {{history.AccessedAt | date:'short'}}</span>
+                    </div>
+                </div>
+                <div class="history-actions">
+                    <button class="btn primary-btn">View Problem</button>
+                </div>
+            </div>
+
+            <div class="empty-state" *ngIf="recentHistory?.length === 0">
+                <i class="bx bx-search-alt"></i>
+                <p>No recently viewed problems</p>
+            </div>
+        </div>
+    </div>
+</div>

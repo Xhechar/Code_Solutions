@@ -1,1 +1,237 @@
-<p>single-problem works!</p>
+<div class="problem-container">
+    <!-- Problem Header -->
+    <div class="problem-header">
+        <div class="problem-title-section">
+            <h1 class="problem-title">{{problem.Title}}</h1>
+            <div class="problem-meta">
+                <span class="problem-date">
+                    <i class='bx bx-calendar'></i> {{problem.DateCreated | date:'mediumDate'}}
+                </span>
+                <span class="problem-category">
+                    <i class='bx bx-category'></i> {{problem.Category?.Name}}
+                </span>
+                <span class="problem-stack">
+                    <i class='bx bx-code-block'></i> {{problem.Stack?.Name}} {{problem.Stack?.Version}}
+                </span>
+            </div>
+        </div>
+        <div class="problem-actions">
+            <button class="btn-icon" [class.favorited]="isFavorited" (click)="toggleFavorite()">
+                <i class="fa" [ngClass]="isFavorited ? 'fa-heart' : 'fa-heart-o'"></i>
+            </button>
+            <button class="btn-icon" (click)="shareProblem()">
+                <i class="fa fa-share-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Problem Details -->
+    <div class="problem-content card">
+        <div class="problem-author">
+            <div class="author-avatar">
+                <img [src]="problem.User?.ProfileImage || 'assets/images/default-avatar.png'" alt="Author" />
+            </div>
+            <div class="author-info">
+                <h3>{{problem.User?.FullName || 'Code Solutions Team'}}</h3>
+                <span class="author-badge" *ngIf="problem.User?.Badge">
+                    <i class='bx bx-badge'></i> {{problem.User ? getBadgeName(problem.User.Badge) : 'Guest'}}
+                </span>
+            </div>
+        </div>
+
+        <div class="problem-description">
+            <p [innerHTML]="problem.Description"></p>
+        </div>
+
+        <div class="problem-details"
+            *ngIf="problem.ErrorCode || problem.Context || problem.Environment || problem.Tags">
+            <div class="detail-item" *ngIf="problem.ErrorCode">
+                <h4><i class='bx bx-error'></i> Error Code</h4>
+                <div class="code-block">{{problem.ErrorCode}}</div>
+            </div>
+
+            <div class="detail-item" *ngIf="problem.Context">
+                <h4><i class='bx bx-detail'></i> Context</h4>
+                <p>{{problem.Context}}</p>
+            </div>
+
+            <div class="detail-item" *ngIf="problem.Environment">
+                <h4><i class='bx bx-server'></i> Environment</h4>
+                <p>{{problem.Environment}}</p>
+            </div>
+
+            <div class="detail-item" *ngIf="problem.Tags">
+                <h4><i class='bx bx-tag'></i> Tags</h4>
+                <div class="tags-container">
+                    <span class="tag" *ngFor="let tag of getTags(problem.Tags)">{{tag}}</span>
+                </div>
+            </div>
+
+            <div class="detail-item" *ngIf="problem.Logs">
+                <h4><i class='bx bx-list-ul'></i> Logs</h4>
+                <div class="logs-container">
+                    <pre>{{problem.Logs}}</pre>
+                </div>
+            </div>
+
+            <div class="detail-item" *ngIf="problem.PriorityLevel">
+                <h4><i class='bx bx-stats'></i> Priority Level</h4>
+                <div class="priority-indicator" [attr.data-level]="problem.PriorityLevel">
+                    <span class="priority-dot" *ngFor="let dot of priorityDots"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solutions Section -->
+    <div class="solutions-section">
+        <h2 class="section-title">
+            <i class='bx bx-bulb'></i> Solutions
+            <span class="solutions-count">{{problem.Solutions?.length || 0}}</span>
+        </h2>
+
+        <div class="add-solution-container">
+            <button class="btn-primary" (click)="openAddSolutionModal()">
+                <i class='bx bx-plus'></i> Add Solution
+            </button>
+        </div>
+
+        <div class="solutions-container" *ngIf="problem.Solutions?.length; else noSolutions">
+            <div class="solution-card" *ngFor="let solution of problem.Solutions; let i = index"
+                [ngClass]="{'solution-expanded': solution.editing}">
+                <div class="solution-header">
+                    <div class="solution-author">
+                        <img [src]="solution.User?.ProfileImage || 'assets/images/default-avatar.png'"
+                            alt="Solution Author" />
+                        <div class="author-details">
+                            <h3>{{solution.User?.FullName || 'Code Solutions Team'}}</h3>
+                            <span class="solution-date">
+                                <i class='bx bx-time'></i> {{solution.CreatedAt | date:'mediumDate'}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="solution-actions">
+                        <button class="btn-icon" (click)="voteSolution(solution, 'up')"
+                            [class.voted]="hasVoted(solution, 'up')">
+                            <i class="fa fa-thumbs-up"></i>
+                            <span class="vote-count">{{getVoteCount(solution, 'up')}}</span>
+                        </button>
+                        <button class="btn-icon" (click)="voteSolution(solution, 'down')"
+                            [class.voted]="hasVoted(solution, 'down')">
+                            <i class="fa fa-thumbs-down"></i>
+                            <span class="vote-count">{{getVoteCount(solution, 'down')}}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <p [innerHTML]="solution.Description"></p>
+                    </div>
+
+                    <div class="solution-steps">
+                        <h4><i class='bx bx-list-ol'></i> Steps to Reproduce</h4>
+                        <div [innerHTML]="formatSteps(solution.Steps)"></div>
+                    </div>
+
+                    <div class="solution-code" *ngIf="solution.CodeSamples">
+                        <h4><i class='bx bx-code'></i> Code Samples</h4>
+                        <pre><code [innerHTML]="formatCode(solution.CodeSamples)"></code></pre>
+                    </div>
+
+                    <div class="solution-media">
+                        <div class="solution-image" *ngIf="solution.ImagePath">
+                            <img [src]="solution.ImagePath" alt="Solution Image"
+                                (click)="openImageModal(solution.ImagePath)" />
+                        </div>
+
+                        <div class="solution-video" *ngIf="solution.VideoLink">
+                            <h4><i class='bx bx-video'></i> Video Tutorial</h4>
+                            <div class="video-container">
+                                <iframe [src]="getSafeVideoUrl(solution.VideoLink)" frameborder="0"
+                                    allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #noSolutions>
+            <div class="no-solutions">
+                <i class='bx bx-bulb'></i>
+                <p>No solutions yet. Be the first to add a solution!</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h2 class="section-title">
+            <i class='bx bx-comment'></i> Comments
+            <span class="comments-count">{{problem.Comments?.length || 0}}</span>
+        </h2>
+
+        <div class="comment-form">
+            <textarea [(ngModel)]="newComment" placeholder="Add your comment..." rows="3" [maxlength]="1000"></textarea>
+            <div class="form-actions">
+                <span class="char-count">{{newComment.length || 0}}/1000</span>
+                <button class="btn-primary" [disabled]="!newComment.trim()" (click)="submitComment()">
+                    <i class='bx bx-send'></i> Post
+                </button>
+            </div>
+        </div>
+
+        <div class="comments-container" *ngIf="problem.Comments?.length; else noComments">
+            <div class="comment-card" *ngFor="let comment of problem.Comments">
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <img [src]="comment.User?.ProfileImage || 'assets/images/default-avatar.png'"
+                            alt="Comment Author" />
+                        <div class="author-details">
+                            <h3>{{comment.User?.FullName || 'Code Solutions Team'}}</h3>
+                            <span class="comment-date">
+                                <i class='bx bx-time'></i> {{comment.DatePosted | date:'medium'}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <p>{{comment.Content}}</p>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #noComments>
+            <div class="no-comments">
+                <i class='bx bx-comment-detail'></i>
+                <p>No comments yet. Start the conversation!</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Related Problems Section -->
+    <div class="related-problems" *ngIf="relatedProblems?.length">
+        <h2 class="section-title">
+            <i class='bx bx-link'></i> Related Problems
+        </h2>
+
+        <div class="related-problems-grid">
+            <div class="related-problem-card" *ngFor="let relatedProb of relatedProblems">
+                <div class="related-problem-header">
+                    <span class="related-problem-stack">{{relatedProb.Stack?.Name}}</span>
+                </div>
+                <h3 class="related-problem-title">{{relatedProb.Title}}</h3>
+                <p class="related-problem-excerpt">{{getExcerpt(relatedProb.Description)}}</p>
+                <div class="related-problem-footer">
+                    <span class="related-problem-date">
+                        <i class='bx bx-calendar'></i> {{relatedProb.DateCreated | date:'shortDate'}}
+                    </span>
+                    <a class="related-problem-link" [routerLink]="['/problems', relatedProb.ProblemId]">
+                        View <i class='bx bx-chevron-right'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

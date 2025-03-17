@@ -1,4 +1,9 @@
-export enum Badge {}
+export enum Badge {
+  Expert = 'Expert',
+  Intermediate = 'Intermediate',
+  Admin = 'Admin', 
+  Beginner = 'Beginner'
+}
 
 export interface User {
   UserId: string;
@@ -63,7 +68,7 @@ export interface Problem {
   Histories?: History[];
   UserId: string;
   User?: User;
-  expanded: boolean;
+  expanded: boolean; //to be removed.
   ProjectStructure?: ProjectStructure[];
 }
 

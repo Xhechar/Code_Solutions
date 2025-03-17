@@ -44,7 +44,7 @@ export class AuthService implements AuthInterface{
       }
     }
 
-    let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, ...r_user } = userExists;
+    let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, DateCreated, ...r_user } = userExists;
 
     let token = jwt.sign({ ...r_user }, process.env.SECRET_KEY as string, {
       expiresIn: '15m'

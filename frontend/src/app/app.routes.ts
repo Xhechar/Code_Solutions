@@ -98,7 +98,7 @@ export const routes: Routes = [
       },
       { path: 'favourites', component: FavouritesComponent },
       { path: 'history', component: HistoryComponent },
-      {path: 'my-profile', component: MyProfileComponent}
+      {path: 'my-profile', component: ProfileComponent}
     ]
   },
   { path: '**', component: NotFoundComponent }

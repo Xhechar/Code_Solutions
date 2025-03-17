@@ -18,6 +18,7 @@ import { psgRouter } from "./routers/psg.routes";
 import { solutionRouter } from "./routers/solution.routes";
 import { stackRouter } from "./routers/stack.routes";
 import { userRouter } from "./routers/user.routes";
+import cookieParser from 'cookie-parser'
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ const app = Express();
 
 app.use(json());
 app.use(cors());
+app.use(cookieParser(process.env.SECRET as string));
 
 app.use('/auth', authRouter);
 app.use('/category', categoryRouter);

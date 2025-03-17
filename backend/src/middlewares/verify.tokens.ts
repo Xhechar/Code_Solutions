@@ -1,26 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import { TokenDetails } from "../interfaces/solutions.interfaces";
-import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export interface ExtendedRequest extends Request {
   info?: TokenDetails;
 }
 export const verifyToken = (req: ExtendedRequest, res: Response, next: NextFunction) => {
 
-  let authHeader = req.headers["authorization"] as string;
+  let token = req.signedCookies.token;
 
-  if (!authHeader) {
+  if (!token) {
     res.status(401).json({
       'success': false,
       'error': 'You are not allowed to access this service. Login.'
     });
   }
 
-  let token = authHeader.split(" ")[1];
-
   try {
 
-    jwt.verify(token, process.env.SECRET_KEY as string, (error, data) => {
+    jwt.verify(token, process.env.SECRET_KEY as string, (error: any, data: any) => {
       if (error) {
         if (error.name === 'JsonWebTokenError') {
           res.status(401).json({
@@ -60,7 +58,7 @@ export const getIdFromToken = (req: ExtendedRequest): string => {
     return ''
   }
 
-  if (data.UserId) {
+  if (!data.UserId) {
     return ''
   }
 

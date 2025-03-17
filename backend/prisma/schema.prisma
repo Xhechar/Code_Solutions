@@ -34,6 +34,7 @@ model User {
   Histories   History[]
   Problems    Problem[] 
   Solutions   Solution[]
+  Chats       Chat[]
 }
 
 model Stack {
@@ -152,4 +153,29 @@ model Recovery {
   Email     String
   RecoveryCode  String
   Date      DateTime @default(now())
+}
+
+model Quiz {
+  QuizId String @id @unique
+  Title String
+  Quiz String
+  DateCreated DateTime @default(now())
+}
+
+model Results {
+  ResultsId String @id @unique
+  QuizId String
+  UserId String
+  CodeResult String
+  DateCreated DateTime @default(now())
+  IsReceived Boolean @default(false)
+}
+
+model Chat {
+  ChatId  String  @id @unique
+  UserId  String
+  Message String
+  Pinned  Boolean @default(false)
+  DateCreated DateTime  @default(now())
+  User User @relation(fields: [UserId], references: [UserId], onDelete: NoAction, onUpdate: NoAction)
 }
