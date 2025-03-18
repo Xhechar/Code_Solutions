@@ -174,3 +174,19 @@ export interface TokenDetails {
   Email: string;
   Role: string;
 }
+
+//other landing page interfaces
+
+export interface ContactData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface Testimonial {
+  name: string;
+  role: string;
+  message: string;
+  image: string;
+}

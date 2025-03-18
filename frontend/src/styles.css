@@ -45,9 +45,20 @@
   --tooltip-bg: hsla(0, 0%, 10%, 0.9);
   --tooltip-color: var(--text-color);
   --border-color: hsla(222, 47%, 20%, 1);
+
+  /* Enhanced color scheme */
+    --hero-bg: linear-gradient(135deg, hsl(50, 100%, 94%), hsl(50, 100%, 91%));
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --card-hover-shadow: 0 14px 45px rgba(0, 0, 0, 0.15);
+    --card-gradient: linear-gradient(45deg, var(--accent), hsl(130, 59%, 50%));
+    --code-bg: hsl(222, 20%, 13%);
+    --code-header-bg: hsl(222, 20%, 18%);
+    --line-number-color: hsl(222, 15%, 45%);
+    --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
   min-height: 100vh;
   background-color: var(--bg-color);
+  line-height: 1.6;
 }

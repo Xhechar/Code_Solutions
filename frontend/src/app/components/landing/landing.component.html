@@ -31,22 +31,26 @@
 
 <div class="hero-section">
   <div class="search-container">
-    <h1>Find a solution perfect for you</h1>
+    <h1 class="animated-title">Find a solution perfect for you</h1>
     <p class="subtitle">Search your way to the most perfect solution to your error. Make a click worth it.</p>
-    
+
     <div class="search-box">
       <input type="text" placeholder="Error code, description or Keyword">
       <div class="location-select">
-        <i class="fa-brands fa-hackerrank"></i>
+        <i class="fa-brands fa-hackerrank pulse-icon"></i>
         <select>
           <option>All Errors</option>
+          <option>Runtime Errors</option>
+          <option>Syntax Errors</option>
+          <option>Logic Errors</option>
         </select>
       </div>
       <button class="search-btn">
-        <i class='bx bx-search bx-tada'></i>
+        <i class='bx bx-search'></i>
+        <span>Search</span>
       </button>
     </div>
-    
+
     <div class="cards-container">
       <div class="card">
         <div class="card-icon">
@@ -54,14 +58,28 @@
         </div>
         <h3>Explore Errors & Solutions</h3>
         <p>Discover comprehensive guides and solutions for common programming errors and debugging challenges.</p>
+        <div class="card-hover-effect"></div>
+        <button class="card-btn">Explore Now</button>
       </div>
-      
+
       <div class="card">
         <div class="card-icon">
           <i class='bx bx-folder-open'></i>
         </div>
         <h3>Browse Project Structure Guides</h3>
         <p>Learn best practices for organizing your code and maintaining scalable project architectures.</p>
+        <div class="card-hover-effect"></div>
+        <button class="card-btn">Browse Guides</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">
+          <i class='bx bx-code-block'></i>
+        </div>
+        <h3>Code Snippets Library</h3>
+        <p>Access a collection of reusable code samples and patterns to accelerate your development workflow.</p>
+        <div class="card-hover-effect"></div>
+        <button class="card-btn">View Library</button>
       </div>
     </div>
   </div>
@@ -69,19 +87,26 @@
   <div class="code-container" [ngClass]="{'error': isError, 'success': !isError}">
     <!-- Header Bar -->
     <div class="code-header">
-      <span class="language-label">Java</span>
-      <span class="code-label">Code</span>
+      <div class="left-controls">
+        <span class="control-dot red"></span>
+        <span class="control-dot yellow"></span>
+        <span class="control-dot green"></span>
+        <span class="language-label">Java</span>
+      </div>
+      <span class="code-label">Code Solutions</span>
     </div>
-  
+
     <!-- Code Content -->
     <div class="code-content">
       <div class="code-line">
+        <span class="line-number">1</span>
         <span class="keyword">public class</span>
         <span class="class-name">CodeSolutions</span>
         <span class="v">&#123;</span>
       </div>
-  
+
       <div class="code-line indented">
+        <span class="line-number">2</span>
         <span class="keyword">public</span>
         <span class="class-name">CodeSolutions</span>
         <span class="v">(</span>
@@ -93,8 +118,9 @@
         <span class="v">)</span>
         <span class="v">&#123;</span>
       </div>
-  
+
       <div class="code-line double-indented">
+        <span class="line-number">3</span>
         <span class="keyword">this</span>
         <span class="v">.</span>
         <span class="variable">algorithm</span>
@@ -102,8 +128,9 @@
         <span class="variable">algorithm</span>
         <span class="v">;</span>
       </div>
-  
+
       <div class="code-line double-indented">
+        <span class="line-number">4</span>
         <span class="keyword">this</span>
         <span class="v">.</span>
         <span class="variable">complexity</span>
@@ -111,34 +138,40 @@
         <span class="variable">complexity</span>
         <span class="v">;</span>
       </div>
-  
+
       <div class="code-line indented">
+        <span class="line-number">5</span>
         <span class="v">&#125;</span>
       </div>
-  
+
       <div class="code-line indented">
+        <span class="line-number">6</span>
         <span class="keyword">public</span>
         <span class="type">void</span>
         <span class="method">findSolution</span>
         <span class="v">()</span>
         <span class="v">&#123;</span>
       </div>
-  
+
       <div class="code-line double-indented">
+        <span class="line-number">7</span>
         <span class="comment">// Solution implementation</span>
       </div>
-  
+
       <div class="code-line indented">
+        <span class="line-number">8</span>
         <span class="v">&#125;</span>
       </div>
-  
+
       <div class="code-line">
+        <span class="line-number">9</span>
         <span class="v">&#125;</span>
       </div>
-  
+
       <div class="code-line method-usage">
-        <div class="comment">// Main method</div>
+        <div class="comment"><span class="line-number">10</span>// Main method</div>
         <div class="code-line">
+          <span class="line-number">11</span>
           <span class="keyword">public static void</span>
           <span class="method">main</span>
           <span class="v">(</span>
@@ -148,95 +181,120 @@
           <span class="v">)</span>
           <span class="v">&#123;</span>
         </div>
-  
+
         <div class="code-line indented">
+          <span class="line-number">12</span>
           <span class="keyword">CodeSolutions solutions = new CodeSolutions("quicksort", 1) ;</span>
         </div>
-  
+
         <div class="typewriter-container">
+          <span class="line-number">13</span>
           <span class="typewriter-text" [class.typing]="isTyping">{{currentCode}}</span>
           <span class="cursor" [class.typing]="isTyping"></span>
         </div>
       </div>
     </div>
+
+    <div class="code-status">
+      <div class="status-indicator" [ngClass]="{'error': isError, 'success': !isError}">
+        <i class="bx" [ngClass]="{'bx-x-circle': isError, 'bx-check-circle': !isError}"></i>
+        <span>{{ isError ? 'Error detected' : 'Code valid' }}</span>
+      </div>
+    </div>
   </div>
 </div>
-
-<!--list of errors -->
 
 <div class="category-section">
   <h2>Browse Error Categories</h2>
   <p>Find and explore solutions by category</p>
 
-  <div class="slider-container">
-    <div class="slider" id="slider">
-      <!-- Card 1 -->
-      <div class="error-card">
-        <div class="icon-container">
-          <i class='bx bx-code-block'></i>
-        </div>
-        <h3>Runtime Errors</h3>
-        <div class="error-preview">
-          <div class="error-log">
-            <pre>TypeError: Cannot read property 'length' of undefined</pre>
-          </div>
-          <div class="error-details">
-            <span class="error-code">ERR_001</span>
-            <p>Common JavaScript runtime errors and solutions</p>
-            <div class="tags">
-              <span>JavaScript</span>
-              <span>Runtime</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="filters">
+    <div class="search-boxx">
+      <i class='bx bx-search'></i>
+      <input type="text" placeholder="Search problems..." [(ngModel)]="searchTerm">
+    </div>
+    <div class="filter-options">
+      <select [(ngModel)]="selectedCategory">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category.CategoryId">{{category.Name}}</option>
+      </select>
+      <select [(ngModel)]="selectedStack">
+        <option value="">All Stacks</option>
+        <option *ngFor="let stack of stacks" [value]="stack.StackId">{{stack.Name}}</option>
+      </select>
+    </div>
+  </div>
 
-      <!-- Card 2 -->
-      <div class="error-card">
-        <div class="icon-container">
-          <i class='bx bx-data'></i>
-        </div>
-        <h3>Database Errors</h3>
-        <div class="error-preview">
-          <div class="error-log">
-            <pre>Error: Connection refused at Database.connect</pre>
-          </div>
-          <div class="error-details">
-            <span class="error-code">ERR_002</span>
-            <p>Database connection and query errors</p>
-            <div class="tags">
-              <span>Database</span>
-              <span>SQL</span>
-            </div>
-          </div>
-        </div>
+  <div class="problem-grid">
+    <div class="error-card" *ngFor="let problem of filteredProblems" [@cardAnimation]>
+      <div class="icon-container" [ngClass]="getCategoryClass(problem.CategoryId)">
+        <i [class]="getCategoryIcon(problem.CategoryId)"></i>
       </div>
-
-      <!-- Card 3 -->
-      <div class="error-card">
-        <div class="icon-container">
-          <i class='bx bx-server'></i>
+      <h3>{{ problem.Title }}</h3>
+      <div class="error-preview">
+        <div class="error-log">
+          <pre>{{ problem.ErrorCode || 'Error details not specified' }}</pre>
         </div>
-        <h3>API Errors</h3>
-        <div class="error-preview">
-          <div class="error-log">
-            <pre>404 Not Found: API endpoint /users not found</pre>
+        <div class="error-details">
+          <div class="meta-info">
+            <span class="error-code">{{ problem.ProblemId | slice:0:8 }}</span>
+            <span class="date">{{ problem.DateCreated | date }}</span>
           </div>
-          <div class="error-details">
-            <span class="error-code">ERR_003</span>
-            <p>Common API and HTTP request errors</p>
-            <div class="tags">
-              <span>API</span>
-              <span>HTTP</span>
+          <p>{{ problem.Description | slice:0:120 }}{{ problem.Description.length > 120 ? '...' : '' }}</p>
+          <div class="tags">
+            <span *ngFor="let tag of getTags(problem.Tags)">{{ tag }}</span>
+            <span class="stack-tag">{{ getStackName(problem.StackId) }}</span>
+          </div>
+          <div class="card-footer">
+            <button class="view-btn" (click)="viewProblem(problem.ProblemId)">
+              <i class='bx bx-show'></i> View Details
+            </button>
+            <div class="stats">
+              <span><i class='bx bx-message-square'></i> {{ problem.Comments?.length || 0 }}</span>
+              <span><i class='bx bx-star'></i> {{ problem.Favourites?.length || 0 }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="slider-controls">
-      <button class="direction-btn left" onclick="changeDirection('left')">←</button>
-      <button class="direction-btn right" onclick="changeDirection('right')">→</button>
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      <i class='bx bx-chevron-left'></i>
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+      <i class='bx bx-chevron-right'></i>
+    </button>
+  </div>
+</div>
+
+<div class="project-structures-section">
+  <h2>Project Structures</h2>
+  <p>Complete solutions and architecture guides</p>
+
+  <div class="project-grid">
+    <div class="project-card" *ngFor="let project of projectStructures" [@projectAnimation]>
+      <div class="project-header">
+        <div class="stack-icon">
+          <i [class]="getStackIcon(project.StackId)"></i>
+        </div>
+        <div class="project-meta">
+          <h3>{{ project.Title }}</h3>
+          <span class="date-info">
+            <i class='bx bx-calendar'></i> {{ project.LastUpdated | date }}
+          </span>
+        </div>
+      </div>
+      <p class="project-description">{{ project.Description }}</p>
+      <div class="project-stats">
+        <span><i class='bx bx-file'></i> {{ project.PSG?.length || 0 }} guides</span>
+        <span><i class='bx bx-bug'></i> {{ getRelatedProblemsCount(project) }} problems</span>
+      </div>
+      <button class="explore-btn" (click)="viewProjectStructure(project.ProjectId)">
+        Explore Structure <i class='bx bx-right-arrow-alt'></i>
+      </button>
     </div>
   </div>
 </div>
@@ -244,7 +302,7 @@
 <div class="page-container">
   <div class="title-container">
     <div class="title-content">
-      <i class="fas fa-comments title-icon"></i>
+      <i class='bx bxs-chat title-icon'></i>
       <h1 class="title-text">Coders Oval</h1>
     </div>
   </div>
@@ -253,7 +311,7 @@
     <!-- Chat Header -->
     <div class="chat-header">
       <div class="chat-header-info">
-        <img [src]="'/api/placeholder/45/45'" alt="Design Team">
+        <img src="https://i.pinimg.com/474x/a9/4c/95/a94c957cd9fbaf76b15795c64209bf13.jpg" alt="Design Team">
         <div class="chat-header-text">
           <h3>{{ groupName }}</h3>
           <p>{{ members.length }} members.</p>
@@ -361,3 +419,189 @@
     <img [src]="selectedImage" alt="Full size media">
   </div>
 </div>
+
+<!-- Contact Us Section -->
+<section class="contact-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Contact Us</h2>
+      <p>Have questions about Code Solutions? We're here to help!</p>
+    </div>
+
+    <div class="contact-container">
+      <!-- Contact Form -->
+      <div class="contact-form-container">
+        <form class="contact-form" (ngSubmit)="onSubmit()" #contactForm="ngForm">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" [(ngModel)]="contactData.name" required class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" [(ngModel)]="contactData.email" required class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject" [(ngModel)]="contactData.subject" class="form-control">
+              <option value="general">General Inquiry</option>
+              <option value="support">Technical Support</option>
+              <option value="feature">Feature Request</option>
+              <option value="partnership">Partnership Opportunities</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" name="message" [(ngModel)]="contactData.message" required rows="5"
+              class="form-control"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="!contactForm.valid">Send Message</button>
+        </form>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <div class="info-card">
+          <div class="icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h3>Our Location</h3>
+          <p>Tharaka Nithi, Chuka</p>
+          <p>Ndagani , White House - Chuka University</p>
+        </div>
+
+        <div class="info-card">
+          <div class="icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h3>Email Us</h3>
+          <p><a href="mailto:help@codesolutions.com">help&#64;codesolutions.com</a></p>
+          <p><a href="mailto:support@codesolutions.com">support&#64;codesolutions.com</a></p>
+        </div>
+
+        <div class="info-card">
+          <div class="icon">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <h3>Call Us</h3>
+          <p>+254 7-68-030-478</p>
+          <p>Mon-Fri, 9AM-6PM EAT</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>What People Say</h2>
+      <p>Hear from our community of passionate coders</p>
+    </div>
+
+    <div class="testimonials-slider">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <div class="testimonial-content">
+          <div class="quote-icon">
+            <i class="fas fa-quote-left"></i>
+          </div>
+          <p>{{testimonial.message}}</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-img">
+            <img [src]="testimonial.image" alt="{{testimonial.name}}">
+          </div>
+          <div class="author-info">
+            <h4>{{testimonial.name}}</h4>
+            <p>{{testimonial.role}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-controls">
+      <button class="control-btn prev" (click)="prevTestimonial()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <div class="dots">
+        <span class="dot" *ngFor="let dot of testimonialDots; let i = index" [class.active]="currentTestimonial === i"
+          (click)="goToTestimonial(i)"></span>
+      </div>
+      <button class="control-btn next" (click)="nextTestimonial()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- About -->
+        <div class="footer-about">
+          <div class="logo">
+            <h2>Code Solutions</h2>
+          </div>
+          <p>Your go-to platform for solving coding errors and sharpening your skills with daily coding challenges.</p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Error Database</a></li>
+            <li><a href="#">Daily Challenges</a></li>
+            <li><a href="#">Submit Solution</a></li>
+            <li><a href="#">Leaderboard</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div class="footer-links">
+          <h3>Our Services</h3>
+          <ul>
+            <li><a href="#">Error Lookup</a></li>
+            <li><a href="#">Code Optimization</a></li>
+            <li><a href="#">Practice Sessions</a></li>
+            <li><a href="#">Community Support</a></li>
+            <li><a href="#">Premium Features</a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer-newsletter">
+          <h3>Stay Updated</h3>
+          <p>Subscribe to our newsletter for weekly coding tips and challenges</p>
+          <form class="newsletter-form" (ngSubmit)="subscribeNewsletter()" #newsletterForm="ngForm">
+            <input type="email" name="email" [(ngModel)]="newsletterEmail" placeholder="Your email address" required>
+            <button type="submit" [disabled]="!newsletterForm.valid">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; {{currentYear}} Code Solutions. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
