@@ -68,7 +68,6 @@ export interface Problem {
   Histories?: History[];
   UserId: string;
   User?: User;
-  expanded: boolean; //to be removed.
   ProjectStructure?: ProjectStructure[];
 }
 

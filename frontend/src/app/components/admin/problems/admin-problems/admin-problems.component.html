@@ -83,7 +83,8 @@
               <i class='bx bx-edit'></i>
               <span class="tooltip">Edit Problem</span>
             </button>
-            <button *ngIf="!problem.IsApproved" class="action-btn approve" (click)="approveProblem(problem, $event)" data-tooltip="Approve Problem">
+            <button *ngIf="!problem.IsApproved" class="action-btn approve" (click)="approveProblem(problem, $event)"
+              data-tooltip="Approve Problem">
               <i class='bx bx-check'></i>
               <span class="tooltip">Approve Problem</span>
             </button>
@@ -91,19 +92,20 @@
               <i class='bx bx-trash'></i>
               <span class="tooltip">Delete Problem</span>
             </button>
-            <button class="toggle-btn" [class.expanded]="problem.expanded">
-              <i class='bx' [ngClass]="{'bx-chevron-down': !problem.expanded, 'bx-chevron-up': problem.expanded}"></i>
+            <button class="toggle-btn" [class.expanded]="isExpanded(problem.ProblemId)">
+              <i class='bx'
+                [ngClass]="{'bx-chevron-down': !isExpanded(problem.ProblemId), 'bx-chevron-up': isExpanded(problem.ProblemId)}"></i>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Problem Description -->
-      <div class="problem-details" *ngIf="problem.expanded">
+      <div class="problem-details" [class.expanded]="isExpanded(problem.ProblemId)">
         <div class="problem-description">
           <h3>Problem Description</h3>
           <p>{{ problem.Description }}</p>
-          
+
           <div class="problem-details-grid">
             <div class="detail-item" *ngIf="problem.ErrorCode">
               <span class="detail-label">Error Code:</span>
@@ -159,7 +161,8 @@
                     <i class='bx bx-edit'></i>
                     <span class="tooltip">Edit Solution</span>
                   </button>
-                  <button class="action-btn delete" (click)="deleteSolution(solution, problem)" data-tooltip="Delete Solution">
+                  <button class="action-btn delete" (click)="deleteSolution(solution, problem)"
+                    data-tooltip="Delete Solution">
                     <i class='bx bx-trash'></i>
                     <span class="tooltip">Delete Solution</span>
                   </button>
@@ -188,7 +191,8 @@
                     <div class="image-container">
                       <div class="image-wrapper">
                         <img [src]="solution.ImagePath" alt="Solution Image">
-                        <button class="remove-image-btn" (click)="removeImage(solution, problem)" data-tooltip="Remove Image">
+                        <button class="remove-image-btn" (click)="removeImage(solution, problem)"
+                          data-tooltip="Remove Image">
                           <i class='fa fa-times'></i>
                         </button>
                       </div>
@@ -210,7 +214,8 @@
               <form *ngIf="solution.editing" class="edit-solution-form" (ngSubmit)="updateSolution(solution, problem)">
                 <div class="form-group">
                   <label for="description{{i}}">Description</label>
-                  <textarea id="description{{i}}" name="description" [(ngModel)]="solution.Description" required></textarea>
+                  <textarea id="description{{i}}" name="description" [(ngModel)]="solution.Description"
+                    required></textarea>
                 </div>
 
                 <div class="form-group">

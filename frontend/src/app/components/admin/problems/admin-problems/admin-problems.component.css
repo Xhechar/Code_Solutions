@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 /* Stats Section */
@@ -25,6 +25,7 @@
 
 .stat-card:hover {
   transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .stat-card i {
@@ -36,10 +37,11 @@
 .stat-info h3 {
   font-size: 1.8rem;
   margin-bottom: 5px;
+  color: var(--text-primary);
 }
 
 .stat-info p {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -53,7 +55,7 @@
 
 .header-container h1 {
   font-size: 2rem;
-  color: var(--dark);
+  color: var(--text-primary);
 }
 
 .add-problem-btn {
@@ -67,10 +69,14 @@
   display: flex;
   align-items: center;
   transition: background-color var(--transition-speed);
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .add-problem-btn:hover {
   background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .add-problem-btn i {
@@ -102,16 +108,19 @@
   cursor: pointer;
   transition: all var(--transition-speed);
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .filter-buttons button:hover {
   background-color: var(--accent);
   color: white;
+  transform: translateY(-2px);
 }
 
 .filter-buttons button.active {
   background-color: var(--accent);
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-container {
@@ -125,7 +134,7 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .search-container input {
@@ -135,11 +144,18 @@
   border-radius: var(--border-radius);
   font-size: 1rem;
   transition: border-color var(--transition-speed);
+  color: var(--text-primary);
+  background-color: var(--bg-color);
 }
 
 .search-container input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.1);
+}
+
+.search-container input::placeholder {
+  color: var(--text-secondary);
 }
 
 /* Problems List */
@@ -155,10 +171,11 @@
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: box-shadow var(--transition-speed);
+  border: 1px solid var(--border-color);
 }
 
 .problem-card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .problem-header {
@@ -171,7 +188,7 @@
 }
 
 .problem-header:hover {
-  background-color: var(--light);
+  background-color: var(--hover-bg);
 }
 
 .problem-info {
@@ -187,7 +204,7 @@
   padding: 5px 10px;
   border-radius: 20px;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .problem-status.approved {
@@ -208,11 +225,13 @@
 .problem-title-container h2 {
   margin-bottom: 5px;
   font-size: 1.2rem;
+  color: var(--text-primary);
 }
 
-.problem-category, .problem-stack {
+.problem-category,
+.problem-stack {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-right: 10px;
 }
 
@@ -233,13 +252,19 @@
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--light);
+}
+
+.problem-user span {
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .problem-date {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -248,7 +273,23 @@
   gap: 8px;
 }
 
-.action-btn, .toggle-btn {
+/* Problem Details */
+.problem-details {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  background-color: var(--card-bg);
+}
+
+.problem-details.expanded {
+  padding: 20px;
+  max-height: 5000px;
+  border-top: 1px solid var(--border-color);
+}
+
+.action-btn,
+.toggle-btn {
   border: none;
   background: none;
   cursor: pointer;
@@ -261,10 +302,12 @@
   align-items: center;
   justify-content: center;
   transition: all var(--transition-speed);
+  color: var(--text-secondary);
 }
 
 .action-btn:hover {
   background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
 }
 
 .action-btn .tooltip {
@@ -272,8 +315,8 @@
   bottom: -35px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--dark);
-  color: white;
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-color);
   padding: 5px 10px;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -282,6 +325,7 @@
   opacity: 0;
   transition: opacity var(--transition-speed);
   z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .action-btn:hover .tooltip {
@@ -289,19 +333,20 @@
 }
 
 .action-btn.edit:hover {
-  color: #3498db;
+  color: var(--info);
 }
 
 .action-btn.approve:hover {
-  color: var(--accent);
+  color: var(--success);
 }
 
 .action-btn.delete:hover {
-  color: #e74c3c;
+  color: var(--danger);
 }
 
 .toggle-btn {
   transition: transform var(--transition-speed);
+  color: var(--text-secondary);
 }
 
 .toggle-btn.expanded {
@@ -314,21 +359,25 @@
   max-height: 0;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
+  background-color: var(--card-bg);
 }
 
 .problem-expanded .problem-details {
   padding: 20px;
-  max-height: 5000px; /* Arbitrary large value to ensure content is visible */
+  max-height: 5000px;
+  border-top: 1px solid var(--border-color);
 }
 
 .problem-description h3 {
   margin-bottom: 15px;
   font-size: 1.3rem;
+  color: var(--text-primary);
 }
 
 .problem-description p {
   margin-bottom: 20px;
   line-height: 1.6;
+  color: var(--text-primary);
 }
 
 .problem-details-grid {
@@ -347,6 +396,11 @@
 .detail-label {
   font-weight: 600;
   margin-right: 5px;
+  color: var(--text-primary);
+}
+
+.detail-value {
+  color: var(--text-primary);
 }
 
 .problem-tags {
@@ -361,6 +415,8 @@
   padding: 5px 10px;
   border-radius: 20px;
   font-size: 0.8rem;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .problem-image {
@@ -370,32 +426,39 @@
 .problem-image img {
   max-width: 100%;
   border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
 .problem-logs {
   margin-bottom: 20px;
 }
 
+.problem-logs h4 {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
 .problem-logs pre {
-  background-color: var(--dark);
+  background-color: var(--code-bg);
   color: var(--neutral);
   padding: 15px;
   border-radius: 8px;
   overflow-x: auto;
-  font-family: monospace;
   font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 /* Solutions Section */
 .solutions-section {
   margin-top: 30px;
-  border-top: 1px solid var(--light);
+  border-top: 1px solid var(--border-color);
   padding-top: 20px;
 }
 
 .solutions-section h3 {
   margin-bottom: 20px;
   font-size: 1.3rem;
+  color: var(--text-primary);
 }
 
 .solutions-list {
@@ -405,14 +468,17 @@
 }
 
 .solution-card {
-  background-color: var(--light);
+  background-color: var(--bg-color);
   border-radius: var(--border-radius);
   overflow: hidden;
   transition: transform var(--transition-speed);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
 }
 
 .solution-card:hover {
   transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .solution-header {
@@ -420,7 +486,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .solution-user {
@@ -434,43 +500,53 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--light);
 }
 
 .user-info h4 {
   font-size: 1rem;
   margin-bottom: 3px;
+  color: var(--text-primary);
 }
 
 .user-info span {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .solution-content {
   padding: 20px;
 }
 
-.solution-description, .solution-steps, .solution-code {
+.solution-description,
+.solution-steps,
+.solution-code {
   margin-bottom: 20px;
 }
 
-.solution-description h4, .solution-steps h4, .solution-code h4, .solution-media h4 {
+.solution-description h4,
+.solution-steps h4,
+.solution-code h4,
+.solution-media h4 {
   margin-bottom: 10px;
   font-size: 1.1rem;
+  color: var(--text-primary);
 }
 
+.solution-description p,
 .solution-steps div {
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
 .solution-code pre {
-  background-color: var(--dark);
+  background-color: var(--code-bg);
   color: var(--neutral);
   padding: 15px;
   border-radius: 8px;
   overflow-x: auto;
-  font-family: monospace;
   font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .solution-media {
@@ -495,6 +571,7 @@
   width: 100%;
   border-radius: 8px;
   transition: filter var(--transition-speed);
+  box-shadow: var(--shadow);
 }
 
 .image-wrapper:hover img {
@@ -554,9 +631,11 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
-.form-group input, .form-group textarea {
+.form-group input,
+.form-group textarea {
   width: 100%;
   padding: 10px;
   border: 2px solid var(--light);
@@ -564,11 +643,15 @@
   font-size: 1rem;
   font-family: inherit;
   transition: border-color var(--transition-speed);
+  color: var(--text-primary);
+  background-color: var(--bg-color);
 }
 
-.form-group input:focus, .form-group textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.1);
 }
 
 .form-group textarea {
@@ -583,22 +666,25 @@
   margin-top: 20px;
 }
 
-.cancel-btn, .update-btn {
+.cancel-btn,
+.update-btn {
   padding: 10px 20px;
   border-radius: var(--border-radius);
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
   transition: all var(--transition-speed);
+  font-weight: 500;
 }
 
 .cancel-btn {
   background-color: var(--light);
-  color: var(--dark);
+  color: var(--text-primary);
 }
 
 .cancel-btn:hover {
   background-color: #e0e0e0;
+  transform: translateY(-2px);
 }
 
 .update-btn {
@@ -608,29 +694,36 @@
 
 .update-btn:hover {
   background-color: var(--accent-hover);
+  transform: translateY(-2px);
 }
 
 /* Empty State */
-.empty-state, .no-solutions {
+.empty-state,
+.no-solutions {
   text-align: center;
   padding: 30px;
-  background-color: var(--light);
+  background-color: var(--bg-color);
   border-radius: var(--border-radius);
+  border: 1px dashed var(--border-color);
 }
 
-.empty-state i, .no-solutions i {
+.empty-state i,
+.no-solutions i {
   font-size: 3rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-bottom: 15px;
 }
 
-.empty-state h3, .no-solutions h3 {
+.empty-state h3,
+.no-solutions h3 {
   margin-bottom: 10px;
   font-size: 1.3rem;
+  color: var(--text-primary);
 }
 
-.empty-state p, .no-solutions p {
-  color: var(--text-muted);
+.empty-state p,
+.no-solutions p {
+  color: var(--text-secondary);
 }
 
 @media (max-width: 992px) {
@@ -639,13 +732,13 @@
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .problem-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
-  
+
   .problem-actions {
     align-self: flex-end;
   }
@@ -657,24 +750,32 @@
     align-items: flex-start;
     gap: 15px;
   }
-  
+
   .filters-container {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-container {
     max-width: 100%;
   }
-  
+
   .solution-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .solution-actions {
     align-self: flex-end;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-info h3 {
+    font-size: 1.5rem;
   }
 }
 
@@ -688,6 +789,7 @@
     transform: scaleY(0.95);
     opacity: 0.8;
   }
+
   100% {
     transform: scaleY(1);
     opacity: 1;
@@ -696,7 +798,7 @@
 
 /* Hover effects */
 .problem-card:hover .problem-header {
-  background-color: rgba(229, 217, 182, 0.5);
+  background-color: rgba(229, 217, 182, 0.3);
 }
 
 .solution-card {
@@ -705,16 +807,19 @@
 
 .solution-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--card-shadow);
 }
 
 /* Additional animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
+
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -731,9 +836,11 @@
   0% {
     box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
   }
@@ -775,6 +882,7 @@
     opacity: 0;
     transform: translate(-50%, 10px);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, 0);
@@ -783,4 +891,23 @@
 
 .action-btn:hover .tooltip {
   animation: tooltipFade 0.3s forwards;
+}
+
+/* Improved accessibility */
+.problem-card:focus-within {
+  outline: 2px solid var(--accent);
+}
+
+.action-btn:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Transitions for smooth hover effects */
+.problem-card,
+.solution-card,
+.stat-card,
+.add-problem-btn,
+.filter-buttons button {
+  transition: all var(--transition-speed) var(--animation-timing);
 }

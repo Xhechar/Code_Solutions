@@ -44,7 +44,6 @@
   --hover-item-bg: var(--sidebar-hover);
   --tooltip-bg: hsla(0, 0%, 10%, 0.9);
   --tooltip-color: var(--text-color);
-  --border-color: hsla(222, 47%, 20%, 1);
 
   /* Enhanced color scheme */
     --hero-bg: linear-gradient(135deg, hsl(50, 100%, 94%), hsl(50, 100%, 91%));

@@ -106,8 +106,7 @@ throw new Error('Method not implemented.');
         StackId: '3',
         CategoryId: '1',
         IsApproved: true,
-        UserId: '1',
-        expanded: false,
+        UserId: '1'
       },
       {
         ProblemId: '2',

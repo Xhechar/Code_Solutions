@@ -186,8 +186,7 @@ export class SingleProblemComponent implements OnInit {
         ProblemsCount: 8,
         Role: 'user',
         IsSolver: false
-      },
-      expanded: false
+      }
     };
   }
 
@@ -209,7 +208,6 @@ export class SingleProblemComponent implements OnInit {
         IsApproved: true,
         Reproducibility: true,
         UserId: 'u002',
-        expanded: false
       },
       {
         ProblemId: 'p003',
@@ -227,7 +225,6 @@ export class SingleProblemComponent implements OnInit {
         IsApproved: true,
         Reproducibility: true,
         UserId: 'u001',
-        expanded: false
       },
       {
         ProblemId: 'p004',
@@ -245,7 +242,6 @@ export class SingleProblemComponent implements OnInit {
         IsApproved: true,
         Reproducibility: false,
         UserId: 'u003',
-        expanded: false
       }
     ];
   }

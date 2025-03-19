@@ -340,7 +340,7 @@
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
-  text-fill-color: transparent;
+  -webkit-text-fill-color: transparent;
   -webkit-text-fill-color: transparent;
   animation: gradientShift 3s ease infinite;
 }
@@ -1339,6 +1339,7 @@
   margin-bottom: 20px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

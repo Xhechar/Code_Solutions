@@ -23,6 +23,9 @@ export class AdminProblemsComponent implements OnInit {
   userProblems: number = 0;
   adminProblems: number = 0;
 
+  // Expansion state
+  expandedProblems: Map<string, boolean> = new Map();
+
   constructor() { }
 
   ngOnInit(): void {
@@ -146,7 +149,7 @@ function MyComponent({ items }) {
       editing: false
     };
 
-    // Create dummy problems
+    // Create dummy problems without expanded property
     this.problems = [
       {
         ProblemId: '1',
@@ -168,8 +171,7 @@ function MyComponent({ items }) {
         Solutions: [solution1],
         UserId: '1',
         User: adminUser,
-        IsApproved: true,
-        expanded: false
+        IsApproved: true
       },
       {
         ProblemId: '2',
@@ -191,8 +193,7 @@ function MyComponent({ items }) {
         Solutions: [solution2],
         UserId: '2',
         User: regularUser,
-        IsApproved: false,
-        expanded: false
+        IsApproved: false
       },
       {
         ProblemId: '3',
@@ -214,8 +215,7 @@ function MyComponent({ items }) {
         Solutions: [],
         UserId: '1',
         User: adminUser,
-        IsApproved: true,
-        expanded: false
+        IsApproved: true
       },
       {
         ProblemId: '4',
@@ -237,8 +237,7 @@ function MyComponent({ items }) {
         Solutions: [solution1, solution2],
         UserId: '2',
         User: regularUser,
-        IsApproved: false,
-        expanded: false
+        IsApproved: false
       },
       {
         ProblemId: '5',
@@ -260,8 +259,7 @@ function MyComponent({ items }) {
         Solutions: [],
         UserId: '1',
         User: adminUser,
-        IsApproved: true,
-        expanded: false
+        IsApproved: true
       }
     ];
   }
@@ -344,38 +342,40 @@ function MyComponent({ items }) {
   }
 
   toggleProblem(problem: Problem): void {
-    problem.expanded = !problem.expanded;
+    const current = this.expandedProblems.get(problem.ProblemId) || false;
+    this.expandedProblems.set(problem.ProblemId, !current);
+  }
+
+  isExpanded(id: string): boolean {
+    return this.expandedProblems.get(id) || false;
   }
 
   openCreateProblemModal(): void {
-    // Implementation for opening create problem modal
     console.log('Opening create problem modal');
-    // This would typically involve showing a modal or navigating to a create page
   }
 
   editProblem(problem: Problem, event: MouseEvent): void {
-    event.stopPropagation(); // Prevent problem toggle
+    event.stopPropagation();
     console.log('Editing problem:', problem.ProblemId);
-    // Implementation for editing problem
   }
 
   approveProblem(problem: Problem, event: MouseEvent): void {
-    event.stopPropagation(); // Prevent problem toggle
+    event.stopPropagation();
     console.log('Approving problem:', problem.ProblemId);
     problem.IsApproved = true;
     this.calculateStats();
-    this.filterProblems(this.currentFilter); // Refresh filtered list
+    this.filterProblems(this.currentFilter);
   }
 
   deleteProblem(problem: Problem, event: MouseEvent): void {
-    event.stopPropagation(); // Prevent problem toggle
+    event.stopPropagation();
     if (confirm('Are you sure you want to delete this problem?')) {
       console.log('Deleting problem:', problem.ProblemId);
       const index = this.problems.findIndex(p => p.ProblemId === problem.ProblemId);
       if (index !== -1) {
         this.problems.splice(index, 1);
         this.calculateStats();
-        this.filterProblems(this.currentFilter); // Refresh filtered list
+        this.filterProblems(this.currentFilter);
       }
     }
   }

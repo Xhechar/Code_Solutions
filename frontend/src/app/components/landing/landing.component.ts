@@ -555,8 +555,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack2',
         CategoryId: 'cat1',
         IsApproved: true,
-        UserId: 'user1',
-        expanded: false
+        UserId: 'user1'
       },
       {
         ProblemId: 'prob2',
@@ -572,8 +571,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack4',
         CategoryId: 'cat2',
         IsApproved: true,
-        UserId: 'user2',
-        expanded: false
+        UserId: 'user2'
       },
       {
         ProblemId: 'prob3',
@@ -589,8 +587,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack1',
         CategoryId: 'cat3',
         IsApproved: true,
-        UserId: 'user3',
-        expanded: false
+        UserId: 'user3'
       },
       {
         ProblemId: 'prob4',
@@ -606,8 +603,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack5',
         CategoryId: 'cat4',
         IsApproved: true,
-        UserId: 'user1',
-        expanded: false
+        UserId: 'user1'
       },
       {
         ProblemId: 'prob5',
@@ -623,8 +619,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack2',
         CategoryId: 'cat4',
         IsApproved: true,
-        UserId: 'user2',
-        expanded: false
+        UserId: 'user2'
       },
       {
         ProblemId: 'prob6',
@@ -640,8 +635,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack3',
         CategoryId: 'cat1',
         IsApproved: true,
-        UserId: 'user3',
-        expanded: false
+        UserId: 'user3'
       },
       {
         ProblemId: 'prob7',
@@ -657,8 +651,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack4',
         CategoryId: 'cat2',
         IsApproved: true,
-        UserId: 'user1',
-        expanded: false
+        UserId: 'user1'
       },
       {
         ProblemId: 'prob8',
@@ -674,8 +667,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack1',
         CategoryId: 'cat3',
         IsApproved: true,
-        UserId: 'user2',
-        expanded: false
+        UserId: 'user2'
       },
       {
         ProblemId: 'prob9',
@@ -691,8 +683,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack2',
         CategoryId: 'cat1',
         IsApproved: true,
-        UserId: 'user3',
-        expanded: false
+        UserId: 'user3'
       },
       {
         ProblemId: 'prob10',
@@ -708,8 +699,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack5',
         CategoryId: 'cat4',
         IsApproved: true,
-        UserId: 'user1',
-        expanded: false
+        UserId: 'user1'
       },
       {
         ProblemId: 'prob11',
@@ -725,8 +715,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack4',
         CategoryId: 'cat3',
         IsApproved: true,
-        UserId: 'user2',
-        expanded: false
+        UserId: 'user2'
       },
       {
         ProblemId: 'prob12',
@@ -742,8 +731,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
         StackId: 'stack3',
         CategoryId: 'cat1',
         IsApproved: true,
-        UserId: 'user3',
-        expanded: false
+        UserId: 'user3'
       }
     ];
 
