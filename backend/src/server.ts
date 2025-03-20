@@ -19,13 +19,17 @@ import { solutionRouter } from "./routers/solution.routes";
 import { stackRouter } from "./routers/stack.routes";
 import { userRouter } from "./routers/user.routes";
 import cookieParser from 'cookie-parser'
+import { chatRouter } from "./routers/chat.routes";
 
 dotenv.config();
 
 const app = Express();
 
 app.use(json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true //important
+}));
 app.use(cookieParser(process.env.SECRET as string));
 
 app.use('/auth', authRouter);
@@ -39,6 +43,7 @@ app.use('/solution', solutionRouter);
 app.use('/stack', stackRouter);
 app.use('/user', userRouter);
 app.use('/problem', problemRouter);
+app.use('/chats', chatRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(501).json({ message: err.message });

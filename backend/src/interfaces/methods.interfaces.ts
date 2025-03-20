@@ -1,4 +1,4 @@
-import { PrismaClient, Problem, PSG, Recovery, Solution } from "@prisma/client";
+import { Chat, PrismaClient, Problem, PSG, Recovery, Solution } from "@prisma/client";
 import { Category, Comment, Favourite, LoginDetails, ProjectStructure, RecoveryDetails, Stack, User } from "./solutions.interfaces";
 
 export interface UserInterface {
@@ -101,4 +101,14 @@ export interface AuthInterface {
   changePassword(Details: RecoveryDetails) : Promise<{success: boolean, error?:string, message?: string}>,
   getAllRecoveries() : Promise<{success: boolean, error?:string, message?: string, recoveries?: Recovery[] | unknown[]}>,
   verifyMail(Email: string) : Promise<{success: boolean, error?:string, message?: string}>
+}
+
+export interface ChatServiceInterface {
+  prisma: PrismaClient,
+  createChat(UserId: string, Message: string): Promise<{success: boolean, error?: string, message?: string}>,
+  updateChat(UserId: string, ChatId: string, Message: string): Promise<{success: boolean, error?: string, message?: string}>,
+  deleteChat(ChatId: string): Promise<{success: boolean, error?: string, message?: string}>,
+  toggleChatPinStatus(UserId: string, ChatId: string): Promise<{success: boolean, error?: string, message?: string}>,
+  getSingleChat(ChatId: string): Promise<{success: boolean, error?: string, message?: string, chat?: Chat}>,
+  getChats(): Promise<{success: boolean, error?: string, message?: string, chats?: Chat[]}>,
 }

@@ -1,178 +1,328 @@
-<p>all-users works!</p>
-<!-- Admin Users Panel -->
 <div class="admin-dashboard">
-    <!-- Header Section -->
-    <header class="dashboard-header">
-        <h1>User Management</h1>
-        <div class="header-actions">
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Search users...">
+    <!-- Header section with stats and filters -->
+    <div class="dashboard-header">
+        <div class="stats-overview">
+            <div class="stat-card">
+                <i class="fa fa-users"></i>
+                <div class="stat-content">
+                    <h3>{{totalUsers}}</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fa fa-user-check"></i>
+                <div class="stat-content">
+                    <h3>{{activeUsers}}</h3>
+                    <p>Active Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fa fa-user-times"></i>
+                <div class="stat-content">
+                    <h3>{{deletedUsers}}</h3>
+                    <p>Deleted Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fa fa-user-shield"></i>
+                <div class="stat-content">
+                    <h3>{{adminUsers}}</h3>
+                    <p>Admins</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-filters">
+            <button class="filter-btn active" (click)="filterUsers('all')">All Users</button>
+            <button class="filter-btn" (click)="filterUsers('active')">Active Users</button>
+            <button class="filter-btn" (click)="filterUsers('deleted')">Deleted Users</button>
+            <button class="filter-btn" (click)="filterUsers('admin')">Admins</button>
+        </div>
+
+        <div class="search-filters">
+            <div class="search-box">
                 <i class="fa fa-search"></i>
+                <input type="text" placeholder="Search users..." [(ngModel)]="searchQuery" (input)="handleSearch()">
             </div>
             <div class="filter-dropdown">
-                <button class="filter-btn">
-                    <i class="fa fa-filter"></i>
-                    <span>Filter</span>
-                </button>
-                <div class="filter-menu">
-                    <div class="filter-group">
-                        <h4>Badge</h4>
-                        <label><input type="checkbox" value="Expert"> Expert</label>
-                        <label><input type="checkbox" value="Intermediate"> Intermediate</label>
-                        <label><input type="checkbox" value="Beginner"> Beginner</label>
-                        <label><input type="checkbox" value="Admin"> Admin</label>
+                <div class="dropdown-toggle" (click)="toggleFilterDropdown()">
+                    <span>Filter by</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu" [class.show]="showFilterDropdown">
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="filter" value="name" [(ngModel)]="filterBy"
+                                (change)="handleSearch()">
+                            <span>Name</span>
+                        </label>
                     </div>
-                    <div class="filter-group">
-                        <h4>Role</h4>
-                        <label><input type="checkbox" value="Admin"> Admin</label>
-                        <label><input type="checkbox" value="User"> User</label>
-                        <label><input type="checkbox" value="Solver"> Solver</label>
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="filter" value="email" [(ngModel)]="filterBy"
+                                (change)="handleSearch()">
+                            <span>Email</span>
+                        </label>
                     </div>
-                    <div class="filter-group">
-                        <h4>Date Created</h4>
-                        <label>From: <input type="date"></label>
-                        <label>To: <input type="date"></label>
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="filter" value="badge" [(ngModel)]="filterBy"
+                                (change)="handleSearch()">
+                            <span>Badge</span>
+                        </label>
                     </div>
-                    <div class="filter-actions">
-                        <button class="btn-apply">Apply Filters</button>
-                        <button class="btn-clear">Clear All</button>
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="filter" value="role" [(ngModel)]="filterBy"
+                                (change)="handleSearch()">
+                            <span>Role</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="sort-dropdown">
+                <div class="dropdown-toggle" (click)="toggleSortDropdown()">
+                    <span>Sort by</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu" [class.show]="showSortDropdown">
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="sort" value="newest" [(ngModel)]="sortBy" (change)="handleSort()">
+                            <span>Newest</span>
+                        </label>
+                    </div>
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="sort" value="oldest" [(ngModel)]="sortBy" (change)="handleSort()">
+                            <span>Oldest</span>
+                        </label>
+                    </div>
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="sort" value="problems" [(ngModel)]="sortBy"
+                                (change)="handleSort()">
+                            <span>Problems Count</span>
+                        </label>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Stats Cards -->
-    <section class="stats-section">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fa fa-users"></i>
-            </div>
-            <div class="stat-details">
-                <h3>Total Users</h3>
-                <p class="stat-number">2,458</p>
-                <p class="stat-trend up"><i class="fa fa-arrow-up"></i> 12% from last month</p>
-            </div>
+    <!-- Bulk actions bar - appears when checkboxes are selected -->
+    <div class="bulk-actions" *ngIf="selectedUsers.length > 0">
+        <div class="selected-count">
+            <span>{{selectedUsers.length}} users selected</span>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fa fa-user-plus"></i>
-            </div>
-            <div class="stat-details">
-                <h3>New Users</h3>
-                <p class="stat-number">245</p>
-                <p class="stat-trend up"><i class="fa fa-arrow-up"></i> 5% from last month</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fa fa-user-slash"></i>
-            </div>
-            <div class="stat-details">
-                <h3>Deleted Users</h3>
-                <p class="stat-number">32</p>
-                <p class="stat-trend down"><i class="fa fa-arrow-down"></i> 3% from last month</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fa fa-shield-alt"></i>
-            </div>
-            <div class="stat-details">
-                <h3>Admins</h3>
-                <p class="stat-number">8</p>
-                <p class="stat-trend no-change"><i class="fa fa-equals"></i> No change</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filter Tabs -->
-    <div class="filter-tabs">
-        <button class="tab-btn active" data-filter="all">All Users</button>
-        <button class="tab-btn" data-filter="active">Active Users</button>
-        <button class="tab-btn" data-filter="deleted">Deleted Users</button>
-        <div class="bulk-actions hidden">
-            <button class="btn-bulk-deactivate" id="bulkActionBtn">
-                <i class="fa fa-ban"></i> Deactivate Selected
+        <div class="bulk-buttons">
+            <button class="bulk-btn delete" (click)="bulkDelete()">
+                <i class="fa fa-trash-alt"></i> Delete Selected
+            </button>
+            <button class="bulk-btn deactivate" (click)="bulkDeactivate()">
+                <i class="fa fa-user-slash"></i> Deactivate Selected
+            </button>
+            <button class="bulk-btn cancel" (click)="clearSelection()">
+                <i class="fa fa-times"></i> Cancel
             </button>
         </div>
     </div>
 
-    <!-- Users Table -->
-    <div class="table-container">
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="selectAll">
-                            <span class="checkmark"></span>
-                        </label>
-                    </th>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Badge</th>
-                    <th>Role</th>
-                    <th>Date Created</th>
-                    <th>Problems</th>
-                    <th>Solutions</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="usersTableBody">
-                <!-- User rows will be populated by JavaScript -->
-            </tbody>
-        </table>
-    </div>
+    <!-- Users list -->
+    <div class="users-table-container">
+        <div class="users-table-header">
+            <div class="col-checkbox">
+                <label class="custom-checkbox">
+                    <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <div class="col-user">User</div>
+            <div class="col-email">Email</div>
+            <div class="col-role">Role</div>
+            <div class="col-badge">Badge</div>
+            <div class="col-problems">Problems</div>
+            <div class="col-date">Joined</div>
+            <div class="col-actions">Actions</div>
+        </div>
 
-    <!-- Pagination -->
-    <div class="pagination">
-        <button class="page-btn" disabled><i class="fa fa-angle-double-left"></i></button>
-        <button class="page-btn" disabled><i class="fa fa-angle-left"></i></button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <span class="page-dots">...</span>
-        <button class="page-btn">12</button>
-        <button class="page-btn"><i class="fa fa-angle-right"></i></button>
-        <button class="page-btn"><i class="fa fa-angle-double-right"></i></button>
+        <div class="users-table-body">
+            <div class="user-row" *ngFor="let user of filteredUsers" [class.deleted]="user.IsDeleted">
+                <div class="col-checkbox">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" [checked]="isSelected(user.UserId)"
+                            (change)="toggleSelectUser(user.UserId)">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+                <div class="col-user" (click)="showUserDetails(user)">
+                    <div class="user-info">
+                        <div class="user-avatar" [class.no-image]="!user.ProfileImage">
+                            <img *ngIf="user.ProfileImage" [src]="user.ProfileImage" alt="{{user.FullName}}">
+                            <span *ngIf="!user.ProfileImage">{{getInitials(user.FullName)}}</span>
+                        </div>
+                        <div class="user-name">
+                            <h4>{{user.FullName}}</h4>
+                            <span>{{user.Username}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-email">{{user.Email}}</div>
+
+                <div class="col-role">
+                    <span class="role-badge" [class.admin-role]="user.Role === 'Admin'">
+                        {{user.Role}}
+                    </span>
+                </div>
+
+                <div class="col-badge">
+                    <span class="badge-pill" [ngClass]="getBadgeClass(user.Badge)">
+                        {{user.Badge}}
+                    </span>
+                </div>
+
+                <div class="col-problems">{{user.ProblemsCount}}</div>
+
+                <div class="col-date">{{formatDate(user.DateCreated)}}</div>
+
+                <div class="col-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn edit" (click)="editUser(user)">
+                            <i class="fa fa-edit"></i>
+                            <span class="tooltip">Edit User</span>
+                        </button>
+
+                        <button class="action-btn admin" *ngIf="user.Role !== 'Admin'" (click)="makeAdmin(user)">
+                            <i class="fa fa-user-shield"></i>
+                            <span class="tooltip">Make Admin</span>
+                        </button>
+
+                        <button class="action-btn remove-admin" *ngIf="user.Role === 'Admin'"
+                            (click)="removeAdmin(user)">
+                            <i class="fa fa-user-minus"></i>
+                            <span class="tooltip">Remove Admin</span>
+                        </button>
+
+                        <button class="action-btn toggle-status"
+                            [ngClass]="{'activate': user.IsDeleted, 'deactivate': !user.IsDeleted}"
+                            (click)="toggleUserStatus(user)">
+                            <i class="fa"
+                                [ngClass]="{'fa-user-check': user.IsDeleted, 'fa-user-slash': !user.IsDeleted}"></i>
+                            <span class="tooltip">{{user.IsDeleted ? 'Activate Account' : 'Deactivate Account'}}</span>
+                        </button>
+
+                        <button class="action-btn delete" (click)="deleteUser(user)">
+                            <i class="fa fa-trash-alt"></i>
+                            <span class="tooltip">Delete User</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-results" *ngIf="filteredUsers.length === 0">
+                <i class="fa fa-search"></i>
+                <h3>No users found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- User Details Modal -->
-<div class="modal" id="userDetailsModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>User Details</h2>
-            <button class="modal-close-btn"><i class="fa fa-times"></i></button>
+<div class="modal-overlay" *ngIf="selectedUserDetails" (click)="closeUserDetails()">
+    <div class="user-details-modal" (click)="$event.stopPropagation()">
+        <button class="close-modal" (click)="closeUserDetails()">
+            <i class="fa fa-times"></i>
+        </button>
+
+        <div class="user-profile-header">
+            <div class="user-avatar large" [class.no-image]="!selectedUserDetails.ProfileImage">
+                <img *ngIf="selectedUserDetails.ProfileImage" [src]="selectedUserDetails.ProfileImage"
+                    alt="{{selectedUserDetails.FullName}}">
+                <span *ngIf="!selectedUserDetails.ProfileImage">{{getInitials(selectedUserDetails.FullName)}}</span>
+            </div>
+            <div class="user-profile-info">
+                <h2>{{selectedUserDetails.FullName}}</h2>
+                <p>{{selectedUserDetails.Username}}</p>
+                <div class="user-badges">
+                    <span class="role-badge" [class.admin-role]="selectedUserDetails.Role === 'Admin'">
+                        {{selectedUserDetails.Role}}
+                    </span>
+                    <span class="badge-pill" [ngClass]="getBadgeClass(selectedUserDetails.Badge)">
+                        {{selectedUserDetails.Badge}}
+                    </span>
+                </div>
+            </div>
         </div>
-        <div class="modal-body" id="modalUserDetails">
-            <!-- User details will be populated by JavaScript -->
+
+        <div class="user-details-content">
+            <div class="details-section">
+                <h3>Contact Information</h3>
+                <div class="detail-item">
+                    <i class="fa fa-envelope"></i>
+                    <span>{{selectedUserDetails.Email}}</span>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h3>Account Statistics</h3>
+                <div class="stats-grid">
+                    <div class="detail-stat">
+                        <div class="stat-value">{{selectedUserDetails.ProblemsCount}}</div>
+                        <div class="stat-label">Problems Posted</div>
+                    </div>
+                    <div class="detail-stat" *ngIf="selectedUserDetails.Solutions">
+                        <div class="stat-value">{{selectedUserDetails.Solutions.length}}</div>
+                        <div class="stat-label">Solutions Provided</div>
+                    </div>
+                    <div class="detail-stat" *ngIf="selectedUserDetails.Comments">
+                        <div class="stat-value">{{selectedUserDetails.Comments.length}}</div>
+                        <div class="stat-label">Comments</div>
+                    </div>
+                    <div class="detail-stat" *ngIf="selectedUserDetails.Favourites">
+                        <div class="stat-value">{{selectedUserDetails.Favourites.length}}</div>
+                        <div class="stat-label">Favorited Items</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h3>Account Details</h3>
+                <div class="detail-item">
+                    <i class="fa fa-calendar"></i>
+                    <span>Joined: {{formatDate(selectedUserDetails.DateCreated)}}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa fa-trophy"></i>
+                    <span>Current Badge: {{selectedUserDetails.Badge}}</span>
+                </div>
+                <div class="detail-item" *ngIf="selectedUserDetails.PreviousBadge">
+                    <i class="fa fa-medal"></i>
+                    <span>Previous Badge: {{selectedUserDetails.PreviousBadge}}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa fa-user-check"></i>
+                    <span>Account Status: {{selectedUserDetails.IsDeleted ? 'Deactivated' : 'Active'}}</span>
+                </div>
+            </div>
+
+            <div class="details-actions">
+                <button class="action-btn edit" (click)="editUser(selectedUserDetails)">
+                    <i class="fa fa-edit"></i> Edit User
+                </button>
+                <button class="action-btn toggle-status"
+                    [ngClass]="{'activate': selectedUserDetails.IsDeleted, 'deactivate': !selectedUserDetails.IsDeleted}"
+                    (click)="toggleUserStatus(selectedUserDetails)">
+                    <i class="fa"
+                        [ngClass]="{'fa-user-check': selectedUserDetails.IsDeleted, 'fa-user-slash': !selectedUserDetails.IsDeleted}"></i>
+                    {{selectedUserDetails.IsDeleted ? 'Activate Account' : 'Deactivate Account'}}
+                </button>
+                <button class="action-btn delete" (click)="deleteUser(selectedUserDetails)">
+                    <i class="fa fa-trash-alt"></i> Delete User
+                </button>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div class="modal" id="confirmationModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content confirmation-content">
-        <div class="modal-header">
-            <h2 id="confirmationTitle">Confirm Action</h2>
-            <button class="modal-close-btn"><i class="fa fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <p id="confirmationMessage">Are you sure you want to proceed with this action?</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel">Cancel</button>
-            <button class="btn-confirm" id="confirmBtn">Confirm</button>
-        </div>
-    </div>
-</div>
-
-<!-- Custom Toast for Notifications -->
-<div class="toast-container" id="toastContainer">
-    <!-- Toasts will be added dynamically -->
 </div>

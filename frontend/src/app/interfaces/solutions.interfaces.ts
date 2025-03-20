@@ -149,6 +149,15 @@ export interface RecoveryDetails {
   NewPassword: string;
 }
 
+export interface Chat {
+  ChatId : string,
+  UserId : String,
+  Message: String,
+  Pinned : Boolean,
+  DateCreated : Date,
+  User ?: User
+}
+
 export interface MailConfigurations {
   service: string;
   host: string;

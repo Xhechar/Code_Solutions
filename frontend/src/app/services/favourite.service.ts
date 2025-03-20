@@ -1,9 +1,35 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Favourite } from '../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavouriteService {
-
-  constructor() { }
+  API_URL: string = 'http://localhost:3000/favourite/';
+  
+  constructor(private http: HttpClient) { }
+  
+  addFavourite(favourite: Favourite): Observable<{ success: boolean, error?: string, message?: string }> {
+    return this.http.post<{ success: boolean, error?: string, message?: string }>(
+      `${this.API_URL}add-favourite`,
+      favourite, 
+      { withCredentials: true }
+    );
+  }
+  
+  removeFavourite(FavouriteId: string): Observable<{ success: boolean, error?: string, message?: string }> {
+    return this.http.delete<{ success: boolean, error?: string, message?: string }>(
+      `${this.API_URL}remove-favourite/${FavouriteId}`, 
+      { withCredentials: true }
+    );
+  }
+  
+  getFavouritesByUser(): Observable<{ success: boolean, error?: string, message?: string, favourites?: Favourite[] }> {
+    return this.http.get<{ success: boolean, error?: string, message?: string, favourites?: Favourite[] }>(
+      `${this.API_URL}get-user-favourites`, 
+      { withCredentials: true }
+    );
+  }
 }
