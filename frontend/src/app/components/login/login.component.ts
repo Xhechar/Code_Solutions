@@ -26,8 +26,8 @@ export class LoginComponent implements OnInit{
 
   initForm(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      Email: ['', [Validators.required, Validators.email]],
+      Password: ['', [Validators.required]],
       rememberMe: [false]
     });
   }
@@ -47,11 +47,8 @@ export class LoginComponent implements OnInit{
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      // Implement your login logic here
       console.log('Login form submitted', this.loginForm.value);
       
-      // Simulate successful login after validation
-      // In a real app, you'd authenticate with your backend
       setTimeout(() => {
         this.router.navigate(['/dashboard']);
       }, 5000);

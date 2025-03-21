@@ -2,8 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Category, Stack } from '../../interfaces/solutions.interfaces';
-import { Title } from 'chart.js';
+import { Category, Problem, Stack } from '../../interfaces/solutions.interfaces';
 
 @Component({
   selector: 'app-create-problem',
@@ -105,20 +104,28 @@ export class CreateProblemComponent implements OnInit{
   }
 
   onFileSelected(event: any): void {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      for (let file of files) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.uploadedImages.push(e.target.result);
-          
-          // Set first image as main preview if no preview exists
-          if (!this.mainPreviewImage) {
-            this.mainPreviewImage = e.target.result;
-          }
-        };
-        reader.readAsDataURL(file);
-      }
+    const files: FileList = event.target.files;
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      let formData : FormData = new FormData();
+
+      formData.append('file', file);
+      formData.append('upload_preset', 'Code_Solutions');
+      formData.append('cloud_name', 'dakyiye2e');
+
+      fetch('https://api.cloudinary.com/v1_1/dakyiye2e/image/upload', {
+        method: 'POST',
+        body: formData
+      }).then(res => res.json()).then(res => {
+        this.uploadedImages.push(res.secure_url);
+
+        if (this.uploadedImages.length === 1) {
+          this.mainPreviewImage = this.uploadedImages[0];
+        }
+      })
+
     }
   }
 
@@ -132,7 +139,6 @@ export class CreateProblemComponent implements OnInit{
     }
     this.uploadedImages.splice(index, 1);
     
-    // If main preview was removed, set new main preview or reset
     if (this.mainPreviewImage === this.uploadedImages[index]) {
       this.mainPreviewImage = this.uploadedImages.length > 0 
         ? this.uploadedImages[0] 
@@ -168,7 +174,12 @@ export class CreateProblemComponent implements OnInit{
   onSubmit(): void {
     if (this.problemForm.valid) {
 
-      console.log('Submitting problem:', this.problemForm.value);
+      let formValue: Partial<Problem> = {
+        ... this.problemForm.value,
+        ImagePath: this.uploadedImages.join(', ')
+      }
+
+      console.log('Submitting problem:', formValue);
       
       this.resetForm();
     } else {
@@ -180,7 +191,6 @@ export class CreateProblemComponent implements OnInit{
   }
 
   onCancel(): void {
-    // Reset the form and clear uploaded images
     this.resetForm();
   }
 
@@ -202,7 +212,6 @@ export class CreateProblemComponent implements OnInit{
     this.uploadedImages = [];
     this.mainPreviewImage = null;
     
-    // Reset file input
     if (this.fileInput && this.fileInput.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
