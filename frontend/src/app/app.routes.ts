@@ -34,42 +34,37 @@ import { MySolutionsComponent } from './components/user/contributions/my-solutio
 import { FavouritesComponent } from './components/user/favourites/favourites.component';
 import { HistoryComponent } from './components/user/history/history.component';
 import { HomeComponent } from './components/user/home/home.component';
-import { MyProfileComponent } from './components/user/my-profile/my-profile.component';
 import { AllProjectStructuresComponent } from './components/admin/project-structure/all-project-structures/all-project-structures.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'home', pathMatch: 'full', redirectTo: '' },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'single-problem', component: SingleProblemComponent },
-  { path: 'create-problem', component: CreateProblemComponent },
   { path: 'create-solution', component: CreateSolutionComponent },
   { path: 'verify-mail', component: VerifyMailComponent },
   { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'notification', component: NotificationsComponent },
   {
     path: 'admin', component: AdminComponent, children: [
       { path: 'comments', component: CommentsComponent },
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'create-problem', component: CreateProblemComponent },
+      { path: 'create-solution', component: CreateSolutionComponent },
       {
         path: 'problems', component: ProblemsComponent, children: [
           { path: '', component: AdminProblemsComponent },
-          { path: 'admin-problems', component: AdminProblemsComponent },
-          { path: 'all-problems', component: AllProblemsComponent },
-          { path: 'approved-problems', component: ApprovedProblemsComponent },
-          { path: 'pending-problems', component: PendingProblemsComponent },
-          { path: 'users-problems', component: UserProblemsComponent }
+          { path: 'admin-problems', component: AdminProblemsComponent }
       ]},
       {
         path: 'project-structure', component: ProjectStructureComponent, children: [
           { path: '', component: AllProjectStructuresComponent },
           { path: 'all-project-structures', component: AllProjectStructuresComponent },
-          { path: 'preview', component: PreviewwComponent },
-          { path: 'structure-guides', component: StructureguidesComponent }
+          { path: 'preview', component: PreviewwComponent }
       ]},
-      { path: 'solutions', component: SolutionsComponent },
       {
         path: 'tech-tools', component: TechToolsComponent, children: [
           { path: '', component: CategoriesComponent },
@@ -80,7 +75,6 @@ export const routes: Routes = [
         path: 'users', component: UsersComponent, children: [
           { path: '', component: AllUsersComponent },
           { path: 'all-users', component: AllUsersComponent },
-          {path: 'deleted-users', component: DeletedUsersComponent}
       ]},
       { path: 'profile', component: ProfileComponent }
     ]

@@ -9,7 +9,7 @@
   </div>
   
   <div class="nav-actions">
-    <button class="action-btn create-btn" (click)="toggleCreateMenu($event)">
+    <button class="action-btn create-btn" routerLink="create-problem">
       <i class='bx bxs-folder-plus'></i>
       <span class="tooltip">Create New</span>
     </button>
@@ -19,7 +19,7 @@
       <span class="tooltip">Analytics</span>
     </button>
     
-    <button class="action-btn solutions-btn">
+    <button class="action-btn solutions-btn" routerLink="problems">
       <i class='bx bx-git-repo-forked' ></i>
       <span class="tooltip">Solutions</span>
     </button>

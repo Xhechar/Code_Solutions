@@ -1,12 +1,17 @@
-<!-- Notification -->
-<div class="notification" 
-     [class.show]="showNotification"
-     [class.error]="notificationIsError"
-     [class.success]="!notificationIsError">
-  <div class="notification-content">
-    <span>{{notificationMessage}}</span>
-    <button class="notification-close" (click)="closeNotification()">
-      <i class="fas fa-times"></i>
+<div class="toast-container">
+  <div *ngIf="visible" class="toast-message" [ngClass]="type">
+    <div class="toast-icon">
+      <i *ngIf="type === 'success'" class="bx bx-check-circle"></i>
+      <i *ngIf="type === 'error'" class="bx bx-x-circle"></i>
+      <i *ngIf="type === 'warning'" class="bx bx-error"></i>
+      <i *ngIf="type === 'info'" class="bx bx-info-circle"></i>
+    </div>
+    <div class="toast-content">
+      <p>{{ message }}</p>
+    </div>
+    <button class="toast-close" (click)="hide()">
+      <i class="bx bx-x"></i>
     </button>
+    <div class="toast-progress" *ngIf="showProgress"></div>
   </div>
 </div>

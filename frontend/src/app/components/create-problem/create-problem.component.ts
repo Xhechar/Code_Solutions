@@ -1,21 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-
-interface Stack {
-  id: string;
-  name: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { RouterLink } from '@angular/router';
+import { Category, Stack } from '../../interfaces/solutions.interfaces';
+import { Title } from 'chart.js';
 
 @Component({
   selector: 'app-create-problem',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './create-problem.component.html',
   styleUrl: './create-problem.component.css'
 })
@@ -24,21 +17,55 @@ export class CreateProblemComponent implements OnInit{
   uploadedImages: string[] = [];
   mainPreviewImage: string | null = null;
 
-  // Mock data - replace with actual service calls
   stacks: Stack[] = [
-    { id: '1', name: 'Angular' },
-    { id: '2', name: 'React' },
-    { id: '3', name: 'Vue' },
-    { id: '4', name: 'Node.js' },
-    { id: '5', name: 'Python' }
+    {
+      StackId: '1', Name: 'Angular',
+      Description: '',
+      Version: ''
+    },
+    {
+      StackId: '2', Name: 'React',
+      Description: '',
+      Version: ''
+    },
+    {
+      StackId: '3', Name: 'Vue',
+      Description: '',
+      Version: ''
+    },
+    {
+      StackId: '4', Name: 'Node.js',
+      Description: '',
+      Version: ''
+    },
+    {
+      StackId: '5', Name: 'Python',
+      Description: '',
+      Version: ''
+    }
   ];
 
   categories: Category[] = [
-    { id: '1', name: 'Frontend' },
-    { id: '2', name: 'Backend' },
-    { id: '3', name: 'Database' },
-    { id: '4', name: 'DevOps' },
-    { id: '5', name: 'Full Stack' }
+    {
+      CategoryId: '1', Name: 'Frontend',
+      Description: ''
+    },
+    {
+      CategoryId: '2', Name: 'Backend',
+      Description: ''
+    },
+    {
+      CategoryId: '3', Name: 'Database',
+      Description: ''
+    },
+    {
+      CategoryId: '4', Name: 'DevOps',
+      Description: ''
+    },
+    {
+      CategoryId: '5', Name: 'Full Stack',
+      Description: ''
+    }
   ];
 
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -51,25 +78,25 @@ export class CreateProblemComponent implements OnInit{
 
   initForm(): void {
     this.problemForm = this.fb.group({
-      title: ['', [
+      Title: ['', [
         Validators.required, 
         Validators.minLength(4),
         Validators.maxLength(100)
       ]],
-      description: ['', [
+      Description: ['', [
         Validators.required, 
         Validators.minLength(10),
         Validators.maxLength(500)
       ]],
-      stackId: ['', Validators.required],
-      categoryId: ['', Validators.required],
-      errorCode: ['', [Validators.maxLength(50)]],
-      context: ['', [Validators.maxLength(500)]],
-      environment: ['', [Validators.maxLength(500)]],
-      tags: ['', Validators.required],
-      reproducibility: [false, Validators.required],
-      logs: ['', [Validators.maxLength(10000)]],
-      priorityLevel: [2, [
+      StackId: ['', Validators.required],
+      CategoryId: ['', Validators.required],
+      ErrorCode: ['', [Validators.maxLength(50)]],
+      Context: ['', [Validators.maxLength(500)]],
+      Environment: ['', [Validators.maxLength(500)]],
+      Tags: ['', Validators.required],
+      Reproducibility: [false, Validators.required],
+      Logs: ['', [Validators.maxLength(10000)]],
+      PriorityLevel: [2, [
         Validators.required,
         Validators.min(0),
         Validators.max(5)
@@ -140,25 +167,11 @@ export class CreateProblemComponent implements OnInit{
 
   onSubmit(): void {
     if (this.problemForm.valid) {
-      // Convert tags to array
-      const formValue = { 
-        ...this.problemForm.value,
-        tags: this.problemForm.get('tags')?.value.split(',').map((tag: string) => tag.trim())
-      };
 
-      // Prepare form data for submission
-      const formData = {
-        ...formValue,
-        images: this.uploadedImages
-      };
-
-      // TODO: Implement actual submission logic
-      console.log('Submitting problem:', formData);
+      console.log('Submitting problem:', this.problemForm.value);
       
-      // Optional: Reset form after submission
       this.resetForm();
     } else {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.problemForm.controls).forEach(field => {
         const control = this.problemForm.get(field);
         control?.markAsTouched({ onlySelf: true });

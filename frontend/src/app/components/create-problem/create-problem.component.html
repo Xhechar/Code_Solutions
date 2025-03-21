@@ -1,7 +1,7 @@
 <div class="problem-creation-container">
   <form [formGroup]="problemForm" (ngSubmit)="onSubmit()" class="problem-form">
     <h2 class="form-title">
-      <i class="fas fa-bug"></i> Create New Problem/Error
+      <i class="fas fa-bug"></i> Create <span class="new">New</span> Problem
     </h2>
 
     <div class="form-grid">
@@ -11,12 +11,12 @@
         <input 
           type="text" 
           id="title" 
-          formControlName="title" 
+          formControlName="Title" 
           placeholder="Enter problem title"
-          [ngClass]="{'invalid': isFieldInvalid('title')}"
+          [ngClass]="{'invalid': isFieldInvalid('Title')}"
         >
-        <div *ngIf="isFieldInvalid('title')" class="error-message">
-          {{ getErrorMessage('title') }}
+        <div *ngIf="isFieldInvalid('Title')" class="error-message">
+          {{ getErrorMessage('Title') }}
         </div>
       </div>
 
@@ -25,12 +25,12 @@
         <label for="description">Description</label>
         <textarea 
           id="description" 
-          formControlName="description" 
+          formControlName="Description" 
           placeholder="Provide detailed problem description"
           [ngClass]="{'invalid': isFieldInvalid('description')}"
         ></textarea>
-        <div *ngIf="isFieldInvalid('description')" class="error-message">
-          {{ getErrorMessage('description') }}
+        <div *ngIf="isFieldInvalid('Description')" class="error-message">
+          {{ getErrorMessage('Description') }}
         </div>
       </div>
 
@@ -39,15 +39,15 @@
         <label for="stack">Stack</label>
         <select 
           id="stack" 
-          formControlName="stackId"
+          formControlName="StackId"
           [ngClass]="{'invalid': isFieldInvalid('stackId')}"
         >
           <option value="">Select Stack</option>
-          <option *ngFor="let stack of stacks" [value]="stack.id">
-            {{ stack.name }}
+          <option *ngFor="let stack of stacks" [value]="stack.StackId">
+            {{ stack.Name }}
           </option>
         </select>
-        <div *ngIf="isFieldInvalid('stackId')" class="error-message">
+        <div *ngIf="isFieldInvalid('StackId')" class="error-message">
           Stack is required
         </div>
       </div>
@@ -57,12 +57,12 @@
         <label for="category">Category</label>
         <select 
           id="category" 
-          formControlName="categoryId"
-          [ngClass]="{'invalid': isFieldInvalid('categoryId')}"
+          formControlName="CategoryId"
+          [ngClass]="{'invalid': isFieldInvalid('CategoryId')}"
         >
           <option value="">Select Category</option>
-          <option *ngFor="let category of categories" [value]="category.id">
-            {{ category.name }}
+          <option *ngFor="let category of categories" [value]="category.CategoryId">
+            {{ category.Name }}
           </option>
         </select>
         <div *ngIf="isFieldInvalid('categoryId')" class="error-message">
@@ -76,7 +76,7 @@
         <input 
           type="text" 
           id="errorCode" 
-          formControlName="errorCode" 
+          formControlName="ErrorCode" 
           placeholder="Enter error code if applicable"
         >
       </div>
@@ -87,7 +87,7 @@
         <input 
           type="text" 
           id="context" 
-          formControlName="context" 
+          formControlName="Context" 
           placeholder="Provide context of the error"
         >
       </div>
@@ -98,7 +98,7 @@
         <input 
           type="text" 
           id="environment" 
-          formControlName="environment" 
+          formControlName="Environment" 
           placeholder="Development, Production, Staging"
         >
       </div>
@@ -109,10 +109,10 @@
         <input 
           type="text" 
           id="tags" 
-          formControlName="tags" 
+          formControlName="Tags" 
           placeholder="Add relevant tags (comma-separated)"
         >
-        <div *ngIf="isFieldInvalid('tags')" class="error-message">
+        <div *ngIf="isFieldInvalid('Tags')" class="error-message">
           At least one tag is required
         </div>
       </div>
@@ -122,7 +122,7 @@
         <label>
           <input 
             type="checkbox" 
-            formControlName="reproducibility"
+            formControlName="Reproducibility"
           >
           Reproducible Error
         </label>
@@ -133,7 +133,7 @@
         <label for="logs">Logs</label>
         <textarea 
           id="logs" 
-          formControlName="logs" 
+          formControlName="Logs" 
           placeholder="Paste relevant log information"
         ></textarea>
       </div>
@@ -143,7 +143,7 @@
         <label for="priorityLevel">Priority Level</label>
         <select 
           id="priorityLevel" 
-          formControlName="priorityLevel"
+          formControlName="PriorityLevel"
         >
           <option value="0">Low</option>
           <option value="1">Medium-Low</option>
@@ -212,6 +212,7 @@
         type="button" 
         class="cancel-btn" 
         (click)="onCancel()"
+        routerLink="/admin/dashboard"
       >
         <i class="fas fa-times"></i> Cancel
       </button>

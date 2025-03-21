@@ -34,7 +34,7 @@
   <!-- Header and Action Button -->
   <div class="header-container">
     <h1>Problem Management</h1>
-    <button class="add-problem-btn" (click)="openCreateProblemModal()">
+    <button class="add-problem-btn" routerLink="/admin/create-problem">
       <i class='bx bx-plus'></i> Create Problem
     </button>
   </div>
@@ -57,7 +57,7 @@
   <!-- Problems List -->
   <div class="problems-list">
     <div *ngFor="let problem of filteredProblems" class="problem-card">
-      <div class="problem-header" (click)="toggleProblem(problem)">
+      <div class="problem-header">
         <div class="problem-info">
           <div class="problem-status" [ngClass]="{'approved': problem.IsApproved, 'pending': !problem.IsApproved}">
             <i class="fa" [ngClass]="{'fa-check-circle': problem.IsApproved, 'fa-clock-o': !problem.IsApproved}"></i>
@@ -79,7 +79,7 @@
             <span>{{ problem.DateCreated | date:'mediumDate' }}</span>
           </div>
           <div class="problem-actions">
-            <button class="action-btn edit" (click)="editProblem(problem, $event)" data-tooltip="Edit Problem">
+            <button class="action-btn edit" routerLink="/admin/create-problem" data-tooltip="Edit Problem">
               <i class='bx bx-edit'></i>
               <span class="tooltip">Edit Problem</span>
             </button>
@@ -92,7 +92,7 @@
               <i class='bx bx-trash'></i>
               <span class="tooltip">Delete Problem</span>
             </button>
-            <button class="toggle-btn" [class.expanded]="isExpanded(problem.ProblemId)">
+            <button class="toggle-btn" [class.expanded]="isExpanded(problem.ProblemId)" (click)="toggleProblem(problem)">
               <i class='bx'
                 [ngClass]="{'bx-chevron-down': !isExpanded(problem.ProblemId), 'bx-chevron-up': isExpanded(problem.ProblemId)}"></i>
             </button>
@@ -145,7 +145,11 @@
 
         <!-- Solutions Section -->
         <div class="solutions-section">
-          <h3>Solutions ({{ problem.Solutions?.length || 0 }})</h3>
+          <h3>Solutions ({{ problem.Solutions?.length || 0 }})
+            <button class="add-solution-btn" routerLink="/admin/create-solution" >
+              <i class='bx bx-plus'></i> Add Solution
+            </button>
+          </h3>
           <div class="solutions-list">
             <div *ngFor="let solution of problem.Solutions; let i = index" class="solution-card">
               <div class="solution-header">
@@ -243,6 +247,9 @@
             <div *ngIf="!problem.Solutions || problem.Solutions.length === 0" class="no-solutions">
               <i class='bx bx-info-circle'></i>
               <p>No solutions available for this problem yet.</p>
+              <button class="add-solution-empty" routerLink="/admin/create-solution">
+                <i class='bx bx-plus'></i> Add First Solution
+              </button>
             </div>
           </div>
         </div>

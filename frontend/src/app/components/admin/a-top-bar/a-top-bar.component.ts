@@ -88,11 +88,6 @@ export class ATopBarComponent implements OnInit {
     this.showProfileMenu = false;
   }
 
-  toggleCreateMenu(event: Event): void {
-    event.stopPropagation();
-    // Implement create menu functionality here
-  }
-
   markAllAsRead(): void {
     this.notifications.forEach(notification => {
       notification.unread = false;

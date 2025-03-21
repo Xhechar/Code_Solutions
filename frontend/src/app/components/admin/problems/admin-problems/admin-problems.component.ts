@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Category, Problem, Solution, Stack, User } from '../../../../interfaces/solutions.interfaces';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-problems',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-problems.component.html',
   styleUrl: './admin-problems.component.css'
 })
@@ -348,15 +349,6 @@ function MyComponent({ items }) {
 
   isExpanded(id: string): boolean {
     return this.expandedProblems.get(id) || false;
-  }
-
-  openCreateProblemModal(): void {
-    console.log('Opening create problem modal');
-  }
-
-  editProblem(problem: Problem, event: MouseEvent): void {
-    event.stopPropagation();
-    console.log('Editing problem:', problem.ProblemId);
   }
 
   approveProblem(problem: Problem, event: MouseEvent): void {
