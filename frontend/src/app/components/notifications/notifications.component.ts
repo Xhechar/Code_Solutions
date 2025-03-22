@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Alert, SucessType } from '../../interfaces/solutions.interfaces';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
 
 @Component({
   selector: 'app-notifications',
@@ -10,8 +12,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './notifications.component.css'
 })
 export class NotificationsComponent {
-  message: string = 'Unable to connect to server.';
-  type: 'success' | 'error' | 'warning' | 'info' = 'success';
+  message: string = '';
+  type = SucessType.None;
   duration: number = 5000;
   showProgress: boolean = true;
 
@@ -19,10 +21,20 @@ export class NotificationsComponent {
   isHiding: boolean = false;
   private timeout: any = null;
 
-  constructor() { }
+  constructor(private ns: NotificationsService) { }
 
   ngOnInit(): void {
-    this.show();
+    this.ns.alert$.subscribe((res) => {
+      if (res) {
+        this.message = res.message;
+        this.type = res.type;
+        this.show();
+      } else {
+        this.message = '';
+        this.type = SucessType.None;
+        this.hide();
+      }
+    })
   }
 
   ngOnDestroy(): void {
@@ -47,7 +59,7 @@ export class NotificationsComponent {
     setTimeout(() => {
       this.visible = false;
       this.isHiding = false;
-    }, 300); // Duration of the slide-out animation
+    }, 300);
     
     if (this.timeout) {
       clearTimeout(this.timeout);

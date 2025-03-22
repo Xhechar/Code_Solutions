@@ -198,3 +198,16 @@ export interface Testimonial {
   message: string;
   image: string;
 }
+
+export enum SucessType {
+  Success = 'success',
+  Warning = 'warning',
+  Error = 'error',
+  Info = 'info',
+  None = 'null'
+}
+
+export interface Alert {
+  type: SucessType;
+  message: string;
+}
