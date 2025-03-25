@@ -156,7 +156,7 @@ export class AuthService implements AuthInterface{
       data: {
         RecoveryId: v4(),
         Email: Email,
-        RecoveryCode: generateRecoveryCode(8)
+        RecoveryCode: generateRecoveryCode(6)
       }
     });
 
@@ -167,7 +167,7 @@ export class AuthService implements AuthInterface{
       }
     } else {
 
-      let mailPath = path.resolve(__dirname, '../email_templates/send.recovery.ejs');
+      let mailPath = path.resolve(__dirname, '../../email_templates/send.recovery.ejs');
 
       ejs.renderFile(mailPath, { UserName: userExists.FullName, Code: create_recovery.RecoveryCode }, async (err, data) => {
         try {

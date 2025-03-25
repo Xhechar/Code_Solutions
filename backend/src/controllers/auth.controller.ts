@@ -31,7 +31,7 @@ export class AuthController {
         return res.status(201).json(rest);
       }
       
-      return res.status(401).json(result);
+      return res.status(201).json(result);
     } catch (error) {
       return res.status(501).json({
         error: error

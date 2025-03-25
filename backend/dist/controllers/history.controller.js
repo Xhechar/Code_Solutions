@@ -7,30 +7,30 @@ const historyService = new history_service_1.HistoryService();
 class HistoryController {
     async addHistory(req, res) {
         try {
-            return res.status(201).json(await historyService.addHistory((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
+            res.status(201).json(await historyService.addHistory((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getHistoryByUser(req, res) {
         try {
-            return res.status(201).json(await historyService.getHistoryByUser((0, verify_tokens_1.getIdFromToken)(req)));
+            res.status(201).json(await historyService.getHistoryByUser((0, verify_tokens_1.getIdFromToken)(req)));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async clearHistory(req, res) {
         try {
-            return res.status(201).json(await historyService.clearHistory((0, verify_tokens_1.getIdFromToken)(req)));
+            res.status(201).json(await historyService.clearHistory((0, verify_tokens_1.getIdFromToken)(req)));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }

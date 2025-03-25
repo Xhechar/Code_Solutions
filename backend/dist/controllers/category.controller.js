@@ -9,15 +9,15 @@ class CategoryController {
         try {
             let { error } = body_input_validators_1.CategorySchema.validate(req.body);
             if (error) {
-                return res.status(401).json({
+                res.status(401).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await categoryService.createCategory(req.body));
+            res.status(201).json(await categoryService.createCategory(req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
@@ -26,45 +26,45 @@ class CategoryController {
         try {
             let { error } = body_input_validators_1.CategorySchema.validate(req.body);
             if (error) {
-                return res.status(401).json({
+                res.status(401).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await categoryService.updateCategory(req.params.CategoryId, req.body));
+            res.status(201).json(await categoryService.updateCategory(req.params.CategoryId, req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async deleteCategory(req, res) {
         try {
-            return res.status(201).json(await categoryService.deleteCategory(req.params.CategoryId));
+            res.status(201).json(await categoryService.deleteCategory(req.params.CategoryId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getAllCategories(req, res) {
         try {
-            return res.status(201).json(await categoryService.getAllCategories());
+            res.status(201).json(await categoryService.getAllCategories());
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getSingleCategory(req, res) {
         try {
-            return res.status(201).json(await categoryService.getSingleCategory(req.params.categoryId));
+            res.status(201).json(await categoryService.getSingleCategory(req.params.categoryId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }

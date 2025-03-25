@@ -10,15 +10,15 @@ class SolutionController {
         try {
             let { error } = body_input_validators_1.SolutionSchema.validate(req.body);
             if (error) {
-                return res.status(401).json({
+                res.status(401).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await solutionService.createSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.problemId, req.body));
+            res.status(201).json(await solutionService.createSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.problemId, req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
@@ -27,45 +27,45 @@ class SolutionController {
         try {
             let { error } = body_input_validators_1.SolutionSchema.validate(req.body);
             if (error) {
-                return res.status(401).json({
+                res.status(401).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await solutionService.updateSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.SolutionId, req.body));
+            res.status(201).json(await solutionService.updateSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.SolutionId, req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async deleteSolution(req, res) {
         try {
-            return res.status(201).json(await solutionService.deleteSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.SolutionId));
+            res.status(201).json(await solutionService.deleteSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.SolutionId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getAllSolutions(req, res) {
         try {
-            return res.status(201).json(await solutionService.getAllSolutions());
+            res.status(201).json(await solutionService.getAllSolutions());
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getSolutionsByProblem(req, res) {
         try {
-            return res.status(201).json(await solutionService.getSolutionsByProblem(req.params.ProblemId));
+            res.status(201).json(await solutionService.getSolutionsByProblem(req.params.ProblemId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }

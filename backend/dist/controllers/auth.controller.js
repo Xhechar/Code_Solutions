@@ -9,31 +9,22 @@ class AuthController {
         try {
             let { error } = body_input_validators_1.LoginDetailsSchema.validate(req.body);
             if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            else {
-                let result = await authService.loginUser(req.body);
-                res.status(201).json(result);
-            }
-        }
-        catch (error) {
-            res.status(501).json({
-                error: error
-            });
-        }
-    }
-    async changePassword(req, res) {
-        try {
-            let { error } = body_input_validators_1.RecoveryDetailsSchema.validate(req.body);
-            if (error) {
                 return res.status(401).json({
                     'error': error.message
                 });
             }
-            ;
-            let result = await authService.changePassword(req.body);
+            let result = await authService.loginUser(req.body);
+            if (result.success) {
+                res.cookie('token', result.token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', // Use secure in production
+                    sameSite: 'strict',
+                    maxAge: 15 * 60 * 1000,
+                    signed: true
+                });
+                let { token, ...rest } = result;
+                return res.status(201).json(rest);
+            }
             return res.status(201).json(result);
         }
         catch (error) {
@@ -42,22 +33,54 @@ class AuthController {
             });
         }
     }
-    async getAllRecoveries(res) {
+    async logoutUser(req, res) {
         try {
-            return res.status(201).json(await authService.getAllRecoveries());
+            res.clearCookie('token', { signed: true });
+            return res.status(201).json({
+                'success': true,
+                'message': 'Logout successfull. You are always welcomed.'
+            });
         }
         catch (error) {
             return res.status(501).json({
+                'error': error
+            });
+        }
+    }
+    async changePassword(req, res) {
+        try {
+            let { error } = body_input_validators_1.RecoveryDetailsSchema.validate(req.body);
+            if (error) {
+                res.status(401).json({
+                    'error': error.message
+                });
+            }
+            ;
+            let result = await authService.changePassword(req.body);
+            res.status(201).json(result);
+        }
+        catch (error) {
+            res.status(501).json({
+                error: error
+            });
+        }
+    }
+    async getAllRecoveries(res) {
+        try {
+            res.status(201).json(await authService.getAllRecoveries());
+        }
+        catch (error) {
+            res.status(501).json({
                 error: error
             });
         }
     }
     async verifyMail(req, res) {
         try {
-            return res.status(201).json(await authService.verifyMail(req.body.Email));
+            res.status(201).json(await authService.verifyMail(req.body.Email));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 error: error
             });
         }

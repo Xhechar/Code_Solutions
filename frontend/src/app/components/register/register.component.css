@@ -139,7 +139,6 @@
 }
 
 .image-quote {
-  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 1.2rem;
   color: var(--light);
   /* hsl(51, 40%, 76%) */
@@ -172,12 +171,9 @@
 .form-header {
   padding: 2.5rem 2.5rem 1.5rem;
   background: var(--dark);
-  /* hsl(36, 50%, 4%) */
   color: var(--light);
-  /* hsl(51, 40%, 76%) */
   text-align: center;
   border-bottom: 4px solid var(--accent);
-  /* hsl(110, 59%, 43%) */
   position: relative;
   overflow: hidden;
 }
@@ -222,14 +218,11 @@
   width: 50px;
   height: 2px;
   background-color: var(--accent);
-  /* hsl(110, 59%, 43%) */
 }
 
 .tagline {
-  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 1.1rem;
   color: var(--accent);
-  /* hsl(110, 59%, 43%) */
   opacity: 0.9;
   display: inline-block;
   position: relative;
@@ -291,7 +284,6 @@
   width: 0;
   height: 1px;
   background-color: var(--accent);
-  /* hsl(110, 59%, 43%) */
   transition: width 0.3s ease;
 }
 
@@ -303,7 +295,6 @@ label {
   display: block;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
-  /* hsl(36, 50%, 10%) */
   font-weight: 600;
   font-size: 0.95rem;
   transition: color 0.3s ease;
@@ -311,7 +302,6 @@ label {
 
 .form-group:hover label {
   color: var(--accent);
-  /* hsl(110, 59%, 43%) */
 }
 
 .input-with-icon {
@@ -333,7 +323,6 @@ label {
 
 .form-group:hover .input-icon {
   color: var(--accent);
-  /* hsl(110, 59%, 43%) */
 }
 
 input {
@@ -410,7 +399,6 @@ input.invalid {
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
-  /* hsl(36, 20%, 40%) */
   font-size: 1.2rem;
   transition: all 0.3s ease;
   z-index: 1;
@@ -437,7 +425,6 @@ input.invalid {
   height: 120px;
   border-radius: 50%;
   background-color: var(--border-color);
-  /* hsl(0, 0%, 85%) */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -458,13 +445,11 @@ input.invalid {
 .upload-icon {
   font-size: 3rem;
   color: var(--text-secondary);
-  /* hsl(36, 20%, 40%) */
 }
 
 .upload-button {
   padding: 0.8rem 1.5rem;
   background-color: var(--accent);
-  /* hsl(110, 59%, 43%) */
   color: white;
   border: none;
   border-radius: 8px;
@@ -478,13 +463,10 @@ input.invalid {
 }
 
 .upload-button:hover {
-  background-color: var(--accent-hover);
-  /* hsl(110, 59%, 38%) */
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(110, 189, 110, 0.3);
 }
 
-/* Form footer */
 .form-footer {
   margin-top: 2rem;
   text-align: center;
@@ -494,7 +476,6 @@ input.invalid {
   width: 100%;
   padding: 1rem;
   background-color: var(--accent);
-  /* hsl(110, 59%, 43%) */
   color: white;
   border: none;
   border-radius: 12px;
@@ -526,9 +507,7 @@ input.invalid {
 
 .submit-button:disabled {
   background-color: var(--border-color);
-  /* hsl(0, 0%, 85%) */
   color: var(--text-secondary);
-  /* hsl(36, 20%, 40%) */
   cursor: not-allowed;
   transform: none;
   box-shadow: none;

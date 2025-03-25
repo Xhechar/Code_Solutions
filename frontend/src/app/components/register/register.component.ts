@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { User } from '../../interfaces/solutions.interfaces';
+import { Router, RouterLink } from '@angular/router';
+import { SuccessType, User } from '../../interfaces/solutions.interfaces';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
+import { UserService } from '../../services/user.service';
+import { NotificationsComponent } from "../notifications/notifications.component";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, NotificationsComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -16,7 +19,7 @@ export class RegisterComponent implements OnInit {
   imagePreview: string | null = null;
   showPassword = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private router: Router, private ns: NotificationsService, private us: UserService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -25,30 +28,33 @@ export class RegisterComponent implements OnInit {
 
   initForm(): void {
     this.signupForm = this.fb.group({
-      fullName: ['', [Validators.required]],
-      username: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      profileImage: ['']
+      FullName: ['', [Validators.required]],
+      Username: ['', [Validators.required]],
+      Email: ['', [Validators.required, Validators.email]],
+      Password: ['', [Validators.required, Validators.minLength(8)]],
+      ProfileImage: ['', [Validators.required]]
     });
   }
 
   onSubmit(): void {
     if (this.signupForm.valid) {
-      const formData = this.signupForm.value;
-      
-      const user: Partial<User> = {
-        FullName: formData.fullName,
-        Username: formData.username,
-        Email: formData.email,
-        Password: formData.password,
-        ProfileImage: this.imagePreview || ''
-      };
-      
-      console.log('User registered:', user);
-      
-      // Show success message or redirect
-      alert('Registration successful! Welcome to Code Solutions!');
+      this.us.createUser(this.signupForm.value).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+            this.signupForm.reset();
+            this.imagePreview = null;
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 4000);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      })
       this.signupForm.reset();
       this.imagePreview = null;
     } else {
@@ -75,17 +81,20 @@ export class RegisterComponent implements OnInit {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       
-      // Update form control
-      this.signupForm.patchValue({
-        profileImage: file
-      });
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+      let formData = new FormData();
+
+      formData.append('file', file);
+      formData.append('cloud_name', 'dakyiye2e');
+      formData.append('upload_preset', 'Code_Solutions');
+
+      fetch('https://api.cloudinary.com/v1_1/dakyiye2e/image/upload', {
+        method: 'POST',
+        body: formData
+      }).then(res => res.json()).then(res => {
+        this.imagePreview = res.secure_url;
+        this.signupForm.patchValue({ ProfileImage: res.secure_url });
+        this.ns.showAlert(SuccessType.Success, 'Image successfully uploaded.')
+      })
     }
   }
 
@@ -94,7 +103,6 @@ export class RegisterComponent implements OnInit {
   }
 
   animateForm(): void {
-    // Add animation to form elements on load
     setTimeout(() => {
       const formGroups = document.querySelectorAll('.form-group');
       formGroups.forEach((group, index) => {
@@ -102,6 +110,6 @@ export class RegisterComponent implements OnInit {
           (group as HTMLElement).style.opacity = '1';
         }, 100 * index);
       });
-    }, 300); // Short delay to ensure DOM is ready
+    }, 300);
   }
 }

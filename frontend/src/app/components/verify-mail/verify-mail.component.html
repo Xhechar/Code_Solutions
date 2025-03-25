@@ -1,6 +1,6 @@
-<!-- verify-mail-form.component.html -->
+<app-notifications></app-notifications>
 <div class="form-container">
-  <form #verifyForm="ngForm" (ngSubmit)="onSubmit()" class="form">
+  <form #verifyForm="ngForm" (ngSubmit)="onSubmit(verifyForm.value)" class="form">
     <h2>Verify Your Email</h2>
     <p class="form-description">Please enter your email address to receive a verification code</p>
     
@@ -8,17 +8,17 @@
       <label for="email">Email Address</label>
       <input 
         type="email" 
-        id="email" 
-        name="email" 
-        [(ngModel)]="userEmail" 
-        #email="ngModel" 
+        id="Email" 
+        name="Email"
+        ngModel
+        #Email="ngModel" 
         required 
         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
         placeholder="Enter your email address">
       
-      <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error-messages">
-        <p *ngIf="email.errors?.['required']">Email is required</p>
-        <p *ngIf="email.errors?.['pattern']">Please enter a valid email address</p>
+      <div *ngIf="Email.invalid && (Email.dirty || Email.touched)" class="error-messages">
+        <p *ngIf="Email.errors?.['required']">Email is required</p>
+        <p *ngIf="Email.errors?.['pattern']">Please enter a valid email address</p>
       </div>
     </div>
     

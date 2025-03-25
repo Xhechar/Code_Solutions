@@ -74,7 +74,7 @@ class AuthService {
                 'error': 'Incorrect password provided.'
             };
         }
-        let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, ...r_user } = userExists;
+        let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, DateCreated, ...r_user } = userExists;
         let token = jsonwebtoken_1.default.sign({ ...r_user }, process.env.SECRET_KEY, {
             expiresIn: '15m'
         });
@@ -174,7 +174,7 @@ class AuthService {
             data: {
                 RecoveryId: (0, uuid_1.v4)(),
                 Email: Email,
-                RecoveryCode: generateRecoveryCode(8)
+                RecoveryCode: generateRecoveryCode(6)
             }
         });
         if (create_recovery == null) {
@@ -184,7 +184,7 @@ class AuthService {
             };
         }
         else {
-            let mailPath = path_1.default.resolve(__dirname, '../email_templates/send.recovery.ejs');
+            let mailPath = path_1.default.resolve(__dirname, '../../email_templates/send.recovery.ejs');
             ejs_1.default.renderFile(mailPath, { UserName: userExists.FullName, Code: create_recovery.RecoveryCode }, async (err, data) => {
                 try {
                     if (err) {

@@ -45,7 +45,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'create-solution', component: CreateSolutionComponent },
   { path: 'verify-mail', component: VerifyMailComponent },
-  { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'change-password/:Email', component: ChangePasswordComponent },
   { path: 'notification', component: NotificationsComponent },
   {
     path: 'admin', component: AdminComponent, children: [

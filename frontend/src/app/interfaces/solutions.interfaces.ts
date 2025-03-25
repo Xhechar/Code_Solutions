@@ -199,7 +199,7 @@ export interface Testimonial {
   image: string;
 }
 
-export enum SucessType {
+export enum SuccessType {
   Success = 'success',
   Warning = 'warning',
   Error = 'error',
@@ -208,6 +208,6 @@ export enum SucessType {
 }
 
 export interface Alert {
-  type: SucessType;
+  type: SuccessType;
   message: string;
 }

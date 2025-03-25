@@ -33,7 +33,7 @@ exports.RecoveryDetailsSchema = joi_1.default.object({
     })
 });
 exports.UserRegisterationSchema = joi_1.default.object({
-    Fullname: joi_1.default.string().min(4).required().messages({
+    FullName: joi_1.default.string().min(4).required().messages({
         "string.min": "Fullname must be at least 4 characters long",
         "string.required": "Fullname is required"
     }),
@@ -119,7 +119,7 @@ exports.ProblemSchema = joi_1.default.object({
         "number.min": "Priority level must be at least 0",
         "number.max": "Priority level must not exceed 5"
     }),
-    ImagePath: joi_1.default.string().max(500)
+    ImagePath: joi_1.default.string()
 });
 exports.SolutionSchema = joi_1.default.object({
     Description: joi_1.default.string().min(10).max(500).required().messages({

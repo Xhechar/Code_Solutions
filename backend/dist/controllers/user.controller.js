@@ -10,15 +10,15 @@ class UserController {
         try {
             let { error } = body_input_validators_1.UserRegisterationSchema.validate(req.body);
             if (error) {
-                return res.status(400).json({
+                res.status(400).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await userService.createUser(req.body));
+            res.status(201).json(await userService.createUser(req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
@@ -27,95 +27,95 @@ class UserController {
         try {
             let { error } = body_input_validators_1.UserRegisterationSchema.validate(req.body);
             if (error) {
-                return res.status(400).json({
+                res.status(400).json({
                     'error': error.message
                 });
             }
             ;
-            return res.status(201).json(await userService.updateUser(req.params.UserId, req.body));
+            res.status(201).json(await userService.updateUser((0, verify_tokens_1.getIdFromToken)(req), req.body));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async softDeleteUser(req, res) {
         try {
-            return res.status(201).json(await userService.softDeleteUser(req.params.UserId));
+            res.status(201).json(await userService.softDeleteUser(req.params.UserId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async deleteUser(req, res) {
         try {
-            return res.status(201).json(await userService.deleteUser(req.params.UserId));
+            res.status(201).json(await userService.deleteUser(req.params.UserId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async restoreUser(req, res) {
         try {
-            return res.status(201).json(await userService.restoreUser(req.params.UserId));
+            res.status(201).json(await userService.restoreUser(req.params.UserId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getSingleUser(req, res) {
         try {
-            return res.status(201).json(await userService.getSingleUser((0, verify_tokens_1.getIdFromToken)(req)));
+            res.status(201).json(await userService.getSingleUser((0, verify_tokens_1.getIdFromToken)(req)));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getAllUsers(req, res) {
         try {
-            return res.status(201).json(await userService.getAllUsers());
+            res.status(201).json(await userService.getAllUsers());
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async getSoftDeletedUsers(req, res) {
         try {
-            return res.status(201).json(await userService.getSoftDeletedUsers());
+            res.status(201).json(await userService.getSoftDeletedUsers());
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async updateUserRole(req, res) {
         try {
-            return res.status(201).json(await userService.updateUserRole(req.params.UserId));
+            res.status(201).json(await userService.updateUserRole(req.params.UserId));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }
     }
     async bulkDeleteUsers(req, res) {
         try {
-            return res.status(201).json(await userService.bulkDeleteUsers(req.body.UserIds));
+            res.status(201).json(await userService.bulkDeleteUsers(req.body.UserIds));
         }
         catch (error) {
-            return res.status(501).json({
+            res.status(501).json({
                 'error': error
             });
         }

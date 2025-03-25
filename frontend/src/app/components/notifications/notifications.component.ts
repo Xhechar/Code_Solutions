@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Alert, SucessType } from '../../interfaces/solutions.interfaces';
+import { Alert, SuccessType } from '../../interfaces/solutions.interfaces';
 import { NotificationsService } from '../../services/modifiers/notifications.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { NotificationsService } from '../../services/modifiers/notifications.ser
 })
 export class NotificationsComponent {
   message: string = '';
-  type = SucessType.None;
+  type = SuccessType.None;
   duration: number = 5000;
   showProgress: boolean = true;
 
@@ -24,17 +24,25 @@ export class NotificationsComponent {
   constructor(private ns: NotificationsService) { }
 
   ngOnInit(): void {
-    this.ns.alert$.subscribe((res) => {
+    this.ns.messageType$.subscribe((res) => {
       if (res) {
-        this.message = res.message;
-        this.type = res.type;
+        this.type = res;
+        this.show();
+      } else {
+        this.type = SuccessType.None;
+        this.hide();
+      }
+    });
+
+    this.ns.message$.subscribe((res) => {
+      if (res) {
+        this.message = res;
         this.show();
       } else {
         this.message = '';
-        this.type = SucessType.None;
         this.hide();
       }
-    })
+    });
   }
 
   ngOnDestroy(): void {

@@ -50,10 +50,16 @@ const psg_routes_1 = require("./routers/psg.routes");
 const solution_routes_1 = require("./routers/solution.routes");
 const stack_routes_1 = require("./routers/stack.routes");
 const user_routes_1 = require("./routers/user.routes");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const chat_routes_1 = require("./routers/chat.routes");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, express_1.json)());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: 'http://localhost:4200',
+    credentials: true //important
+}));
+app.use((0, cookie_parser_1.default)(process.env.SECRET));
 app.use('/auth', auth_routes_1.authRouter);
 app.use('/category', category_routes_1.categoryRouter);
 app.use('/comment', comment_routes_1.commentRouter);
@@ -65,6 +71,7 @@ app.use('/solution', solution_routes_1.solutionRouter);
 app.use('/stack', stack_routes_1.stackRouter);
 app.use('/user', user_routes_1.userRouter);
 app.use('/problem', problem_routes_1.problemRouter);
+app.use('/chats', chat_routes_1.chatRouter);
 app.use((err, req, res, next) => {
     res.status(501).json({ message: err.message });
 });

@@ -31,7 +31,7 @@ export const RecoveryDetailsSchema = joi.object({
 });
 
 export const UserRegisterationSchema = joi.object({
-  Fullname: joi.string().min(4).required().messages({
+  FullName: joi.string().min(4).required().messages({
     "string.min": "Fullname must be at least 4 characters long",
     "string.required": "Fullname is required"
   }),
