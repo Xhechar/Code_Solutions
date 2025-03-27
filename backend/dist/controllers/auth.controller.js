@@ -17,7 +17,7 @@ class AuthController {
             if (result.success) {
                 res.cookie('token', result.token, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production', // Use secure in production
+                    secure: false,
                     sameSite: 'strict',
                     maxAge: 15 * 60 * 1000,
                     signed: true

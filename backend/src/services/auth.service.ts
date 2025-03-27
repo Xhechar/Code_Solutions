@@ -52,7 +52,7 @@ export class AuthService implements AuthInterface{
 
     return {
       "success": true,
-      "message": 'Welcome.Login was successful.',
+      "message": 'Welcome. Login was successful.',
       "role": userExists.Role,
       "token": token
     }

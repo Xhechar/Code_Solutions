@@ -2,7 +2,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 1010;
   pointer-events: none;
 }
 
@@ -115,7 +115,7 @@
   height: 3px;
   background-color: rgba(0, 0, 0, 0.1);
   width: 100%;
-  animation: progress 5s linear forwards;
+  animation: progress 4.5s linear forwards;
 }
 
 .toast-message.success .toast-progress {

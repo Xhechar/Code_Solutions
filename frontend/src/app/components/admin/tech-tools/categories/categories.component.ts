@@ -1,85 +1,156 @@
-import { animate, style, transition, trigger } from '@angular/animations';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-export interface Category {
-  CategoryId: string;
-  Name: string;
-  Description: string;
-  Problems?: any[];
-}
+import { CategoryService } from '../../../../services/category.service';
+import { Category, Problem, SuccessType } from '../../../../interfaces/solutions.interfaces';
+import { NotificationsService } from '../../../../services/modifiers/notifications.service';
+import { NotificationsComponent } from "../../../notifications/notifications.component";
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationsComponent],
   templateUrl: './categories.component.html',
-  styleUrl: './categories.component.css',
-  animations: [
-    trigger('modalAnimation', [
-      transition('void => open', [
-        style({ opacity: 0, transform: 'scale(0.9)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
-      ]),
-      transition('open => closed', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'scale(0.9)' }))
-      ])
-    ])
-  ]
+  styleUrl: './categories.component.css'
 })
-export class CategoriesComponent {
+export class CategoriesComponent implements OnInit, AfterViewInit {
+  @ViewChildren('categoryCard') categoryCards!: QueryList<ElementRef>;
+
+  categories: Category[] = [];
   category: Category = {
-    CategoryId: '',  // Will be generated on the server
     Name: '',
-    Description: ''
+    Description: '',
+    CategoryId: ''
   };
   
-  isModalOpen: boolean = false;
+  isModalOpen = false;
+  isEditMode = false;
   
-  openModal(): void {
-    this.isModalOpen = true;
-    // Prevent scrolling of the background content
-    document.body.style.overflow = 'hidden';
+  totalCategories = 0;
+  totalProblems = 0;
+  isClosing: boolean = false;
+
+  constructor(private categoryService: CategoryService, private ns: NotificationsService) {}
+
+  ngOnInit() {
+    this.loadCategories();
   }
-  
-  closeModal(): void {
-    this.isModalOpen = false;
-    // Allow scrolling again
-    document.body.style.overflow = 'auto';
-    
-    // Reset form
-    setTimeout(() => {
-      if (!this.isModalOpen) {
-        this.category = {
-          CategoryId: '',
-          Name: '',
-          Description: ''
-        };
+
+  ngAfterViewInit() {
+    this.categoryCards.forEach((el, index) => {
+      el.nativeElement.style.setProperty('--index', index);
+    });
+  }
+
+  loadCategories() {
+    this.categoryService.getAllCategories().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.categories = response.categories as Category[];
+          this.totalCategories = this.categories.length;
+          this.totalProblems = ((((response.categories as Category[])[0]).Problems as Problem[]).length) as number | 0;
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
       }
-    }, 300); // Wait for animation to complete
+    });
   }
-  
-  closeOnOverlay(event: MouseEvent): void {
-    // Close modal only if the overlay itself was clicked
-    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
+
+  openModal(categoryToEdit?: Category) {
+    if (categoryToEdit) {
+      this.isEditMode = true;
+      this.category = { ...categoryToEdit };
+    } else {
+      this.isEditMode = false;
+      this.category = {
+        CategoryId: '',
+        Name: '',
+        Description: ''
+      };
+    }
+    this.isModalOpen = true;
+  }
+
+  closeOnOverlay(event: MouseEvent) {
+    if (event.target === event.currentTarget) {
       this.closeModal();
     }
   }
-  
-  onSubmit(): void {
-    // Generate a random ID for demo purposes
-    this.category.CategoryId = 'category_' + Math.random().toString(36).substr(2, 9);
+
+  onSubmit() {
+    if (this.isEditMode) {
+      this.updateCategory();
+    } else {
+      this.createCategory();
+    }
+  }
+
+  createCategory() {
+    let { CategoryId, Problems, ...rest } = this.category;
+    this.categoryService.createCategory(rest as Category).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.ns.showAlert(SuccessType.Success, 'Category created successfully');
+          this.closeModal();
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
+  }
+
+  updateCategory() {
+    let { CategoryId, Problems, ...rest } = this.category;
+    this.categoryService.updateCategory(this.category.CategoryId, rest as Category).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.closeModal();
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
+  }
+
+  deleteCategory(categoryId: string) {
+    this.categoryService.deleteCategory(categoryId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.closeModal();
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  closeModal() {
+    const modalOverlay = document.querySelector('.modal-overlay');
+    modalOverlay?.classList.add('closing');
     
-    console.log('Category creation submitted:', this.category);
-    // Call your category creation service here
-    
-    // Close modal after successful submission
-    this.closeModal();
-    
-    // For demo purposes, show success message
     setTimeout(() => {
-      alert('Category created successfully!');
-    }, 300);
+      this.isModalOpen = false;
+      modalOverlay?.classList.remove('closing');
+      this.isEditMode = false;
+      this.category = {
+        CategoryId: '',
+        Name: '',
+        Description: ''
+      };
+      this.isClosing = false;
+      this.loadCategories();
+    }, 200);
   }
 }

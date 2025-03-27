@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { LoginDetailsSchema, RecoveryDetailsSchema } from "../validators/body.input.validators";
 import { TokenDetails } from "../interfaces/solutions.interfaces";
 import { rest } from "lodash";
+import { log } from "console";
 
 const authService = new AuthService();
 
@@ -16,12 +17,13 @@ export class AuthController {
         });
       }
       
+      
       let result = await authService.loginUser(req.body);
       
       if(result.success) {
         res.cookie('token', result.token as string, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production', // Use secure in production
+          secure: false,
           sameSite: 'strict',
           maxAge: 15*60*1000,
           signed: true

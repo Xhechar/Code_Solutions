@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { SuccessType, User } from '../../../interfaces/solutions.interfaces';
+import { ModalService } from '../../../services/modifiers/modal.service';
+import { UserService } from '../../../services/user.service';
+import { LogoutComponent } from "../../logout/logout.component";
+import { NotificationsComponent } from "../../notifications/notifications.component";
+import { NotificationsService } from '../../../services/modifiers/notifications.service';
 
 interface Badge {
   id: string;
@@ -11,20 +17,10 @@ interface Badge {
   color: string;
 }
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  profileImage: string;
-  primaryBadge?: Badge;
-  secondaryBadge?: Badge;
-  tertiaryBadge?: Badge;
-}
-
 @Component({
   selector: 'app-u-side-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, LogoutComponent, NotificationsComponent],
   templateUrl: './u-side-bar.component.html',
   styleUrl: './u-side-bar.component.css',
   animations: [
@@ -56,7 +52,10 @@ export class USideBarComponent {
   constructor(
     private router: Router, 
     private renderer: Renderer2, 
-    private el: ElementRef
+    private el: ElementRef,
+    private ms: ModalService,
+    private us: UserService,
+    private ns: NotificationsService
   ) {}
 
   ngOnInit(): void {
@@ -92,7 +91,6 @@ export class USideBarComponent {
     this.sidebarCollapsed = !this.sidebarCollapsed;
     this.updateBodyClass();
     
-    // Add animation to toggle button
     const toggleBtn = this.el.nativeElement.querySelector('.sidebar-toggler');
     this.renderer.addClass(toggleBtn, 'sidebar-toggler-animated');
     
@@ -102,7 +100,6 @@ export class USideBarComponent {
   }
   
   updateBodyClass() {
-    // Update body class
     if (this.sidebarCollapsed) {
       document.body.classList.add('sidebar-collapsed-body');
     } else {
@@ -116,7 +113,6 @@ export class USideBarComponent {
 
   toggleDropdown(dropdown: string) {
     if (this.sidebarCollapsed && this.screenWidth > 768) {
-      // If sidebar is collapsed, expand it first before opening dropdown
       this.sidebarCollapsed = false;
       this.updateBodyClass();
       setTimeout(() => {
@@ -135,52 +131,30 @@ export class USideBarComponent {
     const logoutBtn = this.el.nativeElement.querySelector('.logout-btn');
     this.renderer.addClass(logoutBtn, 'logout-animation');
     
-    setTimeout(() => {
-      // Handle logout logic
-      // For example:
-      // this.authService.logout().subscribe(() => {
-      //   this.router.navigate(['/login']);
-      // });
-      
-      // For now, just navigate to login
-      this.router.navigate(['/login']);
-    }, 800);
+    this.ms.showModal();
   }
 
   private fetchUserData() {
-    // Simulate HTTP request to get user data
-    // In a real app, you would inject a UserService and call it
-    setTimeout(() => {
-      this.user = {
-        id: '1',
-        name: 'Jane Doe',
-        email: 'jane.doe@example.com',
-        profileImage: 'https://i.pinimg.com/236x/ce/40/b6/ce40b67b89fbba423a330ee1a6bff863.jpg',
-        primaryBadge: {
-          id: 'badge1',
-          name: 'Gold Solver',
-          description: 'Solved over 100 code problems',
-          color: '#FFD700'
-        },
-        secondaryBadge: {
-          id: 'badge2',
-          name: 'Silver Contributor',
-          description: 'Created over 50 solutions',
-          color: '#C0C0C0'
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.user = response.user as User;
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-        // Note: tertiaryBadge is undefined to demonstrate the greyed out state
-      };
-    }, 1000);
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
   }
   
   private addHoverEffects() {
-    // Apply advanced hover effects using Renderer2
     setTimeout(() => {
       const navItems = this.el.nativeElement.querySelectorAll('.sidebar-nav ul li a');
       
       navItems.forEach((item: HTMLElement) => {
         this.renderer.listen(item, 'mouseenter', () => {
-          // Add a subtle animation class
           this.renderer.addClass(item, 'nav-item-hover');
         });
         

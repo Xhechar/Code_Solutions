@@ -37,6 +37,7 @@ import { HomeComponent } from './components/user/home/home.component';
 import { AllProjectStructuresComponent } from './components/admin/project-structure/all-project-structures/all-project-structures.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { LogoutComponent } from './components/logout/logout.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -47,6 +48,7 @@ export const routes: Routes = [
   { path: 'verify-mail', component: VerifyMailComponent },
   { path: 'change-password/:Email', component: ChangePasswordComponent },
   { path: 'notification', component: NotificationsComponent },
+  { path: 'logout', component: LogoutComponent },
   {
     path: 'admin', component: AdminComponent, children: [
       { path: 'comments', component: CommentsComponent },

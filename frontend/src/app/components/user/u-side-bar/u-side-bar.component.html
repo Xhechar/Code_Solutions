@@ -1,3 +1,5 @@
+<app-logout></app-logout>
+<app-notifications></app-notifications>
 <div class="sidebar" [ngClass]="{'sidebar-collapsed': sidebarCollapsed}">
   <!-- Logo and Toggler -->
   <div class="logo-container">
@@ -79,25 +81,25 @@
   <!-- User Profile Section -->
   <div class="user-profile">
     <div class="profile-image">
-      <img [src]="user?.profileImage || 'assets/default-avatar.png'" alt="Profile">
+      <img [src]="user?.ProfileImage || 'assets/default-avatar.png'" alt="Profile">
     </div>
     <div class="user-info" *ngIf="!sidebarCollapsed">
-      <h4 class="user-name">{{ user?.name || 'User Name' }}</h4>
-      <p class="user-email">{{ user?.email || 'user@example.com' }}</p>
+      <h4 class="user-name">{{ user ? user.Username.split(' ')[0] : 'guest' }}</h4>
+      <p class="user-email">{{ user?.Email || 'guest@example.com' }}</p>
       
       <!-- Badges -->
       <div class="badges">
-        <div class="badge" [ngClass]="{'badge-active': user?.primaryBadge}">
-          <i class="fa fa-medal" [style.color]="user?.primaryBadge ? '#FFD700' : '#cccccc'"></i>
-          <div class="tooltip">{{ user?.primaryBadge?.description || 'No primary badge earned yet' }}</div>
+        <div class="badge" [ngClass]="{'badge-active': user?.Badge}">
+          <i class="fa fa-medal" [style.color]="user?.Badge ? '#FFD700' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.Badge || 'No primary badge earned yet' }}</div>
         </div>
-        <div class="badge" [ngClass]="{'badge-active': user?.secondaryBadge}">
-          <i class="fa fa-award" [style.color]="user?.secondaryBadge ? '#C0C0C0' : '#cccccc'"></i>
-          <div class="tooltip">{{ user?.secondaryBadge?.description || 'No secondary badge earned yet' }}</div>
+        <div class="badge" [ngClass]="{'badge-active': user?.PreviousBadge}">
+          <i class="fa fa-award" [style.color]="user?.PreviousBadge ? '#C0C0C0' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.PreviousBadge || 'No secondary badge earned yet' }}</div>
         </div>
-        <div class="badge" [ngClass]="{'badge-active': user?.tertiaryBadge}">
-          <i class="fa fa-certificate" [style.color]="user?.tertiaryBadge ? '#CD7F32' : '#cccccc'"></i>
-          <div class="tooltip">{{ user?.tertiaryBadge?.description || 'No tertiary badge earned yet' }}</div>
+        <div class="badge" [ngClass]="{'badge-active': user?.Badge}">
+          <i class="fa fa-certificate" [style.color]="user?.Badge ? '#CD7F32' : '#cccccc'"></i>
+          <div class="tooltip">{{ user?.Badge || 'No tertiary badge earned yet' }}</div>
         </div>
       </div>
     </div>

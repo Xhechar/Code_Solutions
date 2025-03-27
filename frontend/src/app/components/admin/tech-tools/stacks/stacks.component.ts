@@ -1,116 +1,152 @@
-import { animate, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-export interface Stack {
-  StackId: string;
-  Name: string;
-  Description: string;
-  Version: string;
-  Problems?: any[];
-  ProjectStructures?: ProjectStructure[];
-}
-
-export interface ProjectStructure {
-  PSG: any;
-  ProjectId: string;
-  DateCreated: Date;
-  LastUpdated: Date;
-  id?: string;
-  name: string;
-}
+import { Stack } from '../../../../interfaces/solutions.interfaces';
 
 @Component({
   selector: 'app-stacks',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './stacks.component.html',
-  styleUrl: './stacks.component.css',
-  animations: [
-    trigger('slideIn', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate(
-          '300ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        ),
-      ]),
-      transition(':leave', [
-        animate(
-          '200ms ease-in',
-          style({ opacity: 0, transform: 'translateY(10px)' })
-        ),
-      ]),
-    ]),
-  ],
+  styleUrl: './stacks.component.css'
 })
-export class StacksComponent {
-  @Output() stackCreated = new EventEmitter<Stack>();
-
+export class StacksComponent implements OnInit {
+  stacks: Stack[] = [];
   isModalOpen = false;
+  isUpdateMode = false;
+  currentStack: Stack = this.initializeEmptyStack();
+  totalStructures: number = 0;
 
-  stack: Stack = {
-    StackId: '', // Will be generated on the server
-    Name: '',
-    Description: '',
-    Version: '',
-    ProjectStructures: [],
-  };
+  ngOnInit(): void {
+    // Simulated initial stacks - replace with actual data fetching
+    this.stacks = [
+      {
+        StackId: 'stack_001',
+        Name: 'MERN Stack',
+        Description: 'Modern web development stack using MongoDB, Express, React, and Node.js',
+        Version: '1.0.0',
+        ProjectStructures: [
+          {
+            ProjectId: '',
+            Title: '',
+            Description: '',
+            StackId: '',
+            DateCreated: new Date(),
+            LastUpdated: new Date()
+          },
+          {
+            ProjectId: '',
+            Title: '',
+            Description: '',
+            StackId: '',
+            DateCreated: new Date(),
+            LastUpdated: new Date()
+          }
+        ]
+      },
+      {
+        StackId: 'stack_002',
+        Name: 'Django Stack',
+        Description: 'Python web framework stack with PostgreSQL and Django REST framework',
+        Version: '3.2.0',
+        ProjectStructures: [
+          {
+            ProjectId: '',
+            Title: '',
+            Description: '',
+            StackId: '',
+            DateCreated: new Date(),
+            LastUpdated: new Date()
+          },
+          {
+            ProjectId: '',
+            Title: '',
+            Description: '',
+            StackId: '',
+            DateCreated: new Date(),
+            LastUpdated: new Date()
+          }
+        ]
+      }
+    ];
 
-  projectStructures: ProjectStructure[] = [];
+    this.totalStructures = this.stacks.reduce((sum, stack) => sum + (stack.ProjectStructures?.length || 0), 0)
+  }
 
-  openModal(): void {
+  initializeEmptyStack(): Stack {
+    return {
+      StackId: '',
+      Name: '',
+      Description: '',
+      Version: '',
+      ProjectStructures: []
+    };
+  }
+
+  openModal(stack?: Stack): void {
     this.isModalOpen = true;
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    document.body.style.overflow = 'hidden';
+
+    if (stack) {
+      // Update mode
+      this.isUpdateMode = true;
+      this.currentStack = { ...stack };
+    } else {
+      // Create mode
+      this.isUpdateMode = false;
+      this.currentStack = this.initializeEmptyStack();
+    }
   }
 
   closeModal(event?: Event): void {
     if (event) {
       const target = event.target as HTMLElement;
-      // Only close if clicking directly on the overlay, not its children
       if (!target.classList.contains('modal-overlay')) {
         return;
       }
     }
 
     this.isModalOpen = false;
-    document.body.style.overflow = ''; // Restore scrolling
+    document.body.style.overflow = '';
   }
 
   addStructure(): void {
-    this.projectStructures.push();
+    if (!this.currentStack.ProjectStructures) {
+      this.currentStack.ProjectStructures = [];
+    }
+    this.currentStack.ProjectStructures.push({
+      ProjectId: '',
+      Title: '',
+      Description: '',
+      StackId: '',
+      DateCreated: new Date(),
+      LastUpdated: new Date()
+    });
   }
 
   removeStructure(index: number): void {
-    this.projectStructures.splice(index, 1);
-  }
-
-  resetForm(): void {
-    this.stack = {
-      StackId: '',
-      Name: '',
-      Description: '',
-      Version: '',
-      ProjectStructures: [],
-    };
-    this.projectStructures = [];
+    if (this.currentStack.ProjectStructures) {
+      this.currentStack.ProjectStructures.splice(index, 1);
+    }
   }
 
   onSubmit(): void {
+    if (this.isUpdateMode) {
+      // Update existing stack
+      const index = this.stacks.findIndex(s => s.StackId === this.currentStack.StackId);
+      if (index !== -1) {
+        this.stacks[index] = { ...this.currentStack };
+      }
+    } else {
+      // Create new stack
+      this.currentStack.StackId = 'stack_' + Math.random().toString(36).substr(2, 9);
+      this.stacks.push({ ...this.currentStack });
+    }
 
-    // Generate a random ID for demo purposes
-    this.stack.StackId = 'stack_' + Math.random().toString(36).substr(2, 9);
-
-    console.log('Stack creation submitted:', this.stack);
-
-    // Emit the created stack
-    this.stackCreated.emit({ ...this.stack });
-
-    // For demo purposes, show success message
-    alert('Stack created successfully!');
-
-    this.resetForm();
     this.closeModal();
+  }
+
+  deleteStack(stackId: string): void {
+    this.stacks = this.stacks.filter(stack => stack.StackId !== stackId);
   }
 }

@@ -1,0 +1,24 @@
+<app-notifications></app-notifications>
+<div class="logout-modal" [class.show]="isModalVisible">
+  <div class="logout-modal-backdrop" (click)="closeModal()"></div>
+  <div class="logout-modal-content">
+    <button class="modal-close-btn" (click)="closeModal()">
+      <i class="bx bx-x"></i>
+    </button>
+    <div class="modal-icon">
+      <i class="fas fa-sign-out-alt"></i>
+    </div>
+    <h2>Log Out</h2>
+    <p>Are you sure you want to log out?</p>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" (click)="closeModal()">
+        <i class="bx bx-x-circle"></i>
+        Cancel
+      </button>
+      <button class="btn btn-logout" (click)="confirmLogout()">
+        <i class="fas fa-check-circle"></i>
+        Log Out
+      </button>
+    </div>
+  </div>
+</div>

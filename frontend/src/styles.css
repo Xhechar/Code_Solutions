@@ -54,6 +54,13 @@
     --code-header-bg: hsl(222, 20%, 18%);
     --line-number-color: hsl(222, 15%, 45%);
     --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --modal-backdrop: hsla(0, 0%, 0%, 0.5);
+    --modal-bg: var(--card-bg);
+    --modal-text-primary: var(--text-primary);
+    --modal-text-secondary: var(--text-secondary);
+    --modal-border-color: var(--border-color);
+    --modal-shadow: var(--card-shadow);
 }
 
 body {
