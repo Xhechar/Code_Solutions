@@ -45,11 +45,10 @@ class StackService {
             };
         }
         else {
-            let { StackId, ...r_stack } = stackExists;
             let update = await this.prisma.stack.update({
                 where: { StackId },
                 data: {
-                    ...r_stack
+                    ...stack
                 }
             });
             if (update == null) {

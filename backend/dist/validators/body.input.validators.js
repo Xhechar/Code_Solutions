@@ -107,8 +107,8 @@ exports.ProblemSchema = joi_1.default.object({
     ErrorCode: joi_1.default.string().max(50),
     Context: joi_1.default.string().max(500),
     Environment: joi_1.default.string().max(500),
-    Tags: joi_1.default.array().items(joi_1.default.string().max(50)).required().messages({
-        "array.items": "At least one tag is required"
+    Tags: joi_1.default.string().max(50).required().messages({
+        "string.required": "At least one tag is required"
     }),
     Reproducibility: joi_1.default.boolean().required().messages({
         "boolean.required": "Reproducibility is required"
@@ -119,7 +119,13 @@ exports.ProblemSchema = joi_1.default.object({
         "number.min": "Priority level must be at least 0",
         "number.max": "Priority level must not exceed 5"
     }),
-    ImagePath: joi_1.default.string()
+    ImagePath: joi_1.default.string(),
+    StackId: joi_1.default.string().required().messages({
+        "string.required": "Stack ID is required"
+    }),
+    CategoryId: joi_1.default.string().required().messages({
+        "string.required": "Category ID is required"
+    })
 });
 exports.SolutionSchema = joi_1.default.object({
     Description: joi_1.default.string().min(10).max(500).required().messages({

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PSG } from '../interfaces/solutions.interfaces';
+import { PSG, PSGDto } from '../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +11,15 @@ export class PsgService {
 
   constructor(private http: HttpClient) { }
 
-  createPsg(psg: PSG): Observable<{ success: boolean, error?: string, message?: string }> {
+  createPsg(ProjectId: string , psg: PSGDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}create-psg`,
+      `${this.API_URL}create-psg/${ProjectId}`,
       psg,
       { withCredentials: true }
     );
   }
 
-  updatePsg(PSGId: string, psg: PSG): Observable<{ success: boolean, error?: string, message?: string }> {
+  updatePsg(PSGId: string, psg: PSGDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-psg/${PSGId}`,
       psg,

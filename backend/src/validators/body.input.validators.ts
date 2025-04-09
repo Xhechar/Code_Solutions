@@ -109,8 +109,8 @@ export const ProblemSchema = joi.object({
   ErrorCode: joi.string().max(50),
   Context: joi.string().max(500),
   Environment: joi.string().max(500),
-  Tags: joi.array().items(joi.string().max(50)).required().messages({
-    "array.items": "At least one tag is required"
+  Tags: joi.string().max(50).required().messages({
+    "string.required": "At least one tag is required"
   }),
   Reproducibility: joi.boolean().required().messages({
     "boolean.required": "Reproducibility is required"
@@ -121,7 +121,13 @@ export const ProblemSchema = joi.object({
     "number.min": "Priority level must be at least 0",
     "number.max": "Priority level must not exceed 5"
   }),
-  ImagePath: joi.string()
+  ImagePath: joi.string(),
+  StackId: joi.string().required().messages({
+    "string.required": "Stack ID is required"
+  }),
+  CategoryId: joi.string().required().messages({
+    "string.required": "Category ID is required"
+  })
 });
   
 export const SolutionSchema = joi.object({

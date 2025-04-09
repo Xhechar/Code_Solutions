@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Problem } from '../interfaces/solutions.interfaces';
+import { Problem, ProblemDto } from '../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ProblemService {
   
   constructor(private http: HttpClient) { }
   
-  createProblem(problem: Problem): Observable<{ success: boolean, error?: string, message?: string }> {
+  createProblem(problem: ProblemDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}create-problem`,
       problem, 
@@ -19,7 +19,7 @@ export class ProblemService {
     );
   }
   
-  updateProblem(ProblemId: string, problem: Problem): Observable<{ success: boolean, error?: string, message?: string }> {
+  updateProblem(ProblemId: string, problem: ProblemDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-problem/${ProblemId}`, 
       problem, 

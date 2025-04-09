@@ -6,7 +6,7 @@ const psg_controller_1 = require("../controllers/psg.controller");
 const verify_tokens_1 = require("../middlewares/verify.tokens");
 exports.psgRouter = (0, express_1.Router)();
 const psgController = new psg_controller_1.PSGController();
-exports.psgRouter.post('/create-psg', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, psgController.createPSG);
+exports.psgRouter.post('/create-psg/ProjectId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, psgController.createPSG);
 exports.psgRouter.put('/update-psg/:PSGId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, psgController.updatePSG);
 exports.psgRouter.delete('/delete-psg/:PSGId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, psgController.deletePSG);
 exports.psgRouter.get('/get-psg-by-project/:ProjectId', psgController.getPSGsByProject);

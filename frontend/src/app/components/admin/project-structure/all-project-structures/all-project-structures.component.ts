@@ -3,18 +3,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { ProjectStructure, Problem, Stack, PSG, SuccessType } from '../../../../interfaces/solutions.interfaces';
+import { ProjectStructure, Problem, Stack, PSG, SuccessType, ProjectStructureDto, PSGDto } from '../../../../interfaces/solutions.interfaces';
 import { NotificationsService } from '../../../../services/modifiers/notifications.service';
 import { ProblemService } from '../../../../services/problem.service';
 import { ProjectStructureService } from '../../../../services/project-structure.service';
 import { StackService } from '../../../../services/stack.service';
 import { PsgService } from '../../../../services/psg.service';
+import { NotificationsComponent } from "../../../notifications/notifications.component";
 
 
 @Component({
   selector: 'app-all-project-structures',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationsComponent],
   templateUrl: './all-project-structures.component.html',
   styleUrl: './all-project-structures.component.css',
 })
@@ -23,9 +24,13 @@ export class AllProjectStructuresComponent implements OnInit {
   problems: Problem[] = [];
   stacks: Stack[] = [];
 
+  selectedProblems: string[] = [];
+  problemSearchTerm: string = '';
+  showProblemSelector: boolean = false;
+
   // Selection states
   selectedProjectId: string = '';
-  selectedProject: ProjectStructure | null = null;
+  selectedProject!: ProjectStructure;
   selectedPSG: PSG | null = null;
 
   // Modal states
@@ -38,11 +43,6 @@ export class AllProjectStructuresComponent implements OnInit {
   psgForm: PSG = this.createEmptyPSG();
   psgToDelete: PSG | null = null;
   editingPSG: boolean = false;
-
-  // Problem selector
-  showProblemSelector: boolean = false;
-  problemSearchTerm: string = '';
-  selectedProblems: string[] = [];
 
   // Image handling
   previewImages: string[] = [];
@@ -65,7 +65,7 @@ export class AllProjectStructuresComponent implements OnInit {
   }
 
   private fetchStacks(): void {
-    this.stackService.getAllStacks().subscribe({ // Assuming getAllStacks method
+    this.stackService.getAllStacks().subscribe({
       next: (response) => {
         if (response.success && response.stacks) {
           this.stacks = response.stacks;
@@ -97,11 +97,11 @@ export class AllProjectStructuresComponent implements OnInit {
   }
 
   private fetchProjectStructures(): void {
-    this.projectStructureService.getAllProjectStructures().subscribe({ // Assuming getAllProjectStructures method
+    this.projectStructureService.getAllProjectStructures().subscribe({
       next: (response) => {
-        if (response.success && response.projectStructures) {
-          this.projectStructures = response.projectStructures;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
+        if (response.success && response.projects) {
+          this.projectStructures = response.projects;
+          // this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
           this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
@@ -114,7 +114,7 @@ export class AllProjectStructuresComponent implements OnInit {
 
   createEmptyProject(): ProjectStructure {
     return {
-      ProjectId: this.generateId(),
+      ProjectId: '',
       Title: '',
       Description: '',
       StackId: '',
@@ -126,17 +126,13 @@ export class AllProjectStructuresComponent implements OnInit {
 
   createEmptyPSG(): PSG {
     return {
-      PSGId: this.generateId(),
+      PSGId: '',
       Title: '',
       ProjectId: '',
       PictorialGuide: '',
       TextInstructions: '',
       RelatedProblemIds: undefined
     };
-  }
-
-  generateId(): string {
-    return Math.random().toString(36).substring(2, 10);
   }
 
   truncateText(text: string, maxLength: number): string {
@@ -209,7 +205,6 @@ export class AllProjectStructuresComponent implements OnInit {
 
   selectProject(): void {
     if (!this.selectedProjectId) {
-      this.selectedProject = null;
       this.selectedPSG = null;
       return;
     }
@@ -217,7 +212,7 @@ export class AllProjectStructuresComponent implements OnInit {
     this.selectedProject =
       this.projectStructures.find(
         (p) => p.ProjectId === this.selectedProjectId
-      ) || null;
+      )!;
 
     this.selectedPSG = null;
   }
@@ -245,11 +240,13 @@ export class AllProjectStructuresComponent implements OnInit {
   }
 
   createNewProject(): void {
-    this.newProject.DateCreated = new Date();
-    this.newProject.LastUpdated = new Date();
-    this.newProject.PSG = [];
+    const newPs: ProjectStructureDto = {
+      Title: this.newProject.Title,
+      Description: this.newProject.Description,
+      StackId: this.newProject.StackId
+    }
 
-    this.projectStructureService.createProjectStructure(this.newProject).subscribe({
+    this.projectStructureService.createProjectStructure(newPs).subscribe({
       next: (response) => {
         if (response.success) {
           this.projectStructures.push();
@@ -268,11 +265,15 @@ export class AllProjectStructuresComponent implements OnInit {
   }
 
   updateProjectStructure(): void {
-    if (!this.selectedProject) return;
+    if (!this.selectedProject) this.ns.showAlert(SuccessType.Warning, 'No project selected');
 
-    this.selectedProject.LastUpdated = new Date();
+    let updatedPs: ProjectStructureDto = {
+      Title: this.selectedProject!.Title,
+      Description: this.selectedProject!.Description,
+      StackId: this.selectedProject!.StackId
+    }
 
-    this.projectStructureService.updateProjectStructure(this.selectedProject.ProjectId, this.selectedProject).subscribe({
+    this.projectStructureService.updateProjectStructure(this.selectedProject.ProjectId, updatedPs).subscribe({
       next: (response) => {
         if (response.success) {
           const index = this.projectStructures.findIndex(
@@ -355,7 +356,7 @@ export class AllProjectStructuresComponent implements OnInit {
         }
       });
     } else {
-      this.psgs.createPsg(this.psgForm).subscribe({
+      this.psgs.createPsg(this.selectedProject.ProjectId, this.psgForm).subscribe({
         next: (response) => {
           if (response.success && this.selectedProject) {
             if (!this.selectedProject.PSG) {
@@ -456,16 +457,30 @@ export class AllProjectStructuresComponent implements OnInit {
     this.problemSearchTerm = '';
   }
 
-  // Placeholder methods (unchanged)
-  removeProblem(_t257: string) {
-    throw new Error('Method not implemented.');
+  isSelectedProblem(problemId: string): boolean {
+    return this.selectedProblems.includes(problemId);
   }
-
-  filteredProblems(): any {
-    throw new Error('Method not implemented.');
+  
+  addProblem(problemId: string): void {
+    if (!this.selectedProblems.includes(problemId)) {
+      this.selectedProblems.push(problemId);
+    } else {
+      this.removeProblem(problemId);
+    }
   }
-
-  addProblem(arg0: any) {
-    throw new Error('Method not implemented.');
+  
+  removeProblem(problemId: string): void {
+    this.selectedProblems = this.selectedProblems.filter(id => id !== problemId);
+  }
+  
+  filteredProblems(): Problem[] {
+    if (!this.problemSearchTerm.trim()) {
+      return this.problems;
+    }
+    
+    return this.problems.filter(problem => 
+      problem.Title.toLowerCase().includes(this.problemSearchTerm.toLowerCase()) ||
+      (problem.Description && problem.Description.toLowerCase().includes(this.problemSearchTerm.toLowerCase()))
+    );
   }
 }

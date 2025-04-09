@@ -8,6 +8,7 @@ import { CategoryService } from '../../services/category.service';
 import { NotificationsService } from '../../services/modifiers/notifications.service';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { ProblemService } from '../../services/problem.service';
+import { ModalService } from '../../services/modifiers/modal.service';
 
 @Component({
   selector: 'app-create-problem',
@@ -20,6 +21,7 @@ export class CreateProblemComponent implements OnInit{
   problemForm!: FormGroup;
   uploadedImages: string[] = [];
   mainPreviewImage: string | null = null;
+  updateProblemData: Problem | null = null;
 
   stacks: Stack[] = [];
 
@@ -27,10 +29,32 @@ export class CreateProblemComponent implements OnInit{
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  constructor(private fb: FormBuilder, private ss: StackService, private cs: CategoryService, private ns: NotificationsService, private ps: ProblemService) {}
+  constructor(private fb: FormBuilder, private ss: StackService, private cs: CategoryService, private ns: NotificationsService, private ps: ProblemService, private ms: ModalService) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.fetchStacks();
+    this.fetchCategories();
+    this.ms.updateProblemData$.subscribe((problem) => {
+      if (problem) {
+        this.updateProblemData = problem;
+        this.problemForm.patchValue({
+          Title: problem.Title,
+          Description: problem.Description,
+          StackId: problem.StackId,
+          CategoryId: problem.CategoryId,
+          ErrorCode: problem.ErrorCode,
+          Context: problem.Context,
+          Environment: problem.Environment,
+          Tags: problem.Tags,
+          Reproducibility: problem.Reproducibility,
+          Logs: problem.Logs,
+          PriorityLevel: problem.PriorityLevel
+        });
+        this.uploadedImages = problem.ImagePath ? problem.ImagePath.split(', ') : [];
+        this.mainPreviewImage = this.uploadedImages.length > 0 ? this.uploadedImages[0] : null;
+      }
+    });
   }
 
   initForm(): void {
@@ -166,19 +190,34 @@ export class CreateProblemComponent implements OnInit{
         ... this.problemForm.value,
         ImagePath: this.uploadedImages.join(', ')
       };
-      //use the subscription here
-      this.ps.createProblem(formValue).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.ns.showAlert(SuccessType.Success, response.message as string);
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
+
+      if (this.updateProblemData) {
+        this.ps.updateProblem(this.updateProblemData.ProblemId, formValue).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.ns.showAlert(SuccessType.Success, response.message as string);
+            } else {
+              this.ns.showAlert(SuccessType.Warning, response.error as string);
+            }
+          },
+          error: (error) => {
+            this.ns.showAlert(SuccessType.Error, error.error.error as string);
           }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
-        }
-      });
+        });
+      } else {
+        this.ps.createProblem(formValue).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.ns.showAlert(SuccessType.Success, response.message as string);
+            } else {
+              this.ns.showAlert(SuccessType.Warning, response.error as string);
+            }
+          },
+          error: (error) => {
+            this.ns.showAlert(SuccessType.Error, error.error.error as string);
+          }
+        });
+      }
       
       this.resetForm();
     } else {
@@ -191,6 +230,7 @@ export class CreateProblemComponent implements OnInit{
 
   onCancel(): void {
     this.resetForm();
+    this.ms.clearUpdateProblemData();
   }
 
   private resetForm(): void {

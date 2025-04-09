@@ -119,21 +119,13 @@ class ProblemService {
                 'error': 'Cannot update a problem that has been approved.'
             };
         }
-        let { ProblemId, DateCreated, StackId, CategoryId, UserId, ...r_problem } = problem;
         let update = await this.prisma.problem.update({
             where: {
                 ProblemId: problemExists.ProblemId,
                 UserId: problemExists.UserId
             },
             data: {
-                ...r_problem,
-                ErrorCode: problem.ErrorCode || problemExists.ErrorCode,
-                Context: problem.Context || problemExists.Context,
-                Environment: problem.Environment || problemExists.Environment,
-                Tags: problem.Tags || problemExists.Tags,
-                Logs: problem.Logs || problemExists.Logs,
-                PriorityLevel: problem.PriorityLevel || problemExists.PriorityLevel,
-                ImagePath: problem.ImagePath || problemExists.ImagePath,
+                ...problem
             }
         });
         if (update == null) {

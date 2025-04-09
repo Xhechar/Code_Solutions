@@ -1,3 +1,4 @@
+<app-notifications></app-notifications>
 <div class="admin-container">
   <!-- Header with stats and action buttons -->
   <header class="admin-header">
@@ -250,7 +251,11 @@
                   <i class="fas fa-times"></i>
                 </button>
               </div>
+              <div *ngIf="selectedProblems.length === 0" class="empty-tag-placeholder">
+                No problems selected
+              </div>
             </div>
+            
             <button type="button" class="btn-select" (click)="toggleProblemSelector()">
               <i class="fas fa-plus"></i> Select Problems
             </button>
@@ -259,9 +264,18 @@
               <div class="dropdown-search">
                 <input type="text" placeholder="Search problems..." [(ngModel)]="problemSearchTerm" name="problemSearch">
               </div>
+              
               <div class="problem-list">
-                <div class="problem-item" *ngFor="let problem of filteredProblems()" (click)="addProblem(problem.ProblemId)">
+                <div class="problem-item" *ngFor="let problem of filteredProblems()" 
+                     (click)="addProblem(problem.ProblemId)" 
+                     [class.problem-selected]="isSelectedProblem(problem.ProblemId)">
                   <span class="problem-title">{{problem.Title}}</span>
+                  <span class="problem-status" *ngIf="isSelectedProblem(problem.ProblemId)">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+                <div *ngIf="filteredProblems().length === 0" class="no-results">
+                  <p>No matching problems found</p>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { PrismaClient, Problem } from "@prisma/client";
 import { ProblemInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
+import { ProblemDto } from "../interfaces/solutions.interfaces";
 
 export class ProblemService implements ProblemInterface {
   prisma = new PrismaClient({
@@ -89,7 +90,7 @@ export class ProblemService implements ProblemInterface {
       }
     }
   }
-  async updateProblem(userId: string, problemId: string, problem: Partial<Problem>): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async updateProblem(userId: string, problemId: string, problem: ProblemDto): Promise<{ success: boolean; message?: string; error?: string; }> {
     
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -132,22 +133,13 @@ export class ProblemService implements ProblemInterface {
       }
     }
 
-    let {ProblemId, DateCreated, StackId, CategoryId, UserId, ...r_problem} = problem;
-
     let update = await this.prisma.problem.update({
       where: {
         ProblemId: problemExists.ProblemId,
         UserId: problemExists.UserId
       },
       data: {
-        ...r_problem,
-        ErrorCode: problem.ErrorCode || problemExists.ErrorCode,
-        Context: problem.Context || problemExists.Context,
-        Environment: problem.Environment || problemExists.Environment,
-        Tags: problem.Tags || problemExists.Tags,
-        Logs: problem.Logs || problemExists.Logs,
-        PriorityLevel: problem.PriorityLevel || problemExists.PriorityLevel,
-        ImagePath: problem.ImagePath || problemExists.ImagePath,
+        ...problem
       }
     });
 

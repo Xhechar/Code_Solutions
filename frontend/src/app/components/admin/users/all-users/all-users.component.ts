@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { User, Badge } from '../../../../interfaces/solutions.interfaces';
+import { User, Badge, SuccessType } from '../../../../interfaces/solutions.interfaces';
+import { UserService } from '../../../../services/user.service';
+import { NotificationsService } from '../../../../services/modifiers/notifications.service';
 
 @Component({
   selector: 'app-all-users',
@@ -11,17 +13,14 @@ import { User, Badge } from '../../../../interfaces/solutions.interfaces';
   styleUrl: './all-users.component.css'
 })
 export class AllUsersComponent implements OnInit {
-  // Data
   users: User[] = [];
   filteredUsers: User[] = [];
   
-  // Stats
   totalUsers: number = 0;
   activeUsers: number = 0;
   deletedUsers: number = 0;
   adminUsers: number = 0;
   
-  // Search and Filter
   searchQuery: string = '';
   filterBy: string = 'name';
   sortBy: string = 'newest';
@@ -29,21 +28,19 @@ export class AllUsersComponent implements OnInit {
   showFilterDropdown: boolean = false;
   showSortDropdown: boolean = false;
   
-  // Selection
   selectedUsers: string[] = [];
   allSelected: boolean = false;
   
-  // Modal
   selectedUserDetails: User | null = null;
   
-  constructor() {}
+  constructor(
+    private userService: UserService,
+    private ns: NotificationsService
+  ) {}
   
   ngOnInit(): void {
-    this.loadUsers();
-    this.calculateStats();
-    this.filterUsers('all');
+    this.fetchUsers();
     
-    // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
       if (!(event.target as Element).closest('.filter-dropdown') && this.showFilterDropdown) {
         this.showFilterDropdown = false;
@@ -54,141 +51,22 @@ export class AllUsersComponent implements OnInit {
     });
   }
   
-  // Data Loading
-  loadUsers(): void {
-    // Dummy data based on your interface
-    this.users = [
-      {
-        UserId: '1',
-        FullName: 'John Doe',
-        Username: 'johndoe',
-        Email: 'john.doe@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: 'https://i.pravatar.cc/150?img=1',
-        IsDeleted: false,
-        Notified: true,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-05-15'),
-        Badge: Badge.Expert,
-        PreviousBadge: Badge.Intermediate,
-        ProblemsCount: 23,
-        Role: 'Admin',
-        IsSolver: true,
-        Comments: [],
-        Solutions: [
-          { SolutionId: 's1', Description: 'Solution 1', Steps: 'Step 1, Step 2', CreatedAt: new Date(), UpdatedAt: new Date(), ProblemId: 'p1', UserId: '1', editing: false }
-        ]
+  private fetchUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (response) => {
+        if (response.success && response.users) {
+          this.users = response.users;
+          this.calculateStats();
+          this.filterUsers('all');
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
       },
-      {
-        UserId: '2',
-        FullName: 'Alice Smith',
-        Username: 'alicesmith',
-        Email: 'alice.smith@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: 'https://i.pravatar.cc/150?img=5',
-        IsDeleted: false,
-        Notified: true,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-07-22'),
-        Badge: Badge.Intermediate,
-        PreviousBadge: Badge.Beginner,
-        ProblemsCount: 7,
-        Role: 'User',
-        IsSolver: true,
-        Comments: [],
-        Solutions: []
-      },
-      {
-        UserId: '3',
-        FullName: 'Robert Johnson',
-        Username: 'rjohnson',
-        Email: 'robert.johnson@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: 'https://i.pravatar.cc/150?img=3',
-        IsDeleted: true,
-        Notified: false,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-03-10'),
-        Badge: Badge.Beginner,
-        PreviousBadge: Badge.Beginner,
-        ProblemsCount: 2,
-        Role: 'User',
-        IsSolver: false,
-        Comments: [],
-      },
-      {
-        UserId: '4',
-        FullName: 'Maria Garcia',
-        Username: 'mgarcia',
-        Email: 'maria.garcia@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: '',
-        IsDeleted: false,
-        Notified: true,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-08-05'),
-        Badge: Badge.Expert,
-        PreviousBadge: Badge.Intermediate,
-        ProblemsCount: 15,
-        Role: 'Admin',
-        IsSolver: true,
-        Comments: [],
-      },
-      {
-        UserId: '5',
-        FullName: 'David Chen',
-        Username: 'dchen',
-        Email: 'david.chen@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: 'https://i.pravatar.cc/150?img=8',
-        IsDeleted: false,
-        Notified: true,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-11-18'),
-        Badge: Badge.Intermediate,
-        PreviousBadge: Badge.Beginner,
-        ProblemsCount: 9,
-        Role: 'User',
-        IsSolver: true,
-        Comments: [],
-      },
-      {
-        UserId: '6',
-        FullName: 'Sarah Wilson',
-        Username: 'swilson',
-        Email: 'sarah.wilson@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: 'https://i.pravatar.cc/150?img=9',
-        IsDeleted: false,
-        Notified: true,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-06-30'),
-        Badge: Badge.Admin,
-        PreviousBadge: Badge.Expert,
-        ProblemsCount: 31,
-        Role: 'Admin',
-        IsSolver: true,
-        Comments: [],
-      },
-      {
-        UserId: '7',
-        FullName: 'James Brown',
-        Username: 'jbrown',
-        Email: 'james.brown@example.com',
-        Password: 'hashedpassword',
-        ProfileImage: '',
-        IsDeleted: true,
-        Notified: false,
-        IsWelcomed: true,
-        DateCreated: new Date('2023-02-12'),
-        Badge: Badge.Beginner,
-        PreviousBadge: Badge.Beginner,
-        ProblemsCount: 1,
-        Role: 'User',
-        IsSolver: false,
-        Comments: [],
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
       }
-    ];
+    });
   }
   
   calculateStats(): void {
@@ -198,7 +76,6 @@ export class AllUsersComponent implements OnInit {
     this.adminUsers = this.users.filter(user => user.Role === 'Admin').length;
   }
   
-  // Filter and Search Functions
   filterUsers(filterType: string): void {
     this.currentFilter = filterType;
     
@@ -271,7 +148,6 @@ export class AllUsersComponent implements OnInit {
     }
   }
   
-  // Dropdown Toggle Functions
   toggleFilterDropdown(): void {
     this.showFilterDropdown = !this.showFilterDropdown;
     if (this.showFilterDropdown) {
@@ -286,7 +162,6 @@ export class AllUsersComponent implements OnInit {
     }
   }
   
-  // User Selection Functions
   toggleSelectUser(userId: string): void {
     const index = this.selectedUsers.indexOf(userId);
     
@@ -296,7 +171,6 @@ export class AllUsersComponent implements OnInit {
       this.selectedUsers.splice(index, 1);
     }
     
-    // Update all selected state
     this.updateAllSelectedState();
   }
   
@@ -324,96 +198,148 @@ export class AllUsersComponent implements OnInit {
     this.allSelected = false;
   }
   
-  // Bulk Actions
   bulkDelete(): void {
     if (confirm(`Are you sure you want to delete ${this.selectedUsers.length} users?`)) {
-      // In a real app, you would call a service to delete the users
-      // For this example, we'll just mark them as deleted
-      this.users = this.users.map(user => 
-        this.selectedUsers.includes(user.UserId) 
-          ? { ...user, IsDeleted: true } 
-          : user
-      );
-      
-      // Recalculate stats and reapply filters
-      this.calculateStats();
-      this.filterUsers(this.currentFilter);
+      this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.users = this.users.map(user => 
+              this.selectedUsers.includes(user.UserId) 
+                ? { ...user, IsDeleted: true } 
+                : user
+            );
+            this.calculateStats();
+            this.filterUsers(this.currentFilter);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
   bulkDeactivate(): void {
     if (confirm(`Are you sure you want to deactivate ${this.selectedUsers.length} users?`)) {
-      // In a real app, you would call a service to deactivate the users
-      // For this example, we'll just mark them as deleted
-      this.users = this.users.map(user => 
-        this.selectedUsers.includes(user.UserId) 
-          ? { ...user, IsDeleted: true } 
-          : user
-      );
-      
-      // Recalculate stats and reapply filters
-      this.calculateStats();
-      this.filterUsers(this.currentFilter);
+      this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.users = this.users.map(user => 
+              this.selectedUsers.includes(user.UserId) 
+                ? { ...user, IsDeleted: true } 
+                : user
+            );
+            this.calculateStats();
+            this.filterUsers(this.currentFilter);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
-  // Individual User Actions
   editUser(user: User): void {
-    // In a real app, you would navigate to an edit user page or show a modal
     alert(`Edit user: ${user.FullName}`);
   }
   
   makeAdmin(user: User): void {
     if (confirm(`Are you sure you want to make ${user.FullName} an admin?`)) {
-      // In a real app, you would call a service to update the user
       const updatedUser = { ...user, Role: 'Admin' };
-      this.updateUser(updatedUser);
+      this.userService.updateUser(updatedUser).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.updateUser(updatedUser);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
   removeAdmin(user: User): void {
     if (confirm(`Are you sure you want to remove admin rights from ${user.FullName}?`)) {
-      // In a real app, you would call a service to update the user
       const updatedUser = { ...user, Role: 'User' };
-      this.updateUser(updatedUser);
+      this.userService.updateUser(updatedUser).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.updateUser(updatedUser);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
   toggleUserStatus(user: User): void {
     const action = user.IsDeleted ? 'activate' : 'deactivate';
     if (confirm(`Are you sure you want to ${action} ${user.FullName}'s account?`)) {
-      // In a real app, you would call a service to update the user
       const updatedUser = { ...user, IsDeleted: !user.IsDeleted };
-      this.updateUser(updatedUser);
+      this.userService.updateUser(updatedUser).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.updateUser(updatedUser);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
   deleteUser(user: User): void {
     if (confirm(`Are you sure you want to delete ${user.FullName}?`)) {
-      // In a real app, you would call a service to delete the user
-      // For this example, we'll just mark them as deleted
-      const updatedUser = { ...user, IsDeleted: true };
-      this.updateUser(updatedUser);
+      this.userService.deleteUser(user.UserId).subscribe({
+        next: (response) => {
+          if (response.success) {
+            const updatedUser = { ...user, IsDeleted: true };
+            this.updateUser(updatedUser);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
     }
   }
   
   updateUser(updatedUser: User): void {
-    // Update the user in the main list
     this.users = this.users.map(user => 
       user.UserId === updatedUser.UserId ? updatedUser : user
     );
     
-    // If showing user details, update those too
     if (this.selectedUserDetails && this.selectedUserDetails.UserId === updatedUser.UserId) {
       this.selectedUserDetails = updatedUser;
     }
     
-    // Recalculate stats and reapply filters
     this.calculateStats();
     this.filterUsers(this.currentFilter);
   }
   
-  // User Details Modal
   showUserDetails(user: User): void {
     this.selectedUserDetails = { ...user };
   }
@@ -422,7 +348,6 @@ export class AllUsersComponent implements OnInit {
     this.selectedUserDetails = null;
   }
   
-  // Helper Functions
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',

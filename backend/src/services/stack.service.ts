@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { StackInterface } from "../interfaces/methods.interfaces";
-import { Stack } from "../interfaces/solutions.interfaces";
+import { Stack, StackDto } from "../interfaces/solutions.interfaces";
 import { v4 } from "uuid";
 
 export class StackService implements StackInterface {
@@ -42,7 +42,7 @@ export class StackService implements StackInterface {
       }
     }
   }
-  async updateStack(StackId: string, stack: Partial<Stack>): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async updateStack(StackId: string, stack: StackDto): Promise<{ success: boolean; message?: string; error?: string; }> {
     
     let stackExists = await this.prisma.stack.findUnique({ where: { StackId } });
 
@@ -52,12 +52,11 @@ export class StackService implements StackInterface {
         'error': 'Stack not found'
       }
     } else {
-      let { StackId, ...r_stack } = stackExists;
 
       let update = await this.prisma.stack.update({
         where: { StackId },
         data: {
-          ...r_stack
+          ...stack
         }
       });
 

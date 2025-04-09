@@ -65,6 +65,21 @@ export interface Problem {
   ProjectStructure?: ProjectStructure[];
 }
 
+export interface ProblemDto {
+  Title: string;
+  Description: string;
+  ErrorCode?: string;
+  Context?: string;
+  Environment?: string;
+  Tags?: string;
+  Reproducibility: boolean;
+  Logs?: string;
+  PriorityLevel?: number;
+  ImagePath?: string;
+  StackId: string;
+  CategoryId: string;
+}
+
 export interface Solution {
   SolutionId: string;
   Description: string;
@@ -119,6 +134,12 @@ export interface ProjectStructure {
   PSG?: PSG[];
 }
 
+export interface ProjectStructureDto {
+  Title: string;
+  Description: string;
+  StackId: string;
+}
+
 export interface PSG {
   PSGId: string;
   Title: string;
@@ -130,6 +151,13 @@ export interface PSG {
   RelatedSolutions?: Solution[];
 }
 
+export interface PSGDto {
+  Title: string;
+  ProjectId: string;
+  PictorialGuide?: string;
+  TextInstructions: string;
+}
+
 export interface LoginDetails {
   Email: string;
   Password: string;
@@ -139,6 +167,12 @@ export interface RecoveryDetails {
   Email: string,
   RecoveryCode: string,
   NewPassword: string
+}
+
+export interface StackDto {
+  Name: string;
+  Description: string;
+  Version: string;
 }
 
 export interface MailConfigurations {

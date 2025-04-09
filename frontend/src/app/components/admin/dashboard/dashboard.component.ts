@@ -130,8 +130,8 @@ export class DashboardComponent implements OnInit {
   private fetchRecentProjectStructures(): void {
     this.projectStructureService.getAllProjectStructures().subscribe({
       next: (response) => {
-        if (response.success && response.projectStructures) {
-          this.recentProjectStructures = response.projectStructures;
+        if (response.success && response.projects) {
+          this.recentProjectStructures = response.projects;
           this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
           this.ns.showAlert(SuccessType.Warning, response.error as string);

@@ -2,7 +2,7 @@
 <div class="problem-creation-container">
   <form [formGroup]="problemForm" (ngSubmit)="onSubmit()" class="problem-form">
     <h2 class="form-title">
-      <i class="fas fa-bug"></i> Create <span class="new">New</span> Problem
+      <i class="fas fa-bug"></i> {{updateProblemData === null ? 'Create' : 'Update'}} <span class="new">{{updateProblemData === null ? 'New' : ''}}</span> Problem
     </h2>
 
     <div class="form-grid">
@@ -207,7 +207,7 @@
         class="submit-btn" 
         [disabled]="!problemForm.valid"
       >
-        <i class="fas fa-save"></i> Create Problem
+        <i class="fas fa-save"></i> {{updateProblemData === null ? 'Create' : 'Update'}} Problem
       </button>
       <button 
         type="button" 

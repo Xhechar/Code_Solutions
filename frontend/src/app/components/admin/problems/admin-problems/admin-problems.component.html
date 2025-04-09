@@ -1,3 +1,4 @@
+<app-notifications></app-notifications>
 <div class="problems-container">
   <!-- Stats Section -->
   <div class="stats-container">
@@ -79,7 +80,7 @@
             <span>{{ problem.DateCreated | date:'mediumDate' }}</span>
           </div>
           <div class="problem-actions">
-            <button class="action-btn edit" routerLink="/admin/create-problem" data-tooltip="Edit Problem">
+            <button class="action-btn edit" (click)="setData(problem)" routerLink="/admin/create-problem" data-tooltip="Edit Problem">
               <i class='bx bx-edit'></i>
               <span class="tooltip">Edit Problem</span>
             </button>

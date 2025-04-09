@@ -1,13 +1,14 @@
 import { PrismaClient, ProjectStructure } from "@prisma/client";
 import { ProjectStructureInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
+import { ProjectStructureDto } from "../interfaces/solutions.interfaces";
 
 export class ProjectStructureService implements ProjectStructureInterface {
   prisma = new PrismaClient({
     log: ["error"]
   });
 
-  async createProjectStructure(project: ProjectStructure): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async createProjectStructure(project: ProjectStructureDto): Promise<{ success: boolean; message?: string; error?: string; }> {
     
     let create = await this.prisma.projectStructure.create({
       data: {
@@ -30,7 +31,7 @@ export class ProjectStructureService implements ProjectStructureInterface {
       }
     } 
   }
-  async updateProjectStructure(ProjectId: string, project: Partial<ProjectStructure>): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async updateProjectStructure(ProjectId: string, project: ProjectStructureDto): Promise<{ success: boolean; message?: string; error?: string; }> {
     
     let projectExists = await this.prisma.projectStructure.findUnique({
       where: {

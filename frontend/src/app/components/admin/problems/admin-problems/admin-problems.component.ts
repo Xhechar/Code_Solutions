@@ -6,11 +6,13 @@ import { RouterLink } from '@angular/router';
 import { NotificationsService } from '../../../../services/modifiers/notifications.service';
 import { ProblemService } from '../../../../services/problem.service';
 import { SolutionService } from '../../../../services/solution.service';
+import { NotificationsComponent } from "../../../notifications/notifications.component";
+import { ModalService } from '../../../../services/modifiers/modal.service';
 
 @Component({
   selector: 'app-admin-problems',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationsComponent],
   templateUrl: './admin-problems.component.html',
   styleUrl: './admin-problems.component.css'
 })
@@ -33,7 +35,8 @@ export class AdminProblemsComponent implements OnInit {
   constructor(
     private problemService: ProblemService,
     private ns: NotificationsService,
-    private sos: SolutionService
+    private sos: SolutionService,
+    private ms: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -242,5 +245,9 @@ export class AdminProblemsComponent implements OnInit {
       default:
         return 'Unknown';
     }
+  }
+
+  setData(problem: Problem): void {
+    this.ms.setUpdateProblemData(problem);
   }
 }
