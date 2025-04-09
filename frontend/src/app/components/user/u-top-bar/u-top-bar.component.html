@@ -1,3 +1,4 @@
+<app-notifications></app-notifications>
 <div class="top-bar">
   <div class="top-bar-left">
     <div class="brand">
@@ -23,12 +24,12 @@
     
     <div class="profile-section" (click)="toggleProfileMenu()">
       <div class="profile-info">
-        <div class="profile-name">Jane Doe</div>
-        <div class="profile-role">Full Stack Developer</div>
+        <div class="profile-name">{{user.FullName}}</div>
+        <div class="profile-role">{{user.Username}}</div>
       </div>
       
       <div class="profile-image">
-        <img src="https://i.pinimg.com/236x/ce/40/b6/ce40b67b89fbba423a330ee1a6bff863.jpg" alt="Profile Image">
+        <img [src]="user.ProfileImage" [alt]="user.Username" class="profile-avatar">
         <div class="online-indicator"></div>
       </div>
       
@@ -36,8 +37,8 @@
       
       <div class="profile-dropdown" [class.active]="isProfileMenuOpen">
         <div class="dropdown-header">
-          <strong>Jane Doe</strong>
-          <span>Full Stack Developer</span>
+          <strong>{{user.FullName}}</strong>
+          <span>{{user.Role}}</span>
         </div>
         <div class="dropdown-divider"></div>
         <a routerLink="my-profile"><i class="bx bx-user"></i> View Profile</a>

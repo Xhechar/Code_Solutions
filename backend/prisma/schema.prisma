@@ -142,7 +142,7 @@ model PSG {
   Title           String
   ProjectId     String
   PictorialGuide  String?
-  TextInstructions String
+  TextInstructions String //remember to add RelatedProblemIds
   RelatedProblems    Problem[]
   RelatedSolutions   Solution[]
   Project   ProjectStructure  @relation(fields: [ProjectId], references: [ProjectId], onDelete: Cascade, onUpdate: NoAction)

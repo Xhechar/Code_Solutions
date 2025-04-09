@@ -2,11 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SuccessType, User } from '../../../interfaces/solutions.interfaces';
+import { UserService } from '../../../services/user.service';
+import { NotificationsService } from '../../../services/modifiers/notifications.service';
+import { NotificationsComponent } from "../../notifications/notifications.component";
 
 @Component({
   selector: 'app-u-top-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationsComponent],
   templateUrl: './u-top-bar.component.html',
   styleUrl: './u-top-bar.component.css'
 })
@@ -15,14 +19,27 @@ export class UTopBarComponent implements OnInit {
   isCreateMenuOpen = false;
   isSidebarCollapsed = false;
 
-  constructor() { }
+  user!: User;
+
+  constructor(private us: UserService, private ns: NotificationsService) { }
 
   ngOnInit(): void {
-    // Subscribe to sidebar state changes
-    // This is a placeholder - you would implement this based on your sidebar service
-    // this.sidebarService.sidebarState$.subscribe(isCollapsed => {
-    //   this.isSidebarCollapsed = isCollapsed;
-    // });
+    this.fetchUserDetails();
+  }
+
+  fetchUserDetails(): void {
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.user = response.user as User;
+        } else {
+          // console.error('Failed to fetch user details:', response.error);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   toggleProfileMenu(): void {

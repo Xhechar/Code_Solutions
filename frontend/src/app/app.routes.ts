@@ -3,7 +3,6 @@ import { LandingComponent } from './components/landing/landing.component';
 import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import { SingleProblemComponent } from './components/single-problem/single-problem.component';
 import { CreateProblemComponent } from './components/create-problem/create-problem.component';
 import { CreateSolutionComponent } from './components/create-solution/create-solution.component';
 import { VerifyMailComponent } from './components/verify-mail/verify-mail.component';
@@ -13,20 +12,13 @@ import { CommentsComponent } from './components/admin/comments/comments.componen
 import { DashboardComponent } from './components/admin/dashboard/dashboard.component';
 import { ProblemsComponent } from './components/admin/problems/problems.component';
 import { ProjectStructureComponent } from './components/admin/project-structure/project-structure.component';
-import { SolutionsComponent } from './components/admin/solutions/solutions.component';
 import { TechToolsComponent } from './components/admin/tech-tools/tech-tools.component';
 import { UsersComponent } from './components/admin/users/users.component';
 import { AllUsersComponent } from './components/admin/users/all-users/all-users.component';
-import { DeletedUsersComponent } from './components/admin/users/deleted-users/deleted-users.component';
 import { CategoriesComponent } from './components/admin/tech-tools/categories/categories.component';
 import { StacksComponent } from './components/admin/tech-tools/stacks/stacks.component';
-import { AllProblemsComponent } from './components/admin/problems/all-problems/all-problems.component';
 import { PreviewwComponent } from './components/admin/project-structure/previeww/previeww.component';
-import { StructureguidesComponent } from './components/admin/project-structure/structureguides/structureguides.component';
 import { AdminProblemsComponent } from './components/admin/problems/admin-problems/admin-problems.component';
-import { ApprovedProblemsComponent } from './components/admin/problems/approved-problems/approved-problems.component';
-import { PendingProblemsComponent } from './components/admin/problems/pending-problems/pending-problems.component';
-import { UserProblemsComponent } from './components/admin/problems/user-problems/user-problems.component';
 import { UserComponent } from './components/user/user.component';
 import { ContributionsComponent } from './components/user/contributions/contributions.component';
 import { MyProblemsComponent } from './components/user/contributions/my-problems/my-problems.component';
@@ -38,6 +30,7 @@ import { AllProjectStructuresComponent } from './components/admin/project-struct
 import { ProfileComponent } from './components/profile/profile.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { SingleProblemComponent } from './components/single-problem/single-problem.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -47,6 +40,7 @@ export const routes: Routes = [
   { path: 'create-solution', component: CreateSolutionComponent },
   { path: 'verify-mail', component: VerifyMailComponent },
   { path: 'change-password/:Email', component: ChangePasswordComponent },
+  { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
   { path: 'notification', component: NotificationsComponent },
   { path: 'logout', component: LogoutComponent },
   {
@@ -59,7 +53,8 @@ export const routes: Routes = [
       {
         path: 'problems', component: ProblemsComponent, children: [
           { path: '', component: AdminProblemsComponent },
-          { path: 'admin-problems', component: AdminProblemsComponent }
+          { path: 'admin-problems', component: AdminProblemsComponent },
+          { path: 'single-problem/:ProblemId', component: SingleProblemComponent }
       ]},
       {
         path: 'project-structure', component: ProjectStructureComponent, children: [
@@ -85,6 +80,7 @@ export const routes: Routes = [
     path: 'user', component: UserComponent, children: [
       { path: '', component: HomeComponent },
       { path: 'home', component: HomeComponent },
+      { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
       {
         path: 'contributions', component: ContributionsComponent, children: [
           { path: '', component: MyProblemsComponent },

@@ -10,13 +10,6 @@ import { LogoutComponent } from "../../logout/logout.component";
 import { NotificationsComponent } from "../../notifications/notifications.component";
 import { NotificationsService } from '../../../services/modifiers/notifications.service';
 
-interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-}
-
 @Component({
   selector: 'app-u-side-bar',
   standalone: true,
@@ -140,7 +133,7 @@ export class USideBarComponent {
         if (response.success) {
           this.user = response.user as User;
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {

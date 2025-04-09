@@ -23,6 +23,7 @@ export class AllProjectStructuresComponent implements OnInit {
   projectStructures: ProjectStructure[] = [];
   problems: Problem[] = [];
   stacks: Stack[] = [];
+  isLoading: boolean = false;
 
   selectedProblems: string[] = [];
   problemSearchTerm: string = '';
@@ -131,7 +132,7 @@ export class AllProjectStructuresComponent implements OnInit {
       ProjectId: '',
       PictorialGuide: '',
       TextInstructions: '',
-      RelatedProblemIds: undefined
+      RelatedProblemIds: ''
     };
   }
 
@@ -328,11 +329,16 @@ export class AllProjectStructuresComponent implements OnInit {
     this.psgForm.RelatedProblemIds = this.selectedProblems.join(',');
 
     if (this.previewImages.length > 0) {
-      this.psgForm.PictorialGuide = JSON.stringify(this.previewImages);
+      this.psgForm.PictorialGuide = this.previewImages.join(',');
     }
 
     if (this.editingPSG) {
-      this.psgs.updatePsg(this.psgForm.PSGId, this.psgForm).subscribe({
+      let { PSGId, Project, RelatedProblemIds, RelatedProblems, RelatedSolutions, ...rest } = this.psgForm;
+      let updatePSG: PSGDto = {
+        ...rest,
+        PictorialGuide: this.previewImages.join(',')
+      };
+      this.psgs.updatePsg(this.psgForm.PSGId, updatePSG).subscribe({
         next: (response) => {
           if (response.success && this.selectedProject && this.selectedProject.PSG) {
             const index = this.selectedProject.PSG.findIndex(
@@ -356,7 +362,12 @@ export class AllProjectStructuresComponent implements OnInit {
         }
       });
     } else {
-      this.psgs.createPsg(this.selectedProject.ProjectId, this.psgForm).subscribe({
+      let {PSGId, RelatedSolutions, PictorialGuide, RelatedProblems, Project, RelatedProblemIds, ...rest} = this.psgForm;
+      let createPSG: PSGDto = {
+        ...rest,
+        PictorialGuide: this.previewImages.join(',')
+      };
+      this.psgs.createPsg(this.selectedProject.ProjectId, createPSG).subscribe({
         next: (response) => {
           if (response.success && this.selectedProject) {
             if (!this.selectedProject.PSG) {
@@ -420,6 +431,8 @@ export class AllProjectStructuresComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
+    this.isLoading = true;
+
     Array.from(input.files).forEach((file) => {
       const formData: FormData = new FormData();
       formData.append('file', file);
@@ -433,15 +446,17 @@ export class AllProjectStructuresComponent implements OnInit {
         .then(res => res.json())
         .then(res => {
           this.previewImages.push(res.secure_url);
+          this.isLoading = false;
           if (this.selectedImageIndex === 0 && this.previewImages.length === 1) {
             this.selectedImageIndex = 0;
           }
+          this.isLoading = true;
         })
         .catch(error => {
           this.ns.showAlert(SuccessType.Error, 'Image upload failed');
         });
     });
-
+    this.isLoading = false;
     input.value = '';
   }
 

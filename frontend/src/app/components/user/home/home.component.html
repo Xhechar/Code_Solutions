@@ -1,3 +1,4 @@
+<app-notifications></app-notifications>
 <div class="problems-container">
     <div class="test-summary">
         <div class="test-stats">
@@ -21,15 +22,15 @@
         <div *ngFor="let problem of problems" class="problem-card">
             <div class="problem-header">
                 <!-- User-created Problem Header -->
-                <ng-container *ngIf="problem.Origin === 'user'">
+                <ng-container *ngIf="problem.User?.Role === 'user'">
                     <div class="problem-solver-info">
-                        <img [src]="problem.Solver?.ProfileImage" alt="Solver Profile" class="solver-profile">
+                        <img [src]="problem.User?.ProfileImage" alt="Solver Profile" class="solver-profile">
                         <div class="solver-details">
-                            <span class="solver-name">{{ problem.Solver?.FullName }}</span>
+                            <span class="solver-name">{{ problem.User?.FullName }}</span>
                             <div class="badge-container">
-                                <i *ngIf="problem.Solver?.Badge?.primary" class="fas fa-medal primary-badge"></i>
-                                <i *ngIf="problem.Solver?.Badge?.secondary" class="fas fa-award secondary-badge"></i>
-                                <i *ngIf="problem.Solver?.Badge?.tertiary" class="fas fa-star tertiary-badge"></i>
+                                <i *ngIf="problem.User?.Badge" class="fas fa-medal primary-badge"></i>
+                                <i *ngIf="problem.User?.Badge" class="fas fa-award secondary-badge"></i>
+                                <i *ngIf="problem.User?.Badge" class="fas fa-star tertiary-badge"></i>
                             </div>
                         </div>
                     </div>
@@ -37,7 +38,7 @@
                 </ng-container>
   
                 <!-- Admin-created Problem Header -->
-                <ng-container *ngIf="problem.Origin === 'team'">
+                <ng-container *ngIf="problem.User?.Role === 'admin'">
                     <div class="problem-solver-info">
                         <img src="/assets/cs-team-logo.png" alt="CS Team" class="solver-profile">
                         <div class="solver-details">

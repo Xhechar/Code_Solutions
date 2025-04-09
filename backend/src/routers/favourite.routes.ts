@@ -6,6 +6,6 @@ export const favouriteRouter = Router();
 
 const favouriteController = new FavouriteController();
 
-favouriteRouter.post('/add-favourite', verifyUser, favouriteController.addFavourite);
+favouriteRouter.post('/add-favourite/:ProblemId', verifyUser, favouriteController.addFavourite);
 favouriteRouter.delete('/remove-favourite/:FavouriteId', verifyUser, favouriteController.removeFavourite);
 favouriteRouter.get('/get-user-favourites', verifyUser, favouriteController.getFavouritesByUser);

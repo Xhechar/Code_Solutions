@@ -152,6 +152,9 @@ export const PSGSchema = joi.object({
     "string.max": "Title must not exceed 100 characters",
     "string.required": "Title is required"
   }),
+  ProjectId: joi.string().required().messages({
+    "string.required": "Project ID is required"
+  }),
   PictorialGuide: joi.string().max(500),
   TextInstructions: joi.string().max(5000)
 });

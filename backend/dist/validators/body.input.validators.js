@@ -148,6 +148,9 @@ exports.PSGSchema = joi_1.default.object({
         "string.max": "Title must not exceed 100 characters",
         "string.required": "Title is required"
     }),
+    ProjectId: joi_1.default.string().required().messages({
+        "string.required": "Project ID is required"
+    }),
     PictorialGuide: joi_1.default.string().max(500),
     TextInstructions: joi_1.default.string().max(5000)
 });

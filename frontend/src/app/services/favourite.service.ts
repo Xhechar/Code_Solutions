@@ -11,10 +11,10 @@ export class FavouriteService {
   
   constructor(private http: HttpClient) { }
   
-  addFavourite(favourite: Favourite): Observable<{ success: boolean, error?: string, message?: string }> {
+  addFavourite(ProductId: string): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}add-favourite`,
-      favourite, 
+      `${this.API_URL}add-favourite/{ProblemId}`,
+      {}, 
       { withCredentials: true }
     );
   }

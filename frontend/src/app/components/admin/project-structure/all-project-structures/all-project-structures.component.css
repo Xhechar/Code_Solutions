@@ -856,7 +856,7 @@ select.ng-invalid.ng-touched {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 300;
+  z-index: 1010;
   animation: fadeIn 0.3s var(--animation-timing);
 }
 

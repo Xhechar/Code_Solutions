@@ -214,7 +214,7 @@
           <div class="file-upload-container">
             <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple #fileInput>
             <button type="button" class="btn-upload" (click)="fileInput.click()">
-              <i class="fas fa-cloud-upload-alt"></i> Upload Images
+              <i [ngClass]="isLoading ? 'bx bx-loader-circle bx-spin' : 'fas fa-cloud-upload-alt'"></i> Upload Images
             </button>
           </div>
           
