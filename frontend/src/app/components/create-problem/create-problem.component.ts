@@ -2,12 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Category, Problem, Stack } from '../../interfaces/solutions.interfaces';
+import { Category, Problem, Stack, SuccessType } from '../../interfaces/solutions.interfaces';
+import { StackService } from '../../services/stack.service';
+import { CategoryService } from '../../services/category.service';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
+import { NotificationsComponent } from '../notifications/notifications.component';
+import { ProblemService } from '../../services/problem.service';
 
 @Component({
   selector: 'app-create-problem',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, NotificationsComponent],
   templateUrl: './create-problem.component.html',
   styleUrl: './create-problem.component.css'
 })
@@ -16,60 +21,13 @@ export class CreateProblemComponent implements OnInit{
   uploadedImages: string[] = [];
   mainPreviewImage: string | null = null;
 
-  stacks: Stack[] = [
-    {
-      StackId: '1', Name: 'Angular',
-      Description: '',
-      Version: ''
-    },
-    {
-      StackId: '2', Name: 'React',
-      Description: '',
-      Version: ''
-    },
-    {
-      StackId: '3', Name: 'Vue',
-      Description: '',
-      Version: ''
-    },
-    {
-      StackId: '4', Name: 'Node.js',
-      Description: '',
-      Version: ''
-    },
-    {
-      StackId: '5', Name: 'Python',
-      Description: '',
-      Version: ''
-    }
-  ];
+  stacks: Stack[] = [];
 
-  categories: Category[] = [
-    {
-      CategoryId: '1', Name: 'Frontend',
-      Description: ''
-    },
-    {
-      CategoryId: '2', Name: 'Backend',
-      Description: ''
-    },
-    {
-      CategoryId: '3', Name: 'Database',
-      Description: ''
-    },
-    {
-      CategoryId: '4', Name: 'DevOps',
-      Description: ''
-    },
-    {
-      CategoryId: '5', Name: 'Full Stack',
-      Description: ''
-    }
-  ];
+  categories: Category[] = [];
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private ss: StackService, private cs: CategoryService, private ns: NotificationsService, private ps: ProblemService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -129,6 +87,36 @@ export class CreateProblemComponent implements OnInit{
     }
   }
 
+  fetchStacks() {
+    this.ss.getAllStacks().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.stacks = response.stacks as Stack[];
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
+  }
+
+  fetchCategories() {
+    this.cs.getAllCategories().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.categories = response.categories as Category[];
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
+  }
+
   selectMainImage(image: string): void {
     this.mainPreviewImage = image;
   }
@@ -174,12 +162,23 @@ export class CreateProblemComponent implements OnInit{
   onSubmit(): void {
     if (this.problemForm.valid) {
 
-      let formValue: Partial<Problem> = {
+      let formValue: Problem = {
         ... this.problemForm.value,
         ImagePath: this.uploadedImages.join(', ')
-      }
-
-      console.log('Submitting problem:', formValue);
+      };
+      //use the subscription here
+      this.ps.createProblem(formValue).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
       
       this.resetForm();
     } else {

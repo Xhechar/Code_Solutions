@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Stack } from '../interfaces/solutions.interfaces';
+import { Stack, StackDto } from '../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class StackService {
 
   constructor(private http: HttpClient) { }
 
-  createStack(stack: Stack): Observable<{ success: boolean, error?: string, message?: string }> {
+  createStack(stack: StackDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}create-stack`,
       stack,
@@ -19,7 +19,7 @@ export class StackService {
     );
   }
 
-  updateStack(StackId: string, stack: Stack): Observable<{ success: boolean, error?: string, message?: string }> {
+  updateStack(StackId: string, stack: StackDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-stack/${StackId}`,
       stack,

@@ -5,6 +5,17 @@ export enum Badge {
   Beginner = 'Beginner'
 }
 
+export interface Stats {
+  totalUsers: number,
+    userGrowth: number,
+    totalProblems: number,
+    problemGrowth: number,
+    totalSolutions: number,
+    solutionGrowth: number,
+    totalProjects: number,
+    projectGrowth: number
+}
+
 export interface User {
   UserId: string;
   FullName: string;
@@ -35,6 +46,12 @@ export interface Stack {
   Version: string;
   Problems?: Problem[];
   ProjectStructures?: ProjectStructure[];
+}
+
+export interface StackDto {
+  Name: string;
+  Description: string;
+  Version: string;
 }
 
 export interface Category {

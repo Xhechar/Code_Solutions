@@ -1,3 +1,4 @@
+/* Main layout styles */
 .stacks-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -58,6 +59,7 @@
   transform: translateY(-2px);
 }
 
+/* Stack grid layout */
 .stacks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -152,6 +154,7 @@
   background-color: rgba(255, 0, 0, 0.1);
 }
 
+/* Modal overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -171,17 +174,258 @@
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+  animation: fadeIn 0.3s var(--animation-timing);
 }
 
+/* Modal Form Styling */
+.form-container {
+ background-color: white;
+ border-radius: 12px;
+ padding: 30px;
+ box-shadow: var(--card-shadow);
+}
+
+.form h2 {
+ margin-top: 0;
+ color: var(--text-primary);
+ font-size: 24px;
+ margin-bottom: 10px;
+}
+
+.form-description {
+ color: var(--text-secondary);
+ margin-bottom: 25px;
+ font-size: 15px;
+}
+
+.form-group {
+ margin-bottom: 20px;
+ position: relative;
+}
+
+.form-group label {
+ display: block;
+ margin-bottom: 8px;
+ font-weight: 500;
+ color: var(--text-primary);
+}
+
+.optional {
+ font-size: 12px;
+ font-weight: normal;
+ color: var(--text-secondary);
+}
+
+.form-group input, 
+.form-group textarea {
+ width: 100%;
+ padding: 12px 16px;
+ border: 1px solid var(--border-color);
+ border-radius: 8px;
+ font-size: 16px;
+ transition: all 0.3s ease;
+ background-color: var(--card-bg);
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+ outline: none;
+ border-color: var(--accent);
+ box-shadow: 0 0 0 3px rgba(110, 220, 103, 0.2);
+}
+
+.form-group input::placeholder, 
+.form-group textarea::placeholder {
+ color: #aaa;
+}
+
+.error-messages {
+ margin-top: 6px;
+ color: var(--danger);
+ font-size: 13px;
+}
+
+.error-messages p {
+ margin: 3px 0;
+}
+
+.char-count {
+ position: absolute;
+ right: 10px;
+ bottom: 10px;
+ font-size: 12px;
+ color: var(--text-secondary);
+}
+
+.char-count.warning {
+ color: var(--warning);
+}
+
+/* Project Structures Styling */
+.structures-container {
+ margin-bottom: 15px;
+}
+
+.structure-item {
+ display: flex;
+ align-items: center;
+ margin-bottom: 10px;
+}
+
+.structure-item input {
+ flex: 1;
+}
+
+.btn-remove {
+ background: none;
+ border: none;
+ color: var(--danger);
+ font-size: 18px;
+ cursor: pointer;
+ padding: 0 10px;
+ transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+ transform: scale(1.2);
+}
+
+.btn-add {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ background-color: var(--neutral);
+ border: none;
+ border-radius: 8px;
+ padding: 10px 15px;
+ color: var(--text-primary);
+ cursor: pointer;
+ transition: all 0.3s ease;
+ width: 100%;
+}
+
+.btn-add:hover {
+ background-color: rgba(110, 220, 103, 0.15);
+}
+
+.btn-icon {
+ font-size: 16px;
+ font-weight: bold;
+}
+
+/* Form Actions */
+.form-actions {
+ display: flex;
+ justify-content: flex-end;
+ gap: 15px;
+ margin-top: 30px;
+}
+
+.btn-back, .btn-submit {
+ padding: 12px 24px;
+ border-radius: 8px;
+ font-size: 16px;
+ font-weight: 500;
+ cursor: pointer;
+ transition: all 0.3s ease;
+}
+
+.btn-back {
+ background-color: var(--neutral);
+ border: none;
+ color: var(--text-primary);
+}
+
+.btn-back:hover {
+ background-color: #e0e0e0;
+}
+
+.btn-submit {
+ background-color: var(--accent);
+ border: none;
+ color: white;
+}
+
+.btn-submit:hover {
+ background-color: var(--accent-hover);
+ transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+ background-color: #cccccc;
+ cursor: not-allowed;
+ transform: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+ from { opacity: 0; transform: translateY(20px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .stacks-header {
     flex-direction: column;
     text-align: center;
     gap: 20px;
   }
-
+  
   .stack-stats {
     flex-direction: column;
     align-items: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-back, .btn-submit {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .form-container {
+    padding: 20px 15px;
+  }
+  
+  .modal-content {
+    max-width: 95%;
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stacks-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .structure-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-remove {
+    align-self: flex-end;
+    margin-top: 5px;
+  }
+  
+  .stack-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .stack-version {
+    align-self: flex-start;
+  }
+  
+  .form h2 {
+    font-size: 20px;
+  }
+  
+  .form-description {
+    font-size: 14px;
   }
 }

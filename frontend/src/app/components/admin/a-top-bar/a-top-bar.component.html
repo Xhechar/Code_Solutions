@@ -32,11 +32,11 @@
     
     <div class="user-profile">
       <div class="profile-info">
-        <div class="profile-name">{{user.name}}</div>
-        <div class="profile-role">{{user.role}}</div>
+        <div class="profile-name">{{user.FullName}}</div>
+        <div class="profile-role">{{user.Role}}</div>
       </div>
       <div class="profile-img profile-btn" (click)="toggleProfileMenu($event)">
-        <img src="https://i.pinimg.com/236x/0e/4a/a6/0e4aa6a4ebdc37403fc2c8cfa28b259f.jpg" alt="Admin">
+        <img [src]="user.ProfileImage" alt="Admin">
       </div>
     </div>
   </div>

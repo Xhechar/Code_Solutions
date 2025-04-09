@@ -12,11 +12,11 @@
 
   <div class="admin-info" *ngIf="!isCollapsed">
     <div class="admin-avatar">
-      <img src="https://i.pinimg.com/236x/0e/4a/a6/0e4aa6a4ebdc37403fc2c8cfa28b259f.jpg" alt="Admin" />
+      <img [src]="user.ProfileImage" alt="Admin" />
     </div>
     <div class="admin-details">
-      <span class="admin-name">Felix Okoth</span>
-      <span class="admin-role">Admin</span>
+      <span class="admin-name">{{user.FullName}}</span>
+      <span class="admin-role">{{user.Role}}</span>
     </div>
   </div>
 

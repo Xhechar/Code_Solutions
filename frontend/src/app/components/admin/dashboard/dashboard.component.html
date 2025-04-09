@@ -1,52 +1,12 @@
+<app-notifications></app-notifications>
 <!-- admin-dashboard.component.html -->
 <div class="dashboard-container">
   <!-- Main Content Area -->
-  <main class="main-content">
-    <header class="top-nav">
-      <div class="search-container">
-        <i class="fa fa-search"></i>
-        <input type="text" placeholder="Search..." [(ngModel)]="searchQuery" (keyup.enter)="search()">
-      </div>
-      
-      <div class="top-nav-right">
-        <button class="notification-btn" (click)="toggleNotifications()">
-          <i class="fa fa-bell"></i>
-          <span class="badge" *ngIf="notifications.length > 0">{{notifications.length}}</span>
-        </button>
-        
-        <div class="notification-dropdown" *ngIf="showNotifications">
-          <div class="notification-header">
-            <h3>Notifications</h3>
-            <button (click)="markAllAsRead()">Mark all as read</button>
-          </div>
-          <ul class="notification-list">
-            <li *ngFor="let notification of notifications" [ngClass]="{'unread': !notification.read}">
-              <div class="notification-icon" [ngClass]="notification.type">
-                <i [class]="getNotificationIcon(notification.type)"></i>
-              </div>
-              <div class="notification-content">
-                <p>{{notification.message}}</p>
-                <span class="notification-time">{{notification.time | date:'short'}}</span>
-              </div>
-              <button class="mark-read-btn" (click)="markAsRead(notification.id)">
-                <i class="fa fa-check"></i>
-              </button>
-            </li>
-            <li class="no-notifications" *ngIf="notifications.length === 0">
-              <p>No new notifications</p>
-            </li>
-          </ul>
-          <div class="notification-footer">
-            <a (click)="viewAllNotifications()">View all notifications</a>
-          </div>
-        </div>
-      </div>
-    </header>
-    
+  <main class="main-content">    
     <!-- Dashboard Content -->
     <div class="dashboard-content" *ngIf="activeLink === 'dashboard'">
       <section class="welcome-section">
-        <h1>Welcome, {{currentAdmin?.FullName || 'Admin'}}</h1>
+        <h1>Welcome, {{currentAdmin.FullName || 'Admin'}}</h1>
         <p>Here's what's happening in your platform today</p>
       </section>
       
@@ -155,14 +115,14 @@
                 </div>
                 <div class="stack-stats">
                   <span class="problem-count">
-                    <i class="fa fa-exclamation-circle"></i> {{stack.problemCount}}
+                    <i class="fa fa-exclamation-circle"></i> {{stack.Problems?.length}}
                   </span>
                   <span class="solution-count">
-                    <i class="fa fa-lightbulb"></i> {{stack.solutionCount}}
+                    <i class="fa fa-lightbulb"></i> {{stack.Problems?.length}}
                   </span>
                 </div>
                 <div class="stack-progress">
-                  <div class="progress-bar" [style.width.%]="(stack.solutionCount / stack.problemCount) * 100"></div>
+                  <div class="progress-bar" [style.width.%]="(stack.Problems ? (stack.Problems.length / stack.Problems.length) : 1 ) * 100"></div>
                 </div>
               </li>
             </ul>
@@ -227,8 +187,8 @@
                   <span class="problems-count" *ngIf="user.ProblemsCount > 0">
                     <i class="fa fa-exclamation-circle"></i> {{user.ProblemsCount}} problems
                   </span>
-                  <span class="solutions-count" *ngIf="user.Solutions?.length > 0">
-                    <i class="fa fa-lightbulb"></i> {{user.Solutions?.length}} solutions
+                  <span class="solutions-count" *ngIf="user?.Solutions?.length || 0 > 0">
+                    <i class="fa fa-lightbulb"></i> {{user.Solutions ? user.Solutions.length : 0}} solutions
                   </span>
                 </div>
                 <div class="user-actions">

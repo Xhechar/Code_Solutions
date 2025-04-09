@@ -2,11 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
+import { Problem, ProjectStructure, Stack, Stats, SuccessType, User } from '../../../interfaces/solutions.interfaces';
+import { NotificationsService } from '../../../services/modifiers/notifications.service';
+import { ProblemService } from '../../../services/problem.service';
+import { ProjectStructureService } from '../../../services/project-structure.service';
+import { StackService } from '../../../services/stack.service';
+import { UserService } from '../../../services/user.service';
+import { NotificationsComponent } from '../../notifications/notifications.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationsComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -17,255 +24,170 @@ export class DashboardComponent implements OnInit {
   activeLink: string = 'dashboard';
   activityTimeFrame: string = 'month';
   
-  // Current admin user
-  currentAdmin: any = {
-    UserId: 1,
-    FullName: 'Admin User',
-    Email: 'admin@example.com',
-    ProfileImage: 'assets/admin-avatar.png'
-  };
+  currentAdmin!: User;
   
   // Dashboard statistics
-  stats: any = {
-    totalUsers: 5842,
-    userGrowth: 12.5,
-    totalProblems: 1247,
-    problemGrowth: 8.3,
-    totalSolutions: 982,
-    solutionGrowth: 15.7,
-    totalProjects: 384,
-    projectGrowth: -2.4
-  };
+  stats!: Stats;
   
   // Top tech stacks
-  topStacks: any[] = [
-    {
-      Name: 'MEAN Stack',
-      Version: '2.0',
-      problemCount: 124,
-      solutionCount: 98
-    },
-    {
-      Name: 'React/Redux',
-      Version: '18.2',
-      problemCount: 97,
-      solutionCount: 86
-    },
-    {
-      Name: 'Laravel/Vue',
-      Version: '9.2',
-      problemCount: 76,
-      solutionCount: 53
-    },
-    {
-      Name: 'ASP.NET Core',
-      Version: '7.0',
-      problemCount: 68,
-      solutionCount: 42
-    },
-    {
-      Name: 'Django/React',
-      Version: '4.1',
-      problemCount: 54,
-      solutionCount: 37
-    }
-  ];
+  topStacks: Stack[] = [];
 
   // Recent problems
-  recentProblems: any[] = [
-    {
-      ProblemId: 1,
-      Title: 'Angular Service Injection in Lazy Loaded Modules',
-      Description: 'I\'m having issues with service injection in lazy loaded modules. The service is provided in the root module but is creating a new instance in the lazy loaded module.',
-      Category: { Name: 'Dependency Injection' },
-      Stack: { Name: 'Angular' },
-      DateCreated: new Date('2025-02-28'),
-      User: {
-        UserId: 2,
-        FullName: 'John Doe',
-        Username: 'johndoe',
-        ProfileImage: 'assets/user1.png'
-      }
-    },
-    {
-      ProblemId: 2,
-      Title: 'Redux State Not Updating After API Call',
-      Description: 'After dispatching an action that makes an API call, the Redux state is not being updated. The API call is successful as confirmed in Network tab.',
-      Category: { Name: 'State Management' },
-      Stack: { Name: 'React/Redux' },
-      DateCreated: new Date('2025-03-01'),
-      User: {
-        UserId: 3,
-        FullName: 'Jane Smith',
-        Username: 'janesmith',
-        ProfileImage: 'assets/user2.png'
-      }
-    },
-    {
-      ProblemId: 3,
-      Title: 'MongoDB Aggregation Pipeline Performance Issue',
-      Description: 'Our aggregation pipeline is taking too long to execute. We need to optimize it for better performance.',
-      Category: { Name: 'Database' },
-      Stack: { Name: 'MongoDB' },
-      DateCreated: new Date('2025-03-03'),
-      User: {
-        UserId: 4,
-        FullName: 'Alex Johnson',
-        Username: 'alexj',
-        ProfileImage: 'assets/user3.png'
-      }
-    },
-    {
-      ProblemId: 4,
-      Title: 'Laravel Eloquent Relationship Loading Too Many Records',
-      Description: 'When eager loading relationships in Laravel, it\'s pulling too many records and causing memory issues.',
-      Category: { Name: 'ORM' },
-      Stack: { Name: 'Laravel' },
-      DateCreated: new Date('2025-03-05'),
-      User: {
-        UserId: 5,
-        FullName: 'Sarah Wilson',
-        Username: 'sarahw',
-        ProfileImage: 'assets/user4.png'
-      }
-    }
-  ];
+  recentProblems: Problem[] = [];
   
   // New users
-  newUsers: any[] = [
-    {
-      UserId: 6,
-      FullName: 'Mike Thompson',
-      Username: 'miket',
-      ProfileImage: 'assets/user5.png',
-      Badge: 'intermediate',
-      DateCreated: new Date('2025-03-01'),
-      ProblemsCount: 3,
-      Solutions: [1, 2]
-    },
-    {
-      UserId: 7,
-      FullName: 'Emily Davis',
-      Username: 'emilyd',
-      ProfileImage: 'assets/user6.png',
-      Badge: 'beginner',
-      DateCreated: new Date('2025-03-02'),
-      ProblemsCount: 1,
-      Solutions: []
-    },
-    {
-      UserId: 8,
-      FullName: 'David Kim',
-      Username: 'davidk',
-      ProfileImage: 'assets/user7.png',
-      Badge: 'expert',
-      DateCreated: new Date('2025-03-03'),
-      ProblemsCount: 0,
-      Solutions: [3, 4, 5]
-    },
-    {
-      UserId: 9,
-      FullName: 'Lisa Chen',
-      Username: 'lisac',
-      ProfileImage: 'assets/user8.png',
-      Badge: 'advanced',
-      DateCreated: new Date('2025-03-04'),
-      ProblemsCount: 2,
-      Solutions: [6]
-    }
-  ];
+  newUsers: User[] = [];
   
   // Recent project structures
-  recentProjectStructures: any[] = [
-    {
-      ProjectId: 1,
-      Title: 'React Monorepo Structure',
-      Description: 'A standardized structure for React apps in a monorepo setup with shared libraries.',
-      Stack: { Name: 'React' },
-      LastUpdated: new Date('2025-02-20'),
-      PSG: [1, 2, 3, 4]
-    },
-    {
-      ProjectId: 2,
-      Title: 'Microservices with Spring Boot',
-      Description: 'Best practices for organizing microservices with Spring Boot and Spring Cloud.',
-      Stack: { Name: 'Spring Boot' },
-      LastUpdated: new Date('2025-02-25'),
-      PSG: [5, 6, 7]
-    },
-    {
-      ProjectId: 3,
-      Title: 'Angular Enterprise Architecture',
-      Description: 'Scalable architecture for large Angular applications with modular design.',
-      Stack: { Name: 'Angular' },
-      LastUpdated: new Date('2025-03-01'),
-      PSG: [8, 9, 10, 11, 12]
-    },
-    {
-      ProjectId: 4,
-      Title: 'Django REST API Best Practices',
-      Description: 'Recommended structure for Django REST Framework APIs with proper separation of concerns.',
-      Stack: { Name: 'Django' },
-      LastUpdated: new Date('2025-03-04'),
-      PSG: [13, 14]
-    }
-  ];
-  
-  // Notifications mock data
-  mockNotifications: any[] = [
-    {
-      id: 1,
-      type: 'problem',
-      message: 'New problem reported: "Next.js SSR not working with custom Express server"',
-      time: new Date('2025-03-06T09:15:00'),
-      read: false
-    },
-    {
-      id: 2,
-      type: 'solution',
-      message: 'Solution submitted for: "MongoDB Aggregation Pipeline Performance Issue"',
-      time: new Date('2025-03-06T10:30:00'),
-      read: false
-    },
-    {
-      id: 3,
-      type: 'user',
-      message: 'New user registered: Chris Martin',
-      time: new Date('2025-03-06T11:45:00'),
-      read: true
-    },
-    {
-      id: 4,
-      type: 'system',
-      message: 'System maintenance scheduled for March 10, 2025, at 02:00 UTC',
-      time: new Date('2025-03-05T14:00:00'),
-      read: false
-    },
-    {
-      id: 5,
-      type: 'problem',
-      message: 'Problem flagged for moderation: "Issues with third-party API integration"',
-      time: new Date('2025-03-05T16:20:00'),
-      read: true
-    }
-  ];
+  recentProjectStructures: ProjectStructure[] = [];
 
-  constructor() {}
+  constructor(
+    private userService: UserService,
+    private problemService: ProblemService,
+    private stackService: StackService,
+    private projectStructureService: ProjectStructureService,
+    private ns: NotificationsService
+  ) {}
 
   ngOnInit(): void {
-    // Load notifications data
-    this.notifications = this.mockNotifications;
+    this.fetchCurrentAdmin();
+    this.fetchTopStacks();
+    this.fetchRecentProblems();
+    this.fetchNewUsers();
+    this.fetchRecentProjectStructures();
     
-    // Initialize chart after view is ready
+    // Calculate stats after fetching all data
     setTimeout(() => {
+      this.calculateStats();
       this.initActivityChart();
     }, 100);
   }
 
-  // Methods to handle user interactions
+  private fetchCurrentAdmin(): void {
+    this.userService.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success && response.user) {
+          this.currentAdmin = response.user;
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private fetchTopStacks(): void {
+    this.stackService.getAllStacks().subscribe({
+      next: (response) => {
+        if (response.success && response.stacks) {
+          this.topStacks = response.stacks;
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private fetchRecentProblems(): void {
+    this.problemService.getAllProblems().subscribe({
+      next: (response) => {
+        if (response.success && response.problems) {
+          this.recentProblems = (response.problems as Problem[]).filter(p => p.DateCreated.getTime() < (2 * 60 * 1000));
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private fetchNewUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (response) => {
+        if (response.success && response.users) {
+          this.newUsers = response.users;
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private fetchRecentProjectStructures(): void {
+    this.projectStructureService.getAllProjectStructures().subscribe({
+      next: (response) => {
+        if (response.success && response.projectStructures) {
+          this.recentProjectStructures = response.projectStructures;
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private calculateStats(): void {
+    const previousStats: Stats = {
+      totalUsers: 50,
+      userGrowth: 0,
+      totalProblems: 100,
+      problemGrowth: 0,
+      totalSolutions: 80,
+      solutionGrowth: 0,
+      totalProjects: 20,
+      projectGrowth: 0
+    };
+
+    const currentTotalUsers = this.newUsers.length;
+    const currentTotalProblems = this.recentProblems.length;
+    const currentTotalSolutions = this.recentProblems.reduce((sum, problem) => 
+      sum + (problem.Solutions?.length || 0), 0);
+    const currentTotalProjects = this.recentProjectStructures.length;
+
+    const userGrowth = previousStats.totalUsers > 0 
+      ? ((currentTotalUsers - previousStats.totalUsers) / previousStats.totalUsers) * 100 
+      : 0;
+    const problemGrowth = previousStats.totalProblems > 0 
+      ? ((currentTotalProblems - previousStats.totalProblems) / previousStats.totalProblems) * 100 
+      : 0;
+    const solutionGrowth = previousStats.totalSolutions > 0 
+      ? ((currentTotalSolutions - previousStats.totalSolutions) / previousStats.totalSolutions) * 100 
+      : 0;
+    const projectGrowth = previousStats.totalProjects > 0 
+      ? ((currentTotalProjects - previousStats.totalProjects) / previousStats.totalProjects) * 100 
+      : 0;
+
+    this.stats = {
+      totalUsers: currentTotalUsers,
+      userGrowth: Number(userGrowth.toFixed(2)),
+      totalProblems: currentTotalProblems,
+      problemGrowth: Number(problemGrowth.toFixed(2)),
+      totalSolutions: currentTotalSolutions,
+      solutionGrowth: Number(solutionGrowth.toFixed(2)),
+      totalProjects: currentTotalProjects,
+      projectGrowth: Number(projectGrowth.toFixed(2))
+    };
+  }
+
   search(): void {
     console.log('Searching for:', this.searchQuery);
-    // Implement search functionality
   }
 
   toggleNotifications(): void {
@@ -301,22 +223,21 @@ export class DashboardComponent implements OnInit {
     this.updateActivityChart();
   }
 
-  viewProblem(problemId: number): void {
+  viewProblem(problemId: string): void {
     console.log('Viewing problem:', problemId);
-    // Navigate to problem details
   }
 
-  viewUserProfile(userId: number): void {
+  viewUserProfile(userId: string): void {
     console.log('Viewing user profile:', userId);
     // Navigate to user profile
   }
 
-  messageUser(userId: number): void {
+  messageUser(userId: string): void {
     console.log('Messaging user:', userId);
     // Open messaging interface
   }
 
-  viewProjectStructure(projectId: number): void {
+  viewProjectStructure(projectId: String): void {
     console.log('Viewing project structure:', projectId);
     // Navigate to project structure details
   }
@@ -418,8 +339,6 @@ export class DashboardComponent implements OnInit {
 
   // Update chart when time frame changes
   private updateActivityChart(): void {
-    // In a real app, this would update the existing chart
-    // For this demo, we'll just re-initialize it
     this.initActivityChart();
   }
 }

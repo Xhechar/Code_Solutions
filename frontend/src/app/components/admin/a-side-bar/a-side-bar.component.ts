@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { User } from '../../../interfaces/solutions.interfaces';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-a-side-bar',
@@ -16,10 +18,28 @@ export class ASideBarComponent {
   expandedMenus: string[] = [];
   searchTerm = '';
 
-  constructor() {}
+  user!: User;
+
+  constructor(private us: UserService) {}
 
   ngOnInit(): void {
+    this.getUser();
     this.checkScreenSize();
+  }
+
+  getUser(): void {
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.user = response.user as User;
+        } else {
+          // console.error(response.error);
+        }
+      },
+      error: (error) => {
+        // console.error(error.error.error);
+      }
+    });
   }
 
   @HostListener('window:resize')

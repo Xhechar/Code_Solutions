@@ -2,12 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
-interface User {
-  name: string;
-  role: string;
-  avatar?: string;
-}
+import { User } from '../../../interfaces/solutions.interfaces';
+import { UserService } from '../../../services/user.service';
 
 interface Notification {
   id: number;
@@ -25,11 +21,7 @@ interface Notification {
   styleUrl: './a-top-bar.component.css'
 })
 export class ATopBarComponent implements OnInit {
-  user: User = {
-    name: 'Admin User',
-    role: 'Super Admin',
-    avatar: 'https://i.pinimg.com/236x/0e/4a/a6/0e4aa6a4ebdc37403fc2c8cfa28b259f.jpg'
-  };
+  user!: User;
 
   notifications: Notification[] = [
     {
@@ -66,10 +58,26 @@ export class ATopBarComponent implements OnInit {
   showNotifications: boolean = false;
   unreadNotifications: number = 0;
 
-  constructor() { }
+  constructor(private us: UserService) { }
 
   ngOnInit(): void {
+    this.getUser();
     this.updateUnreadCount();
+  }
+
+  getUser() {
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.user = response.user as User;
+        } else {
+          // console.error(response.error);
+        }
+      },
+      error: (error) => {
+        // console.error(error.error.error);
+      }
+    });
   }
 
   updateUnreadCount(): void {
