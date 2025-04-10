@@ -19,10 +19,18 @@ export class UserService {
     );
   }
 
-  updateUser(user: User): Observable<{ success: boolean, error?: string, message?: string }> {
+  updateUser(user: Partial<User>): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-user`,
       user,
+      { withCredentials: true }
+    );
+  }
+
+  updateProfileImage(ProfilePhoto: string): Observable<{ success: boolean, error?: string, message?: string }> {
+    return this.http.put<{ success: boolean, error?: string, message?: string }>(
+      `${this.API_URL}update-profile-image`,
+      { ProfilePhoto },
       { withCredentials: true }
     );
   }

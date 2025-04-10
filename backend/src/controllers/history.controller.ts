@@ -38,5 +38,17 @@ export class HistoryController {
       });
     }
   }
+
+  async deleteSingleHistory(req: ExtendedRequest, res: Response) {
+    try {
+
+      res.status(201).json(await historyService.deleteSingleHistory(getIdFromToken(req), req.params.HistoryId));
+      
+    } catch (error) {
+      res.status(501).json({
+        'error': error
+      });
+    }
+  }
   
 }

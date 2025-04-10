@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PSGSchema = exports.SolutionSchema = exports.ProblemSchema = exports.CategorySchema = exports.StackSchema = exports.CommentSchema = exports.UserRegisterationSchema = exports.RecoveryDetailsSchema = exports.LoginDetailsSchema = void 0;
+exports.PSGSchema = exports.SolutionSchema = exports.ProblemSchema = exports.CategorySchema = exports.StackSchema = exports.CommentSchema = exports.UserUpdateSchema = exports.UserRegisterationSchema = exports.RecoveryDetailsSchema = exports.LoginDetailsSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.LoginDetailsSchema = joi_1.default.object({
     Email: joi_1.default.string().email().required().messages({
@@ -55,6 +55,22 @@ exports.UserRegisterationSchema = joi_1.default.object({
     }),
     ProfileImage: joi_1.default.string().required().messages({
         "string.required": "Profile image is required"
+    })
+});
+exports.UserUpdateSchema = joi_1.default.object({
+    FullName: joi_1.default.string().min(4).required().messages({
+        "string.min": "Fullname must be at least 4 characters long",
+        "string.required": "Fullname is required"
+    }),
+    Email: joi_1.default.string().email().required().messages({
+        "string.email": "Invalid email format",
+        "string.required": "Email is required"
+    }),
+    Username: joi_1.default.string().min(4).max(30).alphanum().required().messages({
+        "string.min": "Username must be at least 4 characters long",
+        "string.max": "Username must not exceed 30 characters",
+        "string.alphanum": "Username must contain only alphanumeric characters",
+        "string.required": "Username is required"
     })
 });
 exports.CommentSchema = joi_1.default.object({

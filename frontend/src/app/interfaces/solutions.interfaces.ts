@@ -116,7 +116,6 @@ export interface Solution {
   Problem?: Problem;
   UserId: string;
   User?: User;
-  editing: boolean;
   ProjectStructure?: ProjectStructure[];
 }
 
@@ -255,4 +254,10 @@ export enum SuccessType {
 export interface Alert {
   type: SuccessType;
   message: string;
+}
+
+export interface RecentActivities {
+  type: string;
+  text: string;
+  time: Date;
 }

@@ -63,14 +63,14 @@
       
       <!-- Additional links -->
       <li>
-        <a routerLink="/home" routerLinkActive="active">
+        <a routerLink="/user" routerLinkActive="active">
           <i class='bx bx-search-alt'></i>
-          <span>Browse Solutions</span>
+          <span>Browse Challanges</span>
         </a>
       </li>
       
       <li>
-        <a routerLink="/settings" routerLinkActive="active">
+        <a routerLink="/user" routerLinkActive="active">
           <i class='bx bx-cog'></i>
           <span>Settings</span>
         </a>
@@ -84,8 +84,8 @@
       <img [src]="user?.ProfileImage || 'assets/default-avatar.png'" alt="Profile">
     </div>
     <div class="user-info" *ngIf="!sidebarCollapsed">
-      <h4 class="user-name">{{ user ? user.Username.split(' ')[0] : 'guest' }}</h4>
-      <p class="user-email">{{ user?.Email || 'guest@example.com' }}</p>
+      <h4 class="user-name">{{ user ? user.FullName : 'guest' }}</h4>
+      <p class="user-email">{{ user?.Username || 'guest@example.com' }}</p>
       
       <!-- Badges -->
       <div class="badges">

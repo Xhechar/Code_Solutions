@@ -8,6 +8,7 @@ const userController = new UserController();
 
 userRouter.post('/create-user', userController.createUser);
 userRouter.put('/update-user', verifyToken, verifyUser, userController.updateUser);
+userRouter.put('/update-profile-image', verifyToken, verifyUser, userController.updateProfileImage);
 userRouter.put('/soft-delete-user/:UserId', verifyToken, verifyAdmin, userController.softDeleteUser);
 userRouter.delete('/delete-user/:UserId', verifyToken, verifyAdmin, userController.deleteUser);
 userRouter.put('/restore-user/:UserId', verifyToken, verifyAdmin, userController.restoreUser);

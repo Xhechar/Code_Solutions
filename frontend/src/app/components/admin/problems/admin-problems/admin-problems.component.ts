@@ -186,7 +186,7 @@ export class AdminProblemsComponent implements OnInit {
   }
 
   toggleSolutionEdit(solution: Solution): void {
-    solution.editing = !solution.editing;
+    // solution.editing = !solution.editing;
   }
 
   updateSolution(solution: Solution, problem: Problem): void {
@@ -194,7 +194,6 @@ export class AdminProblemsComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           solution.UpdatedAt = new Date();
-          solution.editing = false;
           this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
           this.ns.showAlert(SuccessType.Warning, response.error as string);

@@ -35,5 +35,15 @@ class HistoryController {
             });
         }
     }
+    async deleteSingleHistory(req, res) {
+        try {
+            res.status(201).json(await historyService.deleteSingleHistory((0, verify_tokens_1.getIdFromToken)(req), req.params.HistoryId));
+        }
+        catch (error) {
+            res.status(501).json({
+                'error': error
+            });
+        }
+    }
 }
 exports.HistoryController = HistoryController;

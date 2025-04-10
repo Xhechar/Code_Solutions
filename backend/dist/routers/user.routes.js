@@ -8,6 +8,7 @@ exports.userRouter = (0, express_1.Router)();
 const userController = new user_controller_1.UserController();
 exports.userRouter.post('/create-user', userController.createUser);
 exports.userRouter.put('/update-user', verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, userController.updateUser);
+exports.userRouter.put('/update-profile-image', verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, userController.updateProfileImage);
 exports.userRouter.put('/soft-delete-user/:UserId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, userController.softDeleteUser);
 exports.userRouter.delete('/delete-user/:UserId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, userController.deleteUser);
 exports.userRouter.put('/restore-user/:UserId', verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, userController.restoreUser);

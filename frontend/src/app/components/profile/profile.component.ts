@@ -2,61 +2,37 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { User, History } from '../../interfaces/solutions.interfaces';
+import { User, History, RecentActivities, SuccessType } from '../../interfaces/solutions.interfaces';
+import { UserService } from '../../services/user.service';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
+import { NotificationsComponent } from "../notifications/notifications.component";
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent implements OnInit {
-  user: User = {
-    UserId: '123',
-    FullName: 'John Doe',
-    Username: 'johndoe',
-    Email: 'john.doe@example.com',
-    Password: '',
-    ProfileImage: 'assets/images/profile-placeholder.jpg',
-    IsDeleted: false,
-    Notified: false,
-    IsWelcomed: true,
-    DateCreated: new Date('2023-01-15'),
-    Badge: 'pro' as any,
-    PreviousBadge: 'intermediate' as any,
-    ProblemsCount: 15,
-    Role: 'user',
-    IsSolver: true,
-    Comments: [],
-    Favourites: [],
-    Histories: [],
-    Problems: [],
-    Solutions: []
-  };
+  user!: User;
 
   showEditForm: boolean = false;
 
-  // Added variable for edit form binding
   userEdit: { FullName: string; Username: string; Email: string } = {
     FullName: '',
     Username: '',
     Email: ''
   };
 
-  // Flag to check if profile belongs to current user
-  isCurrentUser: boolean = true;
-
-  // Daily tests data
+  isAdmin: boolean = false;
   completedTestsCount: number = 18;
   totalTestsCount: number = 30;
   testDays: any[] = [];
 
-  // Recent history
   recentHistory: History[] = [];
 
-  // Recent activities (for admin view)
-  recentActivities: any[] = [
+  recentActivities: RecentActivities[] = [
     {
       type: 'problem',
       text: 'New problem reported: "React component not rendering correctly"',
@@ -78,46 +54,38 @@ export class ProfileComponent implements OnInit {
       time: new Date('2025-03-15T11:45:00')
     }
   ];
+  isProfileUploading: boolean = false;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private us: UserService, private ns: NotificationsService) { }
 
   ngOnInit(): void {
-    // Fetch user data based on the route parameter
-    this.route.params.subscribe(params => {
-      const userId = params['id'];
-      if (userId) {
-        this.loadUserData(userId);
-      }
-    });
+    this.loadUserData();
 
-    // Generate test days data for the calendar
     this.generateTestDays();
-    
-    // Load recent history
     this.loadRecentHistory();
   }
 
-  loadUserData(userId: string): void {
-    // In a real application, you would fetch user data from your service
-    // For example:
-    // this.userService.getUserById(userId).subscribe(userData => {
-    //   this.user = userData;
-    //   this.isCurrentUser = this.authService.getCurrentUserId() === userId;
-    //   this.loadRecentHistory();
-    // });
-    
-    console.log(`Loading user data for ID: ${userId}`);
-    
-    // Check if this is the current user (for edit permissions)
-    this.isCurrentUser = userId === 'current-user-id'; // Replace with actual check
+  loadUserData(): void {
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.user = response.user as User;
+          this.isAdmin = this.user.Role === 'admin';
+        } else {
+          console.error('Failed to load user data:', response.error);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching user data:', error);
+      }
+    });
   }
 
   generateTestDays(): void {
     const today = new Date();
     const currentDay = today.getDate();
     
-    // Generate 30 days
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 7; i++) {
       this.testDays.push({
         number: i,
         completed: i <= this.completedTestsCount,
@@ -128,13 +96,6 @@ export class ProfileComponent implements OnInit {
   }
 
   loadRecentHistory(): void {
-    // In a real application, this would come from your API
-    // For example:
-    // this.historyService.getUserHistory(this.user.UserId, 5).subscribe(history => {
-    //   this.recentHistory = history;
-    // });
-    
-    // Dummy data for demonstration
     if (this.user.Histories && this.user.Histories.length > 0) {
       this.recentHistory = this.user.Histories.slice(0, 5);
     }
@@ -155,24 +116,6 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // Method to handle profile image upload
-  onProfileImageUpload(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // Handle file upload logic
-      // In a real application you would use a service to upload the image
-      console.log('File selected for upload:', file.name);
-      
-      // Example of reading the file as a data URL (preview)
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.user.ProfileImage = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  // Method to determine if a user has completed their profile
   isProfileComplete(): boolean {
     return !!(
       this.user.FullName && 
@@ -182,7 +125,6 @@ export class ProfileComponent implements OnInit {
     );
   }
 
-  // Method to switch between admin and user views (for demo purposes)
   toggleAdminView(): void {
     this.user.Role = this.user.Role === 'admin' ? 'user' : 'admin';
   }
@@ -198,24 +140,61 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // Added method to update profile with form values
-  updateProfile(formValue: { fullName: string; username: string; email: string }): void {
-    this.user.FullName = formValue.fullName;
-    this.user.Username = formValue.username;
-    this.user.Email = formValue.email;
-    console.log('Profile updated', this.user);
-    this.showEditForm = false;
+  updateProfile(user: Partial<User>): void {
+    this.us.updateUser(user).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.loadUserData();
+          this.showEditForm = false;
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      }
+      , error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
-  // Added method to handle profile image change from file input
   onProfileImageChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.user.ProfileImage = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    let image = event.target.files[0];
+
+    if (!image) {
+      this.ns.showAlert(SuccessType.Warning, 'Please select an image to upload!');
+      return;
+    } else {
+      this.isProfileUploading = true;
+
+      let formData = new FormData();
+
+      formData.append('file', image);
+      formData.append('upload_preset', 'Code_Solutions');
+      formData.append('cloud_name', 'dakyiye2e');
+
+      fetch('https://api.cloudinary.com/v1_1/dakyiye2e/image/upload', {
+        method: 'POST',
+        body: formData
+      }).then(res => res.json()).then(res => {
+        this.us.updateProfileImage(res.secure_url).subscribe({
+          next: (response) => {
+            if (response.success) {
+              
+              this.user.ProfileImage = res.url;
+              this.ns.showAlert(SuccessType.Success, response.message as string);
+              this.loadUserData();
+              this.isProfileUploading = false;
+            } else {
+              this.ns.showAlert(SuccessType.Warning, response.error as string);
+              this.isProfileUploading = false;
+            }
+          },
+          error: (error) => {
+            this.ns.showAlert(SuccessType.Error, error.error.error as string);
+            this.isProfileUploading = false;
+          }
+        })
+      })
     }
   }
 }

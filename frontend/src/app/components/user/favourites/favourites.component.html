@@ -91,25 +91,25 @@
       *ngFor="let favorite of getCurrentPageItems(); let i = index" 
       class="table-row" 
       [class.even]="i % 2 === 0"
-      [class.solved]="isSolved(favorite.problem)">
+      [class.solved]="isSolved(favorite.Problem!)">
       
       <div class="table-cell cell-title">
         <span class="mobile-label">Problem:</span>
         <div class="problem-title-container">
-          <img *ngIf="favorite.problem.ImagePath" [src]="favorite.problem.ImagePath" alt="Problem Image" class="problem-thumbnail">
+          <img *ngIf="favorite.Problem?.ImagePath" [src]="favorite.Problem?.ImagePath" alt="Problem Image" class="problem-thumbnail">
           <div class="problem-info">
-            <a class="problem-title" (click)="viewProblem(favorite.problem)">
-              {{ favorite.problem.Title }}
+            <a class="problem-title" (click)="viewProblem(favorite.Problem)">
+              {{ favorite.Problem?.Title }}
             </a>
-            <div class="problem-preview">{{ getShortDescription(favorite.problem.Description) }}</div>
+            <div class="problem-preview">{{ getShortDescription(favorite.Problem?.Description) }}</div>
             <div class="problem-meta">
-              <ng-container *ngIf="favorite.problem.Tags && favorite.problem.Tags.length > 0">
-                <span class="meta-tag" *ngFor="let tag of favorite.problem.Tags">
+              <ng-container *ngIf="(favorite.Problem?.Tags?.split(',') || []).length > 0">
+                <span class="meta-tag" *ngFor="let tag of favorite.Problem?.Tags">
                   {{ tag }}
                 </span>
               </ng-container>
-              <span *ngIf="favorite.problem.ErrorCode" class="meta-tag error-code">
-                <i class="fas fa-exclamation-circle"></i> {{ favorite.problem.ErrorCode }}
+              <span *ngIf="favorite.Problem?.ErrorCode" class="meta-tag error-code">
+                <i class="fas fa-exclamation-circle"></i> {{ favorite.Problem?.ErrorCode }}
               </span>
             </div>
           </div>
@@ -118,36 +118,36 @@
       
       <div class="table-cell cell-category">
         <span class="mobile-label">Category:</span>
-        <span class="category-badge">{{ favorite.problem.Category?.Name || 'Uncategorized' }}</span>
+        <span class="category-badge">{{ favorite.Problem?.Category?.Name || 'Uncategorized' }}</span>
       </div>
       
       <div class="table-cell cell-difficulty">
         <span class="mobile-label">Difficulty:</span>
         <div class="difficulty-indicator">
           <div class="difficulty-level" [ngClass]="{
-            'easy': favorite.problem.PriorityLevel === 1,
-            'medium': favorite.problem.PriorityLevel === 2,
-            'hard': favorite.problem.PriorityLevel === 3
+            'easy': favorite.Problem?.PriorityLevel === 1,
+            'medium': favorite.Problem?.PriorityLevel === 2,
+            'hard': favorite.Problem?.PriorityLevel === 3
           }">
-            {{ getDifficultyLabel(favorite.problem.PriorityLevel) }}
+            {{ getDifficultyLabel(favorite.Problem?.PriorityLevel) }}
           </div>
         </div>
       </div>
       
       <div class="table-cell cell-date">
         <span class="mobile-label">Added:</span>
-        {{ favorite.dateAdded | date:'mediumDate' }}
+        {{ today | date:'mediumDate' }}
       </div>
       
       <div class="table-cell cell-actions">
         <span class="mobile-label">Actions:</span>
         <div class="action-buttons">
-          <button class="action-btn view-btn" (click)="viewProblem(favorite.problem)" title="View Problem">
+          <button class="action-btn view-btn" (click)="viewProblem(favorite.Problem)" title="View Problem">
             <i class="fas fa-external-link-alt"></i>
           </button>
           
-          <button class="action-btn solution-btn" *ngIf="hasSolutions(favorite.problem)" 
-            (click)="viewSolutions(favorite.problem)" title="View Solutions">
+          <button class="action-btn solution-btn" *ngIf="hasSolutions(favorite.Problem)" 
+            (click)="viewSolutions(favorite.Problem)" title="View Solutions">
             <i class="fas fa-lightbulb"></i>
           </button>
           
@@ -191,7 +191,7 @@
     <div class="modal-body">
       <p>Are you sure you want to remove this problem from your favorites?</p>
       <p *ngIf="favoriteToRemove">
-        <strong>{{ favoriteToRemove.problem.Title }}</strong>
+        <strong>{{ favoriteToRemove.Problem?.Title }}</strong>
       </p>
     </div>
     <div class="modal-footer">
@@ -199,15 +199,4 @@
       <button class="remove-confirm-btn" (click)="removeFavorite()">Remove</button>
     </div>
   </div>
-</div>
-
-<!-- Notification Toast -->
-<div *ngIf="showNotification" class="notification-toast" [class.error]="notificationIsError">
-  <div class="notification-content">
-    <i class="fas" [class.fa-check-circle]="!notificationIsError" [class.fa-exclamation-circle]="notificationIsError"></i>
-    <span>{{ notificationMessage }}</span>
-  </div>
-  <button class="close-notification" (click)="closeNotification()">
-    <i class="fas fa-times"></i>
-  </button>
 </div>

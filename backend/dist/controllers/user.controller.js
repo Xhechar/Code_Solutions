@@ -25,7 +25,7 @@ class UserController {
     }
     async updateUser(req, res) {
         try {
-            let { error } = body_input_validators_1.UserRegisterationSchema.validate(req.body);
+            let { error } = body_input_validators_1.UserUpdateSchema.validate(req.body);
             if (error) {
                 res.status(400).json({
                     'error': error.message
@@ -33,6 +33,16 @@ class UserController {
             }
             ;
             res.status(201).json(await userService.updateUser((0, verify_tokens_1.getIdFromToken)(req), req.body));
+        }
+        catch (error) {
+            res.status(501).json({
+                'error': error
+            });
+        }
+    }
+    async updateProfileImage(req, res) {
+        try {
+            res.status(201).json(await userService.updateProfileImage((0, verify_tokens_1.getIdFromToken)(req), req.body.ProfilePhoto));
         }
         catch (error) {
             res.status(501).json({

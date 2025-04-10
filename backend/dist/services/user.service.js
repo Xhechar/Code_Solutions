@@ -111,6 +111,49 @@ class UserService {
             };
         }
     }
+    async updateProfileImage(UserId, ProfilePhoto) {
+        let userExists = await this.prisma.user.findUnique({
+            where: {
+                UserId
+            }
+        });
+        if (userExists) {
+            if (userExists.IsDeleted) {
+                return {
+                    'success': false,
+                    'error': 'Update failed because account is terminated. Contact admin'
+                };
+            }
+            else {
+                let updateProfileImage = await this.prisma.user.update({
+                    data: {
+                        ProfileImage: ProfilePhoto
+                    },
+                    where: {
+                        UserId
+                    }
+                });
+                if (updateProfileImage) {
+                    return {
+                        'success': true,
+                        'message': 'Profile updated successfully'
+                    };
+                }
+                else {
+                    return {
+                        'success': false,
+                        'error': 'Unable to update profile image.'
+                    };
+                }
+            }
+        }
+        else {
+            return {
+                'success': false,
+                'error': 'User is not found'
+            };
+        }
+    }
     async softDeleteUser(UserId) {
         let userExists = await this.prisma.user.findUnique({
             where: {

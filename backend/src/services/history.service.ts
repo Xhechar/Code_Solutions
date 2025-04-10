@@ -144,4 +144,59 @@ export class HistoryService implements HistoryInterface {
       };
     }
   }
+
+  async deleteSingleHistory(UserId: string, HistoryId: string): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let userExists = await this.prisma.user.findUnique({
+      where: {
+        UserId
+      }
+    });
+
+    if (userExists == null) {
+      return {
+        'success': false,
+        'error': 'User not found.'
+      }
+    }
+
+    if (userExists.IsDeleted) {
+      return {
+        'success': false,
+        'error': 'Sorry, the user account has been deactivated.'
+      }
+    }
+    
+    let historyExists = await this.prisma.history.findUnique({
+      where: {
+        HistoryId,
+        UserId: userExists.UserId
+      }
+    });
+
+    if (historyExists == null) {
+      return {
+        'success': false,
+        'error': 'History not found.'
+      }
+    }
+
+    let delete_ = await this.prisma.history.delete({
+      where: {
+        HistoryId
+      }
+    });
+
+    if (delete_ == null) {
+      return {
+        'success': false,
+        'error': 'Unable to delete history.'
+      }
+    } else {
+      return {
+        'success': true,
+        'message': 'History deleted successfully.'
+      }
+    }
+  }
 }

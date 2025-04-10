@@ -1,10 +1,11 @@
+<app-notifications></app-notifications>
 <div class="profile-container" [ngClass]="{'admin-view': user.Role === 'admin'}">
     <!-- Profile Header -->
     <div class="profile-header">
         <div class="profile-image-container">
             <img [src]="user.ProfileImage || 'assets/images/default-avatar.png'" alt="Profile Image"
                 class="profile-image">
-            <div class="edit-overlay" *ngIf="isCurrentUser" (click)="fileInput.click()">
+            <div class="edit-overlay" (click)="fileInput.click()">
                 <i class="bx bxs-camera"></i>
                 <input #fileInput type="file" accept="image/*" (change)="onProfileImageChange($event)"
                     style="display: none">
@@ -16,7 +17,7 @@
             <p class="username">{{user.Username}}</p>
             <p class="member-since">Member since {{user.DateCreated | date:'mediumDate'}}</p>
 
-            <div class="action-buttons" *ngIf="isCurrentUser">
+            <div class="action-buttons">
                 <button class="btn primary-btn" (click)="toggleEditForm()"><i class="bx bx-edit"></i> Edit
                     Profile</button>
                 <button class="btn secondary-btn"><i class="bx bx-cog"></i> Settings</button>
@@ -29,7 +30,7 @@
     </div>
 
     <!-- Edit Profile Form -->
-    <div class="edit-profile-form" *ngIf="isCurrentUser && showEditForm">
+    <div class="edit-profile-form" *ngIf="showEditForm">
         <form #profileForm="ngForm" (ngSubmit)="updateProfile(profileForm.value)" novalidate>
             <div class="form-header">
                 <h2>Edit Profile Information</h2>
@@ -40,7 +41,7 @@
 
             <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" class="form-control" [(ngModel)]="userEdit.FullName"
+                <input type="text" id="fullName" name="FullName" class="form-control" [(ngModel)]="userEdit.FullName"
                     #fullName="ngModel" required minlength="3">
                 <div *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)" class="validation-error">
                     <span *ngIf="fullName.errors?.['required']">Full name is required</span>
@@ -50,7 +51,7 @@
 
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" [(ngModel)]="userEdit.Username"
+                <input type="text" id="username" name="Username" class="form-control" [(ngModel)]="userEdit.Username"
                     #username="ngModel" required minlength="3" pattern="^[a-zA-Z0-9_-]+$">
                 <div *ngIf="username.invalid && (username.dirty || username.touched)" class="validation-error">
                     <span *ngIf="username.errors?.['required']">Username is required</span>
@@ -62,7 +63,7 @@
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-control" [(ngModel)]="userEdit.Email"
+                <input type="email" id="email" name="Email" class="form-control" [(ngModel)]="userEdit.Email"
                     #email="ngModel" required email>
                 <div *ngIf="email.invalid && (email.dirty || email.touched)" class="validation-error">
                     <span *ngIf="email.errors?.['required']">Email is required</span>

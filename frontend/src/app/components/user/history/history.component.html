@@ -1,1 +1,181 @@
-<p>history works!</p>
+<app-notifications></app-notifications>
+<div class="history-container">
+  <div class="history-header">
+    <div class="history-title">
+      <i class="bx bx-history"></i>
+      <h2>My Browsing History</h2>
+    </div>
+    <div class="history-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ getTotalItems() }}</span>
+        <span class="stat-label">Total Items</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getItemsThisWeek() }}</span>
+        <span class="stat-label">This Week</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getItemsToday() }}</span>
+        <span class="stat-label">Today</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="search-box">
+      <i class="bx bx-search"></i>
+      <input 
+        type="text" 
+        placeholder="Search history..." 
+        [(ngModel)]="searchText"
+        (input)="applyFilters()"
+      >
+      <i *ngIf="searchText" class="bx bx-x clear-search" (click)="clearSearch()"></i>
+    </div>
+    
+    <div class="filter-options">
+      <div class="filter-select">
+        <label>Stack:</label>
+        <select [(ngModel)]="stackFilter" (change)="applyFilters()">
+          <option value="">All Stacks</option>
+          <option value="Angular">Angular</option>
+          <option value="React">React</option>
+          <option value="Node.js">Node.js</option>
+          <option value="Python">Python</option>
+        </select>
+      </div>
+      
+      <div class="filter-select">
+        <label>Date:</label>
+        <select [(ngModel)]="dateFilter" (change)="applyFilters()">
+          <option value="">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+      
+      <button class="clear-all-btn" (click)="confirmClearHistory()">
+        <i class="bx bx-trash"></i>
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <div class="history-list">
+    <div class="history-list-header">
+      <div class="col title-col">Problem Title</div>
+      <div class="col stack-col">Stack</div>
+      <div class="col category-col">Category</div>
+      <div class="col date-col">Viewed On</div>
+      <div class="col actions-col">Actions</div>
+    </div>
+    
+    <div *ngIf="filteredHistoryItems.length === 0" class="no-history">
+      <i class="bx bx-search-alt"></i>
+      <p>No history items found.</p>
+      <span>Try adjusting your filters or search query.</span>
+    </div>
+    
+    <div *ngFor="let item of filteredHistoryItems | slice:((currentPage-1)*itemsPerPage):(currentPage*itemsPerPage)" 
+         class="history-item" 
+         [class.expanded]="isExpanded(item)">
+      <div class="history-item-main" (click)="toggleExpand(item)">
+        <div class="col title-col">
+          <span class="problem-title">{{ item.Problem?.Title }}</span>
+        </div>
+        <div class="col stack-col">
+          <div class="stack-badge">{{ item.Problem?.Stack?.Name }}</div>
+        </div>
+        <div class="col category-col">
+          <div class="category-badge">{{ item.Problem?.Category?.Name }}</div>
+        </div>
+        <div class="col date-col">
+          <span class="date">{{ item.AccessedAt | date:'MMM d, y, h:mm a' }}</span>
+        </div>
+        <div class="col actions-col">
+          <button class="action-btn view-btn" (click)="viewProblem(item); $event.stopPropagation()">
+            <i class="bx bx-show"></i>
+          </button>
+          <button class="action-btn delete-btn" (click)="confirmDelete(item); $event.stopPropagation()">
+            <i class="bx bx-trash"></i>
+          </button>
+          <button class="expand-btn">
+            <i class="bx" [ngClass]="isExpanded(item) ? 'bx-chevron-up' : 'bx-chevron-down'"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="history-item-details" *ngIf="isExpanded(item)">
+        <div class="details-content">
+          <div class="details-section">
+            <h4>Problem Description</h4>
+            <p>{{ item.Problem?.Description }}</p>
+          </div>
+          
+          <div class="details-section">
+            <h4>Error Code</h4>
+            <div class="error-code" *ngIf="item.Problem?.ErrorCode">{{ item.Problem?.ErrorCode }}</div>
+            <div class="no-code" *ngIf="!item.Problem?.ErrorCode">No error code provided</div>
+          </div>
+          
+          <div class="details-footer">
+            <button class="secondary-btn" (click)="viewSolutions(item)">
+              <i class="bx bx-bulb"></i> View Solutions
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1" 
+      (click)="changePage(currentPage - 1)"
+    >
+      <i class="bx bx-chevron-left"></i>
+    </button>
+    
+    <div class="page-numbers">
+      <span *ngFor="let page of getPageArray()" 
+            class="page-number" 
+            [class.active]="page === currentPage"
+            [class.ellipsis]="page < 0"
+            (click)="page > 0 ? changePage(page) : null">
+        {{ page > 0 ? page : '...' }}
+      </span>
+    </div>
+    
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === totalPages" 
+      (click)="changePage(currentPage + 1)"
+    >
+      <i class="bx bx-chevron-right"></i>
+    </button>
+  </div>
+  
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="showDeleteModal" (click)="cancelDelete()"></div>
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-header">
+      <h3>Confirm Deletion</h3>
+      <button class="close-btn" (click)="cancelDelete()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p *ngIf="!isDeleteAll">Are you sure you want to remove this item from your history?</p>
+      <p *ngIf="isDeleteAll">Are you sure you want to clear your entire browsing history?</p>
+      <p class="modal-warning"><i class="bx bx-error-circle"></i> This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" (click)="cancelDelete()">Cancel</button>
+      <button class="danger-btn" (click)="confirmDeleteAction()">
+        <i class="bx bx-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>

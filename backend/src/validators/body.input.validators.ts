@@ -56,6 +56,23 @@ export const UserRegisterationSchema = joi.object({
   })
 });
 
+export const UserUpdateSchema = joi.object({
+  FullName: joi.string().min(4).required().messages({
+    "string.min": "Fullname must be at least 4 characters long",
+    "string.required": "Fullname is required"
+  }),
+  Email: joi.string().email().required().messages({
+    "string.email": "Invalid email format",
+    "string.required": "Email is required"
+  }),
+  Username: joi.string().min(4).max(30).alphanum().required().messages({
+    "string.min": "Username must be at least 4 characters long",
+    "string.max": "Username must not exceed 30 characters",
+    "string.alphanum": "Username must contain only alphanumeric characters",
+    "string.required": "Username is required"
+  })
+});
+
 export const CommentSchema = joi.object({
   Content: joi.string().min(1).max(200).required().messages({
     "string.min": "Comment must be at least 1 character long",

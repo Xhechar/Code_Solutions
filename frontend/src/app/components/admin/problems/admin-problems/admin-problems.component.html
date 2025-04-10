@@ -174,7 +174,7 @@
                 </div>
               </div>
 
-              <div *ngIf="!solution.editing" class="solution-content">
+              <div *ngIf="!solution.Problem" class="solution-content">
                 <div class="solution-description">
                   <h4>Description</h4>
                   <p>{{ solution.Description }}</p>
@@ -216,7 +216,7 @@
               </div>
 
               <!-- Edit Solution Form -->
-              <form *ngIf="solution.editing" class="edit-solution-form" (ngSubmit)="updateSolution(solution, problem)">
+              <form *ngIf="solution.Problem" class="edit-solution-form" (ngSubmit)="updateSolution(solution, problem)">
                 <div class="form-group">
                   <label for="description{{i}}">Description</label>
                   <textarea id="description{{i}}" name="description" [(ngModel)]="solution.Description"
