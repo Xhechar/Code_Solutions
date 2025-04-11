@@ -81,6 +81,8 @@ export const routes: Routes = [
       { path: '', component: HomeComponent },
       { path: 'home', component: HomeComponent },
       { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
+      { path: 'create-problem', component: CreateProblemComponent },
+      { path: 'create-problem', component: CreateSolutionComponent },
       {
         path: 'contributions', component: ContributionsComponent, children: [
           { path: '', component: MyProblemsComponent },

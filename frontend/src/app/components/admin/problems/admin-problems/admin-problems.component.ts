@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Category, Problem, Solution, Stack, SuccessType, User } from '../../../../interfaces/solutions.interfaces';
+import { Category, Problem, Solution, Stack, SuccessType, UpdatePS, User } from '../../../../interfaces/solutions.interfaces';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -44,15 +44,14 @@ export class AdminProblemsComponent implements OnInit {
   }
 
   private fetchProblems(): void {
-    this.problemService.getAllProblems().subscribe({ // Assuming getAllProblems method
+    this.problemService.getAllProblems().subscribe({
       next: (response) => {
         if (response.success && response.problems) {
           this.problems = response.problems as Problem[];
           this.calculateStats();
           this.filterProblems('all');
-          this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -185,8 +184,8 @@ export class AdminProblemsComponent implements OnInit {
     });
   }
 
-  toggleSolutionEdit(solution: Solution): void {
-    // solution.editing = !solution.editing;
+  toggleSolutionEdit(updatePS: UpdatePS): void {
+    this.ms.setUpdateProbSol(updatePS);
   }
 
   updateSolution(solution: Solution, problem: Problem): void {
@@ -206,31 +205,26 @@ export class AdminProblemsComponent implements OnInit {
   }
 
   deleteSolution(solution: Solution, problem: Problem): void {
-    if (confirm('Are you sure you want to delete this solution?')) {
-      this.sos.deleteSolution(solution.SolutionId).subscribe({
-        next: (response) => {
-          if (response.success) {
-            const index = problem.Solutions?.findIndex(s => s.SolutionId === solution.SolutionId) ?? -1;
-            if (index !== -1 && problem.Solutions) {
-              problem.Solutions.splice(index, 1);
-              this.ns.showAlert(SuccessType.Success, response.message as string);
-            }
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
+    this.sos.deleteSolution(solution.SolutionId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const index = problem.Solutions?.findIndex(s => s.SolutionId === solution.SolutionId) ?? -1;
+          if (index !== -1 && problem.Solutions) {
+            problem.Solutions.splice(index, 1);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
           }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   removeImage(solution: Solution, problem: Problem): void {
-    if (confirm('Are you sure you want to remove this image?')) {
-      solution.ImagePath = undefined;
-      this.updateSolution(solution, problem); // Reuse updateSolution to persist change
-    }
+    //
   }
 
   getPriorityLabel(priority: number): string {
@@ -248,5 +242,9 @@ export class AdminProblemsComponent implements OnInit {
 
   setData(problem: Problem): void {
     this.ms.setUpdateProblemData(problem);
+  }
+
+  setUpdatedProblem(problem: Problem): void {
+    this.ms.setSolvedProblemData(problem);
   }
 }

@@ -2,12 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Badge, Problem } from '../../interfaces/solutions.interfaces';
+import { Badge, Problem, SolutionDto, SuccessType, UpdatePS } from '../../interfaces/solutions.interfaces';
+import { ModalService } from '../../services/modifiers/modal.service';
+import { SolutionService } from '../../services/solution.service';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
+import { NotificationsComponent } from "../notifications/notifications.component";
 
 @Component({
   selector: 'app-create-solution',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule,  RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, NotificationsComponent],
   templateUrl: './create-solution.component.html',
   styleUrl: './create-solution.component.css'
 })
@@ -16,57 +20,28 @@ export class CreateSolutionComponent implements OnInit {
   imagePreviewUrls: string[] = [];
   mainPreviewImage: string | null = null;
   ProblemId: string = '';
-  Problem: Problem = {
-    ProblemId: 'PROB-2023-001',
-    Title: 'Angular HTTP Interceptor Not Catching 401 Errors',
-    Description: 'Our authentication interceptor is not properly catching 401 Unauthorized errors from the API, causing the application to crash instead of redirecting to the login page.',
-    ErrorCode: 'HTTP 401',
-    Context: 'Authentication flow',
-    Environment: 'Production',
-    Tags: 'angular,http,authentication,interceptor',
-    Reproducibility: true,
-    Logs: 'ERROR Error: Uncaught (in promise): HttpErrorResponse: {"headers":{"normalizedNames":{},"lazyUpdate":null},"status":401,"statusText":"Unauthorized"...}',
-    PriorityLevel: 2,
-    ImagePath: '/assets/images/problems/auth-error.png',
-    DateCreated: new Date('2023-09-15T10:30:00'),
-    StackId: 'STACK-001',
-    Stack: {
-      StackId: 'STACK-001',
-      Name: 'Angular/Node.js',
-      Description: 'Frontend Angular with Node.js backend',
-      Version: ''
-    },
-    CategoryId: 'CAT-002',
-    IsApproved: true,
-    Category: {
-      CategoryId: 'CAT-002',
-      Name: 'Authentication',
-      Description: 'Authentication and authorization issues'
-    },
-    UserId: 'USER-042',
-    User: {
-      UserId: 'USER-042',
-      Username: 'jsmith',
-      Email: 'john.smith@example.com',
-      FullName: '',
-      Password: '',
-      ProfileImage: '',
-      IsDeleted: false,
-      Notified: false,
-      IsWelcomed: false,
-      DateCreated: new Date(),
-      Badge: Badge.Expert,
-      PreviousBadge: Badge.Expert,
-      ProblemsCount: 0,
-      Role: '',
-      IsSolver: false
-    }
-  };
+  Problem!: Problem;
+  updatePs!: UpdatePS;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private ms: ModalService, private ss: SolutionService, private ns: NotificationsService) {}
 
   ngOnInit() {
     this.initializeForm();
+
+    this.ms.solvedProblemData$.subscribe((problem: Problem | null) => {
+      if (problem) {
+        this.Problem = problem;
+        this.ProblemId = problem.ProblemId;
+      }
+    });
+
+    this.ms.updateProbSol$.subscribe((update: UpdatePS | null) => {
+      if (update) {
+        this.updatePs = update;
+      }
+    });
+
+    this.checkToSetUpdate();
   }
 
   initializeForm() {
@@ -89,6 +64,21 @@ export class CreateSolutionComponent implements OnInit {
         Validators.pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
       ]]
     });
+  }
+
+  checkToSetUpdate() {
+    if (this.updatePs) {
+      this.solutionForm.patchValue({
+        Description: this.updatePs?.SolutionUpdate?.Description || '',
+        Steps: this.updatePs?.SolutionUpdate?.Steps || '',
+        CodeSamples: this.updatePs?.SolutionUpdate?.CodeSamples || '',
+        VideoLink: this.updatePs?.SolutionUpdate?.VideoLink || ''
+      });
+
+      this.imagePreviewUrls = this.updatePs?.SolutionUpdate?.ImagePath?.split(', ') || [];
+      this.mainPreviewImage = this.imagePreviewUrls.length > 0 ? this.imagePreviewUrls[0] : null;
+      this.Problem = this.updatePs?.ProblemUpdate || null;
+    }
   }
 
   onFileSelected(event: any) {
@@ -128,7 +118,6 @@ export class CreateSolutionComponent implements OnInit {
 
     this.imagePreviewUrls.splice(index, 1);
 
-    // Update main preview if needed
     if (this.imagePreviewUrls.length > 0) {
       this.mainPreviewImage = this.imagePreviewUrls[0];
     } else {
@@ -138,13 +127,41 @@ export class CreateSolutionComponent implements OnInit {
 
   onSubmit() {
     if (this.solutionForm.valid) {
-      let solution = {
+      let solution: SolutionDto = {
         ... this.solutionForm.value,
-        ImagePath: this.imagePreviewUrls.join(', '),
-        ProblemId: this.ProblemId
+        ImagePath: this.imagePreviewUrls.join(', ')
       }
 
-      console.log(solution);
+      if (this.updatePs) {
+        this.ss.updateSolution(this.updatePs.SolutionUpdate.SolutionId, solution).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.ns.showAlert(SuccessType.Success, response.message as string);
+              this.ms.clearUpdateProbSol();
+              this.onCancel();
+            } else {
+              this.ns.showAlert(SuccessType.Warning, response.error as string);
+            }
+          },
+          error: (error) => {
+            this.ns.showAlert(SuccessType.Error, error.error.error as string);
+          }
+        });
+      } else {
+        this.ss.createSolution(this.ProblemId, solution).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.ns.showAlert(SuccessType.Success, response.message as string);
+              this.onCancel();
+            } else {
+              this.ns.showAlert(SuccessType.Warning, response.error as string);
+            }
+          },
+          error: (error) => {
+            this.ns.showAlert(SuccessType.Error, error.error.error as string);
+          }
+        });
+      }
       
     } else {
       this.markFormGroupTouched(this.solutionForm);
@@ -156,6 +173,7 @@ export class CreateSolutionComponent implements OnInit {
     // this.imageFiles = [];
     this.imagePreviewUrls = [];
     this.mainPreviewImage = null;
+    this.ms.clearSolvedProblemData();
   }
 
   markFormGroupTouched(formGroup: FormGroup) {

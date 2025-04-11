@@ -70,9 +70,8 @@ export class AllProjectStructuresComponent implements OnInit {
       next: (response) => {
         if (response.success && response.stacks) {
           this.stacks = response.stacks;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -86,9 +85,8 @@ export class AllProjectStructuresComponent implements OnInit {
       next: (response) => {
         if (response.success && response.problems) {
           this.problems = response.problems as Problem[];
-          this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -102,9 +100,8 @@ export class AllProjectStructuresComponent implements OnInit {
       next: (response) => {
         if (response.success && response.projects) {
           this.projectStructures = response.projects;
-          // this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -410,9 +407,7 @@ export class AllProjectStructuresComponent implements OnInit {
           this.selectedProject!.PSG = this.selectedProject!.PSG!.filter(
             (p) => p.PSGId !== this.psgToDelete?.PSGId
           );
-          // if (this.selectedPSG && this.selectedPSG.PSGId === this.psgToDelete.PSGId) {
-          //   this.selectedPSG = null;
-          // }
+
           this.selectedProject!.LastUpdated = new Date();
           this.showDeleteConfirmation = false;
           this.psgToDelete = null;

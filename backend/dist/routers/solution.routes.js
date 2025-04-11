@@ -6,7 +6,7 @@ const solution_controller_1 = require("../controllers/solution.controller");
 const verify_tokens_1 = require("../middlewares/verify.tokens");
 exports.solutionRouter = (0, express_1.Router)();
 const solutionController = new solution_controller_1.SolutionController();
-exports.solutionRouter.post("/create-solution", verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, solutionController.createSolution);
+exports.solutionRouter.post("/create-solution/:ProblemId", verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, solutionController.createSolution);
 exports.solutionRouter.put("/update-solution/:SolutionId", verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, solutionController.updateSolution);
 exports.solutionRouter.delete("/delete-solution/:SolutionId", verify_tokens_1.verifyToken, verify_tokens_1.verifyAdmin, solutionController.deleteSolution);
 exports.solutionRouter.get("/get-all-solutions", verify_tokens_1.verifyToken, verify_tokens_1.verifyUser, solutionController.getAllSolutions);

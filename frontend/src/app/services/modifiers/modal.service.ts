@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Problem } from '../../interfaces/solutions.interfaces';
+import { Problem, UpdatePS } from '../../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,12 @@ export class ModalService {
 
   private updateSolutionData = new BehaviorSubject<Problem | null>(null);
   updateSolutionData$: Observable<Problem | null> = this.updateSolutionData.asObservable();
+
+  private solvedProblemData = new BehaviorSubject<Problem | null>(null);
+  solvedProblemData$: Observable<Problem | null> = this.solvedProblemData.asObservable();
+
+  private updateProbSol = new BehaviorSubject<UpdatePS | null>(null);
+  updateProbSol$: Observable<UpdatePS | null> = this.updateProbSol.asObservable();
 
   constructor() { }
 
@@ -39,6 +45,20 @@ export class ModalService {
   }
   clearUpdateSolutionData() {
     this.updateSolutionData.next(null);
+  }
+
+  setSolvedProblemData(problem: Problem) {
+    this.solvedProblemData.next(problem);
+  }
+  clearSolvedProblemData() {
+    this.solvedProblemData.next(null);
+  }
+
+  setUpdateProbSol(update: UpdatePS) {
+    this.updateProbSol.next(update);
+  }
+  clearUpdateProbSol() {
+    this.updateProbSol.next(null);
   }
 
 }

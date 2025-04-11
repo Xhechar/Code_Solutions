@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Solution } from '../interfaces/solutions.interfaces';
+import { Solution, SolutionDto } from '../interfaces/solutions.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +11,15 @@ export class SolutionService {
 
   constructor(private http: HttpClient) { }
 
-  createSolution(solution: Solution): Observable<{ success: boolean, error?: string, message?: string }> {
+  createSolution(ProblemId: string, solution: SolutionDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}create-solution`,
+      `${this.API_URL}create-solution/${ProblemId}`,
       solution,
       { withCredentials: true }
     );
   }
 
-  updateSolution(SolutionId: string, solution: Solution): Observable<{ success: boolean, error?: string, message?: string }> {
+  updateSolution(SolutionId: string, solution: SolutionDto): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-solution/${SolutionId}`,
       solution,

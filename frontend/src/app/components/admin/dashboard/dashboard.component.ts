@@ -9,6 +9,7 @@ import { ProjectStructureService } from '../../../services/project-structure.ser
 import { StackService } from '../../../services/stack.service';
 import { UserService } from '../../../services/user.service';
 import { NotificationsComponent } from '../../notifications/notifications.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,7 +47,8 @@ export class DashboardComponent implements OnInit {
     private problemService: ProblemService,
     private stackService: StackService,
     private projectStructureService: ProjectStructureService,
-    private ns: NotificationsService
+    private ns: NotificationsService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -56,9 +58,7 @@ export class DashboardComponent implements OnInit {
     this.fetchNewUsers();
     this.fetchRecentProjectStructures();
     
-    // Calculate stats after fetching all data
     setTimeout(() => {
-      this.calculateStats();
       this.initActivityChart();
     }, 100);
   }
@@ -68,9 +68,8 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.user) {
           this.currentAdmin = response.user;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -84,9 +83,9 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.stacks) {
           this.topStacks = response.stacks;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.calculateStats();
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -99,10 +98,10 @@ export class DashboardComponent implements OnInit {
     this.problemService.getAllProblems().subscribe({
       next: (response) => {
         if (response.success && response.problems) {
-          this.recentProblems = (response.problems as Problem[]).filter(p => p.DateCreated.getTime() < (2 * 60 * 1000));
-          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.recentProblems = (response.problems as Problem[]);
+          this.calculateStats();
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -116,9 +115,9 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.users) {
           this.newUsers = response.users;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.calculateStats();
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -132,9 +131,9 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success && response.projects) {
           this.recentProjectStructures = response.projects;
-          this.ns.showAlert(SuccessType.Success, response.message as string);
+          this.calculateStats();
         } else {
-          this.ns.showAlert(SuccessType.Warning, response.error as string);
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
@@ -145,13 +144,13 @@ export class DashboardComponent implements OnInit {
 
   private calculateStats(): void {
     const previousStats: Stats = {
-      totalUsers: 50,
+      totalUsers: 0,
       userGrowth: 0,
-      totalProblems: 100,
+      totalProblems: 0,
       problemGrowth: 0,
-      totalSolutions: 80,
+      totalSolutions: 0,
       solutionGrowth: 0,
-      totalProjects: 20,
+      totalProjects: 0,
       projectGrowth: 0
     };
 
@@ -214,32 +213,29 @@ export class DashboardComponent implements OnInit {
 
   setActiveLink(link: string): void {
     this.activeLink = link;
-    console.log('Active link set to:', link);
+    this.ns.showAlert(SuccessType.Info, `Navigating to ${link}`);
   }
 
   setActivityTimeFrame(timeFrame: string): void {
     this.activityTimeFrame = timeFrame;
-    console.log('Activity time frame set to:', timeFrame);
+    this.ns.showAlert(SuccessType.Info, `Changing activity time frame to ${timeFrame}`);
     this.updateActivityChart();
   }
 
   viewProblem(problemId: string): void {
-    console.log('Viewing problem:', problemId);
+    this.router.navigate(['/admin/single-problem', problemId]);
   }
 
   viewUserProfile(userId: string): void {
-    console.log('Viewing user profile:', userId);
     // Navigate to user profile
   }
 
   messageUser(userId: string): void {
-    console.log('Messaging user:', userId);
     // Open messaging interface
   }
 
   viewProjectStructure(projectId: String): void {
-    console.log('Viewing project structure:', projectId);
-    // Navigate to project structure details
+    this.router.navigate(['/admin/single-project', projectId]);
   }
 
   getBadgeClass(badge: string): string {
@@ -266,7 +262,6 @@ export class DashboardComponent implements OnInit {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 
-  // Activity Chart initialization
   private initActivityChart(): void {
     const ctx = document.getElementById('activityChart') as HTMLCanvasElement;
     if (!ctx) return;

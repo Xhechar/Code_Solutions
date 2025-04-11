@@ -6,7 +6,7 @@ export const solutionRouter = Router();
 
 const solutionController = new SolutionController();
 
-solutionRouter.post("/create-solution", verifyToken, verifyUser, solutionController.createSolution);
+solutionRouter.post("/create-solution/:ProblemId", verifyToken, verifyUser, solutionController.createSolution);
 solutionRouter.put("/update-solution/:SolutionId", verifyToken, verifyUser, solutionController.updateSolution);
 solutionRouter.delete("/delete-solution/:SolutionId", verifyToken, verifyAdmin, solutionController.deleteSolution);
 solutionRouter.get("/get-all-solutions", verifyToken, verifyUser, solutionController.getAllSolutions);

@@ -135,7 +135,9 @@
           </div>
 
           <div class="problem-image" *ngIf="problem.ImagePath">
-            <img [src]="problem.ImagePath" alt="Problem Image">
+            <div class="img" *ngFor="let image of problem.ImagePath.split(', ')">
+              <img [src]="image" alt="Problem Image">
+            </div>
           </div>
 
           <div class="problem-logs" *ngIf="problem.Logs">
@@ -147,7 +149,7 @@
         <!-- Solutions Section -->
         <div class="solutions-section">
           <h3>Solutions ({{ problem.Solutions?.length || 0 }})
-            <button class="add-solution-btn" routerLink="/admin/create-solution" >
+            <button class="add-solution-btn" (click)="setUpdatedProblem(problem)" routerLink="/admin/create-solution" >
               <i class='bx bx-plus'></i> Add Solution
             </button>
           </h3>
@@ -155,14 +157,14 @@
             <div *ngFor="let solution of problem.Solutions; let i = index" class="solution-card">
               <div class="solution-header">
                 <div class="solution-user">
-                  <img [src]="solution.User?.ProfileImage || 'assets/default-avatar.png'" alt="User Image">
+                  <img [src]="problem.User?.ProfileImage" alt="User Image">
                   <div class="user-info">
-                    <h4>{{ solution.User?.FullName }}</h4>
+                    <h4>{{ problem.User?.FullName }}</h4>
                     <span>{{ solution.CreatedAt | date:'medium' }}</span>
                   </div>
                 </div>
                 <div class="solution-actions">
-                  <button class="action-btn edit" (click)="toggleSolutionEdit(solution)" data-tooltip="Edit Solution">
+                  <button class="action-btn edit" (click)="toggleSolutionEdit({ProblemUpdate: problem, SolutionUpdate: solution})" routerLink="/admin/create-solution" data-tooltip="Edit Solution">
                     <i class='bx bx-edit'></i>
                     <span class="tooltip">Edit Solution</span>
                   </button>
@@ -195,11 +197,13 @@
                     <h4>Images</h4>
                     <div class="image-container">
                       <div class="image-wrapper">
-                        <img [src]="solution.ImagePath" alt="Solution Image">
-                        <button class="remove-image-btn" (click)="removeImage(solution, problem)"
-                          data-tooltip="Remove Image">
-                          <i class='fa fa-times'></i>
-                        </button>
+                        <div class="img" *ngFor="let image of solution.ImagePath.split(', ')">
+                          <img [src]="image" alt="Solution Image">
+                          <button class="remove-image-btn" (click)="removeImage(solution, problem)"
+                            data-tooltip="Remove Image">
+                            <i class='fa fa-times'></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -239,7 +243,7 @@
                 </div>
 
                 <div class="form-buttons">
-                  <button type="button" class="cancel-btn" (click)="toggleSolutionEdit(solution)">Cancel</button>
+                  <button type="button" class="cancel-btn" (click)="toggleSolutionEdit({ProblemUpdate: problem, SolutionUpdate: solution})">Cancel</button>
                   <button type="submit" class="update-btn">Update Solution</button>
                 </div>
               </form>
@@ -248,7 +252,7 @@
             <div *ngIf="!problem.Solutions || problem.Solutions.length === 0" class="no-solutions">
               <i class='bx bx-info-circle'></i>
               <p>No solutions available for this problem yet.</p>
-              <button class="add-solution-empty" routerLink="/admin/create-solution">
+              <button class="add-solution-empty" (click)="setUpdatedProblem(problem)" routerLink="/admin/create-solution">
                 <i class='bx bx-plus'></i> Add First Solution
               </button>
             </div>

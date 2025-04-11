@@ -15,7 +15,7 @@ class SolutionController {
                 });
             }
             ;
-            res.status(201).json(await solutionService.createSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.problemId, req.body));
+            res.status(201).json(await solutionService.createSolution((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId, req.body));
         }
         catch (error) {
             res.status(501).json({

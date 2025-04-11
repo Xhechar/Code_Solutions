@@ -96,6 +96,14 @@ export interface Solution {
   ProjectStructure?: ProjectStructure[];
 }
 
+export interface SolutionDto {
+  Description: string;
+  Steps: string;
+  CodeSamples?: string;
+  ImagePath?: string;
+  VideoLink?: string;
+}
+
 export interface Comment {
   CommentId: string;
   Content: string;
