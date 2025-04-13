@@ -1,0 +1,178 @@
+<!-- Project Structure Detail Component HTML -->
+<div class="project-structure-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="breadcrumb">
+      <a routerLink="/project-structures"><i class="bx bx-arrow-back"></i> Back to Structures</a>
+    </div>
+    <div class="project-meta" *ngIf="projectStructure">
+      <h1 class="project-title">{{projectStructure.Title}}</h1>
+      <div class="project-info">
+        <span class="stack-badge" *ngIf="projectStructure.Stack">
+          <i class="bx bx-code-alt"></i> 
+          {{projectStructure.Stack.Name}} <small>{{projectStructure.Stack.Version}}</small>
+        </span>
+        <span class="date-info">
+          <i class="bx bx-calendar"></i> Created: {{projectStructure.DateCreated | date:'mediumDate'}}
+        </span>
+        <span class="date-info">
+          <i class="bx bx-refresh"></i> Updated: {{projectStructure.LastUpdated | date:'mediumDate'}}
+        </span>
+      </div>
+      <p class="project-description">{{projectStructure.Description}}</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading project structure...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <i class="bx bx-error-circle"></i>
+    <p>Failed to load project structure. Please try again.</p>
+    <button class="btn-primary" (click)="loadProjectStructure()">Retry</button>
+  </div>
+
+  <!-- Content Section -->
+  <div class="content-section" *ngIf="projectStructure && !loading">
+    <!-- Guides Section -->
+    <div class="guides-section">
+      <h2><i class="bx bx-book-open"></i> Project Structure Guides</h2>
+      
+      <div class="guides-container" *ngIf="projectStructure.PSG && projectStructure.PSG.length > 0">
+        <div class="guide-card" *ngFor="let guide of projectStructure.PSG; let i = index">
+          <div class="guide-header">
+            <h3 class="guide-title">{{i + 1}}. {{guide.Title}}</h3>
+            <span class="guide-indicator" 
+                  [class.active]="activeGuideIndex === i" 
+                  (click)="setActiveGuide(i)">
+              <i class="bx" [class.bx-chevron-down]="activeGuideIndex !== i" [class.bx-chevron-up]="activeGuideIndex === i"></i>
+            </span>
+          </div>
+          
+          <div class="guide-content" [class.active]="activeGuideIndex === i">
+            <div class="guide-instructions">
+              <div class="instruction-text" [innerHTML]="formatInstructions(guide.TextInstructions)"></div>
+            </div>
+            
+            <!-- Pictorial Guide Section -->
+            <div class="pictorial-guide" *ngIf="guide.PictorialGuide">
+              <h4><i class="bx bx-images"></i> Visual Guide</h4>
+              <div class="image-gallery">
+                <div class="image-container" *ngFor="let image of getGuideImages(guide.PictorialGuide)">
+                  <div class="image-wrapper">
+                    <img [src]="image" alt="Guide step" (click)="openImageViewer(image)">
+                    <div class="image-overlay">
+                      <i class="bx bx-search-alt-2"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Related Problems Section -->
+            <div class="related-problems" *ngIf="guide.RelatedProblems && guide.RelatedProblems.length > 0">
+              <h4><i class="bx bx-error-alt"></i> Common Issues</h4>
+              <div class="problems-list">
+                <div class="problem-card" *ngFor="let problem of guide.RelatedProblems">
+                  <div class="problem-header">
+                    <span class="priority-indicator" [class]="'priority-' + problem.PriorityLevel">
+                      <i class="bx" [class.bx-error]="problem.PriorityLevel ? problem.PriorityLevel > 2 : false" [class.bx-error-circle]="problem.PriorityLevel ? problem.PriorityLevel <= 2 : false"></i>
+                    </span>
+                    <h5>{{problem.Title}}</h5>
+                  </div>
+                  <p class="problem-description">{{truncateText(problem.Description, 150)}}</p>
+                  <div class="problem-footer">
+                    <span class="problem-tags" *ngIf="problem.Tags">
+                      <span class="tag" *ngFor="let tag of problem.Tags.split(',')">{{tag.trim()}}</span>
+                    </span>
+                    <a [routerLink]="['/single-problem', problem.ProblemId]" class="view-problem">
+                      View Solution <i class="bx bx-right-arrow-alt"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Related Solutions Section -->
+            <div class="related-solutions" *ngIf="guide.RelatedSolutions && guide.RelatedSolutions.length > 0">
+              <h4><i class="bx bx-bulb"></i> Recommended Solutions</h4>
+              <div class="solutions-list">
+                <div class="solution-card" *ngFor="let solution of guide.RelatedSolutions">
+                  <div class="solution-header">
+                    <span class="solution-avatar" *ngIf="solution.User?.ProfileImage">
+                      <img [src]="solution.User?.ProfileImage" [alt]="solution.User?.FullName">
+                    </span>
+                    <span class="solution-avatar" *ngIf="!solution.User?.ProfileImage">
+                      <i class="bx bx-user"></i>
+                    </span>
+                    <div class="solution-author">
+                      <span>By {{solution.User?.FullName || 'Anonymous'}}</span>
+                      <small>{{solution.CreatedAt | date:'mediumDate'}}</small>
+                    </div>
+                  </div>
+                  <p class="solution-description">{{truncateText(solution.Description, 150)}}</p>
+                  <a [routerLink]="['/solutions', solution.SolutionId]" class="view-solution">
+                    View Full Solution <i class="bx bx-right-arrow-alt"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-guides" *ngIf="!projectStructure.PSG || projectStructure.PSG.length === 0">
+        <i class="bx bx-info-circle"></i>
+        <p>No guides available for this project structure yet.</p>
+      </div>
+    </div>
+    
+    <!-- Project Navigation -->
+    <div class="project-navigation">
+      <h3>Project Map</h3>
+      <div class="navigation-tree">
+        <ul class="tree-items">
+          <li *ngFor="let guide of projectStructure.PSG; let i = index" 
+              [class.active]="activeGuideIndex === i"
+              (click)="setActiveGuide(i)">
+            <div class="tree-item">
+              <i class="bx bx-right-arrow"></i>
+              <span>{{guide.Title}}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-primary" [routerLink]="['/project-structures']">
+          <i class="bx bx-list-ul"></i> All Projects
+        </button>
+        <button class="btn-secondary" (click)="downloadProject()" *ngIf="projectStructure">
+          <i class="bx bx-download"></i> Export
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Viewer Modal -->
+<div class="modal-overlay" [class.active]="showImageViewer" (click)="closeImageViewer()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Image Preview</h3>
+      <button class="close-modal" (click)="closeImageViewer()">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <img [src]="selectedImage" alt="Enlarged view" *ngIf="selectedImage">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeImageViewer()">Close</button>
+    </div>
+  </div>
+</div>
