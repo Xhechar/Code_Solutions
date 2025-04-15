@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Solution, Problem, SuccessType } from '../../../../interfaces/solutions.interfaces';
+import { Solution, Problem, SuccessType, UpdatePS } from '../../../../interfaces/solutions.interfaces';
 import { NotificationsService } from '../../../../services/modifiers/notifications.service'; 
 import { ProblemService } from '../../../../services/problem.service';
+import { ModalService } from '../../../../services/modifiers/modal.service';
 
 @Component({
   selector: 'app-my-solutions',
@@ -29,7 +30,8 @@ export class MySolutionsComponent implements OnInit {
   constructor(
     private router: Router,
     private solutionService: ProblemService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private ms: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -129,18 +131,24 @@ export class MySolutionsComponent implements OnInit {
     return description.length > 100 ? description.substring(0, 100) + '...' : description;
   }
 
-  viewSolution(solution: Solution): void {
-    this.router.navigate(['/solutions', solution.SolutionId]);
+  viewSolution(problem: Problem | undefined): void {
+    if (!problem) return;
+    this.router.navigate(['/user/single-problem', problem.ProblemId]);
   }
 
-  editSolution(solution: Solution): void {
-    this.router.navigate(['/solutions/edit', solution.SolutionId]);
+  editSolution(solution: Solution, problem: Problem | undefined): void {
+    if (!problem) return;
+    let probSol: UpdatePS = ({
+      ProblemUpdate: problem,
+      SolutionUpdate: solution
+    });
+    this.ms.setUpdateProbSol(probSol);
+    this.router.navigate(['/user/create-solution']);
   }
 
-  viewRelatedProblem(solution: Solution): void {
-    if (solution.Problem) {
-      this.router.navigate(['/problems', solution.Problem.ProblemId]);
-    }
+  viewRelatedProblem(problem: Problem | undefined): void {
+    if (!problem) return;
+    this.router.navigate(['/user/single-problem', problem.ProblemId]);
   }
 
   confirmDelete(problem: Problem): void {

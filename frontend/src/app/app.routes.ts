@@ -109,7 +109,8 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
       { path: 'create-problem', component: CreateProblemComponent },
-      { path: 'create-problem', component: CreateSolutionComponent },
+      { path: 'create-solution', component: CreateSolutionComponent },
+      { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
       {
         path: 'contributions',
         component: ContributionsComponent,

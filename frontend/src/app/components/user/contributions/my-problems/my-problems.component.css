@@ -346,6 +346,17 @@
   transform: rotate(8deg);
 }
 
+/* NEW STYLE FOR ADD SOLUTION BUTTON */
+.add-solution-btn {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.add-solution-btn:hover {
+  background-color: #28a745;
+  color: white;
+}
+
 /* Animation for buttons */
 @keyframes pulse {
   0% { transform: scale(1); }

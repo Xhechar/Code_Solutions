@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Category, Problem } from '../../../../interfaces/solutions.interfaces';
 import { Router } from '@angular/router';
 import { ProblemService } from '../../../../services/problem.service';
+import { ModalService } from '../../../../services/modifiers/modal.service';
 
 @Component({
   selector: 'app-my-problems',
@@ -34,7 +35,8 @@ export class MyProblemsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private problemService: ProblemService
+    private problemService: ProblemService,
+    private ms: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +106,7 @@ export class MyProblemsComponent implements OnInit {
   }
 
   isApproved(problem: Problem): boolean {
-    return problem.Solutions !== undefined && problem.Solutions.length > 0;
+    return problem.IsApproved;
   }
 
   calculateTotalPages(): void {
@@ -133,11 +135,12 @@ export class MyProblemsComponent implements OnInit {
   }
 
   viewProblem(problem: Problem): void {
-    this.router.navigate(['/problem', problem.ProblemId]);
+    this.router.navigate(['/user/single-problem', problem.ProblemId]);
   }
 
   editProblem(problem: Problem): void {
-    this.router.navigate(['/edit-problem', problem.ProblemId]);
+    this.ms.setUpdateProblemData(problem);
+    this.router.navigate(['/user/create-problem']);
   }
 
   confirmDelete(problem: Problem): void {
@@ -214,5 +217,10 @@ export class MyProblemsComponent implements OnInit {
 
     const progress = ((approvedCount - prevThreshold) / (nextThreshold - prevThreshold)) * 100;
     return Math.round(progress);
+  }
+
+  addSolution(problem: Problem): void {
+    this.ms.setSolvedProblemData(problem);  
+    this.router.navigate(['/user/create-solution']);
   }
 }

@@ -1452,19 +1452,16 @@
   min-height: 300px;
 }
 
-/* Ensure the sticky sidebar doesn't overlap footer on long pages */
 @media screen and (min-height: 800px) {
   .project-navigation {
     max-height: calc(100vh - var(--nav-height) - 80px);
   }
 }
 
-/* Improve active guide visibility */
 .guide-content.active {
   animation: fadeIn 0.4s ease;
 }
 
-/* Better focus indicators for keyboard navigation */
 .tree-item:focus-visible,
 .guide-header:focus-visible,
 .problem-card:focus-visible,

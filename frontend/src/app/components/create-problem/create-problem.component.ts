@@ -188,6 +188,7 @@ export class CreateProblemComponent implements OnInit{
 
       let formValue: Problem = {
         ... this.problemForm.value,
+        PriorityLevel: parseInt(this.problemForm.value.PriorityLevel),
         ImagePath: this.uploadedImages.join(', ')
       };
 

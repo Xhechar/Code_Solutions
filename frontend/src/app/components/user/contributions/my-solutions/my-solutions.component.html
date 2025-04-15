@@ -96,7 +96,7 @@
       <div class="table-cell cell-title">
         <span class="mobile-label">Solution:</span>
         <div class="solution-title-container">
-          <img *ngIf="solution.ImagePath" [src]="solution.ImagePath" alt="Solution Image" class="solution-thumbnail">
+          <img *ngIf="solution.ImagePath" [src]="solution.ImagePath.split(', ')[0]" alt="Solution Image" class="solution-thumbnail">
           <div class="solution-info">
             <div class="solution-preview">{{ getShortDescription(solution.Description) }}</div>
             <div class="solution-meta">
@@ -110,7 +110,7 @@
       
       <div class="table-cell cell-problem">
         <span class="mobile-label">For Problem:</span>
-        <a class="problem-link" (click)="viewRelatedProblem(solution)">
+        <a class="problem-link" (click)="viewRelatedProblem(solution.Problem)">
           {{ solution.Problem?.Title || 'Unknown Problem' }}
         </a>
         <div class="problem-category" *ngIf="solution.Problem?.Category">
@@ -136,12 +136,12 @@
       <div class="table-cell cell-actions">
         <span class="mobile-label">Actions:</span>
         <div class="action-buttons">
-          <button class="action-btn view-btn" (click)="viewSolution(solution)" title="View Solution">
+          <button class="action-btn view-btn" (click)="viewSolution(solution.Problem)" title="View Solution">
             <i class="fas fa-eye"></i>
           </button>
           
           <ng-container *ngIf="!isApproved(solution)">
-            <button class="action-btn edit-btn" (click)="editSolution(solution)" title="Edit Solution">
+            <button class="action-btn edit-btn" (click)="editSolution(solution, solution.Problem)" title="Edit Solution">
               <i class="fas fa-edit"></i>
             </button>
             <button class="action-btn delete-btn" (click)="confirmDelete(solution.Problem!)" title="Delete Solution">

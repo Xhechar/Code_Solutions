@@ -29,7 +29,7 @@
     <div class="problem-content card">
         <div class="problem-author">
             <div class="author-avatar">
-                <img [src]="problem.User?.ProfileImage || 'assets/images/default-avatar.png'" alt="Author" />
+                <img [src]="problem.User?.ProfileImage" alt="Author" />
             </div>
             <div class="author-info">
                 <h3>{{problem.User?.FullName || 'Code Solutions Team'}}</h3>
@@ -90,18 +90,12 @@
             <span class="solutions-count">{{problem.Solutions?.length || 0}}</span>
         </h2>
 
-        <div class="add-solution-container">
-            <button class="btn-primary" (click)="openAddSolutionModal()">
-                <i class='bx bx-plus'></i> Add Solution
-            </button>
-        </div>
-
         <div class="solutions-container" *ngIf="problem.Solutions?.length; else noSolutions">
             <div class="solution-card" *ngFor="let solution of problem.Solutions; let i = index"
                 [ngClass]="{'solution-expanded': solution.ProblemId === problem.ProblemId}">
                 <div class="solution-header">
                     <div class="solution-author">
-                        <img [src]="solution.User?.ProfileImage || 'assets/images/default-avatar.png'"
+                        <img [src]="solution.User?.ProfileImage"
                             alt="Solution Author" />
                         <div class="author-details">
                             <h3>{{solution.User?.FullName || 'Code Solutions Team'}}</h3>
