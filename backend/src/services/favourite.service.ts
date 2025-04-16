@@ -8,7 +8,7 @@ export class FavouriteService implements FavouriteInterface {
   });
 
   async addFavourite(UserId: string, ProblemId: string): Promise<{ success: boolean; message?: string; error?: string; }> {
-    
+
     let userExists = await this.prisma.user.findUnique({
       where: {
         UserId

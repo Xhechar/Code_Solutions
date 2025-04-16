@@ -1,13 +1,13 @@
 <app-notifications></app-notifications>
 <div class="problems-container">
-    <div class="test-summary">
+    <!-- <div class="test-summary">
         <div class="test-stats">
             <span class="test-count">{{ testCount }}</span>
             <span class="test-label">Sharpen Your Coding Skills</span>
         </div>
         <div class="test-actions">
             <button class="test-of-day-btn" (click)="viewTestOfDay()">
-                Test of the Day
+                <i class="fas fa-calendar-check"></i> Test of the Day
             </button>
             <div class="test-info-icon">
                 <i class="fas fa-info-circle"></i>
@@ -16,10 +16,96 @@
                 </div>
             </div>
         </div>
+    </div> -->
+
+    <!-- Filter Section -->
+    <div class="filter-section" [ngClass]="{'filter-expanded': filtersVisible}">
+        <div class="filter-header">
+            <h3 class="filter-title">Filter Problems</h3>
+            <button class="filter-toggle" (click)="toggleFilters()">
+                <span>{{ filtersVisible ? 'Hide Filters' : 'Show Filters' }}</span>
+                <i class="fas" [ngClass]="filtersVisible ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </button>
+        </div>
+
+        <div class="filter-content" *ngIf="filtersVisible">
+            <div class="filter-group">
+                <label class="filter-label">Search</label>
+                <input 
+                    type="text" 
+                    class="filter-input" 
+                    placeholder="Search in descriptions, error codes..." 
+                    [(ngModel)]="filters.searchQuery">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Stack</label>
+                <select class="filter-select" [(ngModel)]="filters.stack">
+                    <option value="">All Stacks</option>
+                    <option *ngFor="let stack of stacks" [value]="stack.StackId">{{ stack.Name }}</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Category</label>
+                <select class="filter-select" [(ngModel)]="filters.category">
+                    <option value="">All Categories</option>
+                    <option *ngFor="let category of categories" [value]="category.CategoryId">{{ category.Name }}</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Tags</label>
+                <input type="text" class="filter-input" placeholder="Enter tags..." [(ngModel)]="filters.tags">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Sort By</label>
+                <select class="filter-select" [(ngModel)]="filters.sortBy">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority">Priority (High to Low)</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Reproducible Only</label>
+                <select class="filter-select" [(ngModel)]="filters.reproducible">
+                    <option value="">All Problems</option>
+                    <option value="true">Reproducible Only</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-actions" *ngIf="filtersVisible">
+            <button class="filter-btn filter-reset" (click)="resetFilters()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+            <button class="filter-btn filter-apply" (click)="applyFilters()">
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+        </div>
     </div>
-  
-    <div class="problems-grid">
-        <div *ngFor="let problem of problems" class="problem-card">
+
+    <!-- Loading State -->
+    <div class="loading-spinner" *ngIf="isLoading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- No Results State -->
+    <div class="no-results" *ngIf="!isLoading && filteredProblems.length === 0">
+        <div class="no-results-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3 class="no-results-title">No Problems Found</h3>
+        <p class="no-results-message">
+            Try adjusting your filters or search query to find more results.
+        </p>
+    </div>
+
+    <!-- Problems Grid -->
+    <div class="problems-grid" *ngIf="!isLoading && filteredProblems.length > 0">
+        <div *ngFor="let problem of filteredProblems" class="problem-card">
             <div class="problem-header">
                 <!-- User-created Problem Header -->
                 <ng-container *ngIf="problem.User?.Role === 'user'">
@@ -27,10 +113,10 @@
                         <img [src]="problem.User?.ProfileImage" alt="Solver Profile" class="solver-profile">
                         <div class="solver-details">
                             <span class="solver-name">{{ problem.User?.FullName }}</span>
-                            <div class="badge-container">
-                                <i *ngIf="problem.User?.Badge" class="fas fa-medal primary-badge"></i>
-                                <i *ngIf="problem.User?.Badge" class="fas fa-award secondary-badge"></i>
-                                <i *ngIf="problem.User?.Badge" class="fas fa-star tertiary-badge"></i>
+                            <div class="badge-container" *ngIf="problem.User?.Badge">
+                                <i class="fas fa-medal primary-badge"></i>
+                                <i class="fas fa-award secondary-badge"></i>
+                                <i class="fas fa-star tertiary-badge"></i>
                             </div>
                         </div>
                     </div>
@@ -51,7 +137,7 @@
                 </ng-container>
             </div>
   
-            <div class="problem-image-container">
+            <div class="problem-image-container" *ngIf="problem.ImagePath">
                 <button class="image-nav-btn left-btn" (click)="switchImage(problem, 'left')">
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -63,17 +149,17 @@
   
             <div class="problem-content">
                 <h3 class="problem-title">{{ problem.Title }}</h3>
-                <div class="problem-tags">
-                    <span *ngFor="let tag of problem.Tags" class="tag">{{ tag }}</span>
+                <div class="problem-tags" *ngIf="problem.Tags">
+                    <span *ngFor="let tag of getTagsArray(problem.Tags)" class="tag">{{ tag }}</span>
                 </div>
                 <p class="problem-description">
                     <i class="fas fa-quote-left description-quote"></i>
-                    {{ problem.Description }}
+                    {{ truncateDescription(problem.Description) }}
                     <i class="fas fa-quote-right description-quote"></i>
                 </p>
   
                 <div class="problem-actions">
-                    <button class="btn view-problem">
+                    <button class="btn view-problem" (click)="navigateToSingleProblem(problem.ProblemId)">
                         <i class="fas fa-external-link-alt"></i> View Problem
                     </button>
                     <div class="problem-action-icons">
@@ -96,7 +182,12 @@
     <div class="error-search-container">
         <div class="error-search-wrapper">
             <i class="fas fa-bug error-icon"></i>
-            <input type="text" class="error-search-input" placeholder="Paste your error message to find solutions..." (keyup.enter)="searchError()">
+            <input 
+                type="text" 
+                class="error-search-input" 
+                placeholder="Paste your error message to find solutions..." 
+                [(ngModel)]="errorSearchQuery"
+                (keyup.enter)="searchError()">
             <button class="error-search-btn" (click)="searchError()">
                 <i class="fas fa-search"></i>
             </button>
@@ -105,4 +196,4 @@
             Having issues? Paste your error and find instant solutions!
         </div>
     </div>
-  </div>
+</div>

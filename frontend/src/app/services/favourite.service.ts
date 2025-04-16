@@ -11,9 +11,9 @@ export class FavouriteService {
   
   constructor(private http: HttpClient) { }
   
-  addFavourite(ProductId: string): Observable<{ success: boolean, error?: string, message?: string }> {
+  addFavourite(ProblemId: string): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}add-favourite/{ProblemId}`,
+      `${this.API_URL}add-favourite/${ProblemId}`,
       {}, 
       { withCredentials: true }
     );

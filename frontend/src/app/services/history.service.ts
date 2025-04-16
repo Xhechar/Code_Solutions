@@ -11,10 +11,10 @@ export class HistoryService {
   
   constructor(private http: HttpClient) { }
   
-  addHistory(history: History): Observable<{ success: boolean, error?: string, message?: string }> {
+  addHistory(ProblemId: string): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}add-history`,
-      history, 
+      `${this.API_URL}add-history/${ProblemId}`,
+      {}, 
       { withCredentials: true }
     );
   }

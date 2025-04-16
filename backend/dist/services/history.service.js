@@ -77,6 +77,17 @@ class HistoryService {
         let histories = await this.prisma.history.findMany({
             where: {
                 UserId
+            },
+            include: {
+                Problem: {
+                    include: {
+                        Stack: true,
+                        Solutions: true,
+                        Category: true,
+                        Comments: true
+                    }
+                },
+                User: true,
             }
         });
         if (histories == null) {
@@ -87,7 +98,7 @@ class HistoryService {
         }
         else {
             return {
-                'success': false,
+                'success': true,
                 'message': 'History successfully retrieved.',
                 'histories': histories
             };

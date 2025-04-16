@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationsComponent } from '../../notifications/notifications.component';
-import { History, SuccessType } from '../../../interfaces/solutions.interfaces';
+import { History, Stack, SuccessType } from '../../../interfaces/solutions.interfaces';
 import { HistoryService } from '../../../services/history.service';
 import { NotificationsService } from '../../../services/modifiers/notifications.service';
+import { StackService } from '../../../services/stack.service';
 
 @Component({
   selector: 'app-history',
@@ -33,36 +34,62 @@ export class HistoryComponent implements OnInit {
   // Data
   historyItems: History[] = [];
   filteredHistoryItems: History[] = [];
-  expandedStates: Map<string, boolean> = new Map(); // Tracks expanded state by HistoryId
+  expandedStates: Map<string, boolean> = new Map();
+  stacks: Stack[] = [];
 
   constructor(
     private router: Router,
     private historyService: HistoryService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private ss: StackService
   ) {}
 
   ngOnInit(): void {
     this.loadHistory();
+    this.loadStacks();
   }
 
   loadHistory(): void {
+    console.log("Loading history...");
+    
     this.historyService.getHistoryByUser().subscribe({
       next: (response) => {
+        console.log("History loaded successfully.", response);
         if (response.success) {
           this.historyItems = response.histories as History[];
-          this.historyItems.forEach(item => this.expandedStates.set(item.HistoryId, false)); // Initialize all as collapsed
+          console.log(this.historyItems);
+          this.filteredHistoryItems = [...this.historyItems];
+          this.totalPages = Math.ceil(this.historyItems.length / this.itemsPerPage) || 1;
+          this.historyItems.forEach(item => this.expandedStates.set(item.HistoryId, false));
           this.applyFilters();
+        } else {
+          // this.notificationsService.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.notificationsService.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  loadStacks(): void {
+    this.ss.getAllStacks().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.stacks = response.stacks as Stack[];
         } else {
           this.notificationsService.showAlert(SuccessType.Warning, response.error as string);
         }
       },
       error: (error) => {
-        this.notificationsService.showAlert(SuccessType.Error, error.error?.error || 'Failed to fetch history');
+        this.notificationsService.showAlert(SuccessType.Error, error.error?.error || 'Failed to fetch stacks');
       }
     });
   }
 
   applyFilters(): void {
+    console.log("Applying filters...");
+    
     let filtered = [...this.historyItems];
 
     if (this.searchText) {
@@ -105,7 +132,8 @@ export class HistoryComponent implements OnInit {
         return true;
       });
     }
-
+    console.log(filtered);
+    
     this.filteredHistoryItems = filtered;
     this.calculatePagination();
   }

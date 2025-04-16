@@ -38,10 +38,7 @@
         <label>Stack:</label>
         <select [(ngModel)]="stackFilter" (change)="applyFilters()">
           <option value="">All Stacks</option>
-          <option value="Angular">Angular</option>
-          <option value="React">React</option>
-          <option value="Node.js">Node.js</option>
-          <option value="Python">Python</option>
+          <option *ngFor="let stack of stacks" [value]="stack.StackId">{{stack.Name}}</option>
         </select>
       </div>
       
