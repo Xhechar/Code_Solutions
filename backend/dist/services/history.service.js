@@ -36,6 +36,18 @@ class HistoryService {
                 'error': 'Problem not found.'
             };
         }
+        let historyExists = await this.prisma.history.findFirst({
+            where: {
+                UserId: userExists.UserId,
+                ProblemId: problemExists.ProblemId
+            }
+        });
+        if (historyExists != null) {
+            return {
+                'success': false,
+                'error': 'History already exists.'
+            };
+        }
         let add = await this.prisma.history.create({
             data: {
                 HistoryId: (0, uuid_1.v4)(),

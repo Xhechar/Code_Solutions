@@ -171,7 +171,6 @@
 }
 
 .card:hover {
-    transform: translateY(-5px);
     box-shadow: var(--card-hover-shadow);
 }
 
@@ -190,19 +189,6 @@
 
 .author-avatar {
     position: relative;
-}
-
-.author-avatar::after {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    opacity: 0.7;
-    animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
@@ -539,20 +525,17 @@
 
 .solution-card {
     background-color: var(--card-bg);
-    border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: all 0.4s var(--animation-timing);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px var(--accent-hover);
 }
 
 .solution-card:hover {
-    transform: translateY(-5px);
     box-shadow: var(--card-hover-shadow);
 }
 
 .solution-expanded {
-    transform: scale(1.02);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--accent);
 }

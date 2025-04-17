@@ -43,6 +43,20 @@ export class HistoryService implements HistoryInterface {
       }
     }
 
+    let historyExists = await this.prisma.history.findFirst({
+      where: {
+        UserId: userExists.UserId,
+        ProblemId: problemExists.ProblemId
+      }
+    });
+
+    if (historyExists != null) {
+      return {
+        'success': false,
+        'error': 'History already exists.'
+      }
+    }
+
     let add = await this.prisma.history.create({
       data: {
         HistoryId: v4(),

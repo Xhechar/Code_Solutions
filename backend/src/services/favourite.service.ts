@@ -42,6 +42,20 @@ export class FavouriteService implements FavouriteInterface {
       }
     }
 
+    let favouriteExists = await this.prisma.favourite.findFirst({
+      where: {
+        UserId: userExists.UserId,
+        ProblemId: problemExists.ProblemId
+      }
+    });
+
+    if (favouriteExists != null) {
+      return {
+        'success': false,
+        'error': 'Problem already in favourites.'
+      }
+    }
+
     let create = await this.prisma.favourite.create({
       data: {
         FavouriteId: v4(),

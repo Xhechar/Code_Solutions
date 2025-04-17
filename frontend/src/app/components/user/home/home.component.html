@@ -126,13 +126,13 @@
                 <!-- Admin-created Problem Header -->
                 <ng-container *ngIf="problem.User?.Role === 'admin'">
                     <div class="problem-solver-info">
-                        <img src="/assets/cs-team-logo.png" alt="CS Team" class="solver-profile">
+                        <img [src]="problem?.User?.ProfileImage" alt="CS Team" class="solver-profile">
                         <div class="solver-details">
                             <span class="solver-name">CS Team</span>
                         </div>
                     </div>
                     <span class="solution-source team-source">
-                        <i class="fas fa-users"></i> by Code Solutions
+                        <i class="fas fa-users"></i> By Code Solutions
                     </span>
                 </ng-container>
             </div>

@@ -1,12 +1,11 @@
-/* Main Container Styles */
+
 .problems-container {
   position: relative;
-  padding: 2rem;
+  padding: 2rem 0;
   min-height: 100vh;
   background-color: var(--bg-color);
 }
 
-/* Test Summary Section */
 .test-summary {
   display: flex;
   justify-content: space-between;
@@ -482,13 +481,11 @@
 .error-search-container {
   position: fixed;
   bottom: 0;
-  left: 0;
   right: 0;
-  padding: 1.5rem;
+  width: 80%;
+  padding: 1rem;
   background-color: var(--bg-color);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  border-top: 1px solid var(--border-color);
   transition: transform var(--transition-speed);
 }
 
@@ -496,10 +493,9 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background-color: var(--card-bg);
+  background-color: rgb(212, 212, 212);
   border-radius: var(--border-radius);
   padding: 0.5rem 1rem;
-  box-shadow: var(--shadow);
   max-width: 800px;
   margin: 0 auto;
 }

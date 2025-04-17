@@ -8,6 +8,8 @@ import { NotificationsService } from '../../../services/modifiers/notifications.
 import { FavouriteService } from '../../../services/favourite.service';
 import { Router } from '@angular/router';
 import { HistoryService } from '../../../services/history.service';
+import { StackService } from '../../../services/stack.service';
+import { CategoryService } from '../../../services/category.service';
 
 interface FilterOptions {
   searchQuery: string;
@@ -50,7 +52,9 @@ export class HomeComponent implements OnInit {
     private ns: NotificationsService, 
     private fs: FavouriteService, 
     private router: Router,
-    private hs: HistoryService
+    private hs: HistoryService,
+    private ss: StackService,
+    private cs: CategoryService
   ) {}
 
   ngOnInit(): void {
@@ -81,17 +85,33 @@ export class HomeComponent implements OnInit {
   }
 
   fetchStacks(): void {
-    // Placeholder for stack fetching service
-    // Replace with actual implementation that fetches stacks from backend
-    // For now using empty array
-    this.stacks = [];
+    this.ss.getAllStacks().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.stacks = response.stacks as Stack[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   fetchCategories(): void {
-    // Placeholder for category fetching service
-    // Replace with actual implementation that fetches categories from backend
-    // For now using empty array
-    this.categories = [];
+    this.cs.getAllCategories().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.categories = response.categories as Category[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   initializeImageIndices(): void {

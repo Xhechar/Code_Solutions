@@ -95,8 +95,8 @@
                 [ngClass]="{'solution-expanded': solution.ProblemId === problem.ProblemId}">
                 <div class="solution-header">
                     <div class="solution-author">
-                        <img [src]="solution.User?.ProfileImage"
-                            alt="Solution Author" />
+                        <img [src]="solution.Problem?.User?.ProfileImage"
+                            alt="Author" />
                         <div class="author-details">
                             <h3>{{solution.User?.FullName || 'Code Solutions Team'}}</h3>
                             <span class="solution-date">

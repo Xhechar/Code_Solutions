@@ -493,4 +493,4 @@ export class AllProjectStructuresComponent implements OnInit {
       (problem.Description && problem.Description.toLowerCase().includes(this.problemSearchTerm.toLowerCase()))
     );
   }
-}
+} 
