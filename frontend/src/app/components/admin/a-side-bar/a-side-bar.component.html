@@ -1,3 +1,4 @@
+<app-logout></app-logout>
 <div class="sidebar-container" [class.collapsed]="isCollapsed">
   <div class="sidebar-header">
     <a routerLink="dashboard" class="logo-link">
@@ -206,11 +207,11 @@
   </nav>
 
   <div class="sidebar-footer">
-    <a href="#" class="settings-link">
+    <a routerLink="/admin" class="settings-link">
       <i class="fas fa-cog"></i>
       <span class="nav-text">Settings</span>
     </a>
-    <a href="#" class="logout-link">
+    <a (click)="logout()" class="logout-link">
       <i class="fas fa-sign-out-alt"></i>
       <span class="nav-text">Logout</span>
     </a>

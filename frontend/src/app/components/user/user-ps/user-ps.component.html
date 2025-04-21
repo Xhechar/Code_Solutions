@@ -1,0 +1,209 @@
+<app-notifications></app-notifications>
+<div class="project-structures-container">
+    <!-- Back button -->
+    <div class="back-navigation">
+        <button class="back-btn" (click)="navigateBack()">
+            <i class='bx bx-arrow-back'></i> Back
+        </button>
+    </div>
+
+    <!-- Header section -->
+    <div class="section-header">
+        <div class="header-content">
+            <div class="title-area">
+                <h1>Project Structures</h1>
+                <p class="subtitle">Complete solutions and architecture guides for your development needs</p>
+            </div>
+            <div class="action-buttons">
+                <button class="view-toggle" (click)="toggleViewMode()"
+                    [attr.aria-label]="viewMode === 'grid' ? 'Switch to list view' : 'Switch to grid view'">
+                    <i class="bx" [ngClass]="viewMode === 'grid' ? 'bx-list-ul' : 'bx-grid-alt'"></i>
+                </button>
+                <button class="refresh-btn" (click)="refreshProjects()" [class.rotating]="isLoading">
+                    <i class='bx bx-refresh'></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and filters -->
+    <div class="controls-container">
+        <div class="search-bar">
+            <i class='bx bx-search'></i>
+            <input type="text" placeholder="Search projects..." [(ngModel)]="searchTerm" (input)="filterProjects()">
+            <button *ngIf="searchTerm" class="clear-search" (click)="clearSearch()">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="stackFilter">Stack:</label>
+                <select id="stackFilter" [(ngModel)]="stackFilter" (change)="filterProjects()">
+                    <option value="">All Stacks</option>
+                    <option *ngFor="let stack of availableStacks" [value]="stack.StackId">{{ stack.Name }}</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="sortBy">Sort by:</label>
+                <select id="sortBy" [(ngModel)]="sortBy" (change)="filterProjects()">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="alphabetical">A-Z</option>
+                    <option value="guides">Most Guides</option>
+                    <option value="problems">Most Problems</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- No results message -->
+    <div class="no-results" *ngIf="filteredProjects.length === 0">
+        <i class='bx bx-search-alt'></i>
+        <h3>No project structures found</h3>
+        <p>Try adjusting your search or filters</p>
+        <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+
+    <!-- Loading spinner -->
+    <div class="loading-container" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading project structures...</p>
+    </div>
+
+    <!-- Projects list -->
+    <div class="projects-view" [ngClass]="viewMode">
+        <!-- Grid view -->
+        <div class="project-grid" *ngIf="viewMode === 'grid' && !isLoading && filteredProjects.length > 0">
+            <div class="project-card" *ngFor="let project of filteredProjects; let i = index"
+                [ngStyle]="{'animation-delay': i * 0.1 + 's'}" [class.new-project]="isNewProject(project)">
+                <div class="new-badge" *ngIf="isNewProject(project)">New</div>
+                <div class="project-header">
+                    <div class="stack-icon" [ngClass]="getStackClass(project.StackId)">
+                        <i [class]="getStackIcon(project.StackId)"></i>
+                    </div>
+                    <div class="project-meta">
+                        <h3>{{ project.Title }}</h3>
+                        <div class="date-info">
+                            <span class="created">
+                                <i class='bx bx-calendar-plus'></i> Created: {{ project.DateCreated | date:'mediumDate'
+                                }}
+                            </span>
+                            <span class="updated">
+                                <i class='bx bx-calendar-check'></i> Updated: {{ project.LastUpdated | date:'mediumDate'
+                                }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="project-description">{{ project.Description }}</p>
+
+                <div class="stack-info">
+                    <span class="stack-name">{{ getStackName(project.StackId) }}</span>
+                    <span class="stack-version" *ngIf="getStackVersion(project.StackId)">v{{
+                        getStackVersion(project.StackId) }}</span>
+                </div>
+
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <i class='bx bx-file'></i>
+                        <span>{{ project.PSG?.length || 0 }} guides</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class='bx bx-bug'></i>
+                        <span>{{ getRelatedProblemsCount(project) }} problems</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class='bx bx-code-alt'></i>
+                        <span>{{ getRelatedSolutionsCount(project) }} solutions</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class='bx bx-time'></i>
+                        <span>{{ getProjectComplexity(project) }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="explore-btn" (click)="viewProjectStructure(project.ProjectId)">
+                        Explore Structure <i class='bx bx-right-arrow-alt'></i>
+                    </button>
+                    <button class="favorite-btn" [class.favorited]="isProjectFavorited(project.ProjectId)"
+                        (click)="toggleFavorite(project.ProjectId, $event)">
+                        <i class='bx' [ngClass]="isProjectFavorited(project.ProjectId) ? 'bxs-heart' : 'bx-heart'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- List view -->
+        <div class="project-list" *ngIf="viewMode === 'list' && !isLoading && filteredProjects.length > 0">
+            <div class="project-list-item" *ngFor="let project of filteredProjects; let i = index"
+                [ngStyle]="{'animation-delay': i * 0.05 + 's'}" [class.new-project]="isNewProject(project)">
+                <div class="new-badge list" *ngIf="isNewProject(project)">New</div>
+                <div class="list-item-content">
+                    <div class="list-item-header">
+                        <div class="stack-icon-small" [ngClass]="getStackClass(project.StackId)">
+                            <i [class]="getStackIcon(project.StackId)"></i>
+                        </div>
+                        <h3>{{ project.Title }}</h3>
+                    </div>
+
+                    <div class="list-item-body">
+                        <p class="list-description">{{ project.Description }}</p>
+
+                        <div class="list-meta">
+                            <span class="stack-name-list">{{ getStackName(project.StackId) }}</span>
+                            <span class="date-info-list">
+                                <i class='bx bx-calendar-check'></i> {{ project.LastUpdated | date:'mediumDate' }}
+                            </span>
+                        </div>
+
+                        <div class="list-stats">
+                            <div class="stat-item-list">
+                                <i class='bx bx-file'></i>
+                                <span>{{ project.PSG?.length || 0 }} guides</span>
+                            </div>
+                            <div class="stat-item-list">
+                                <i class='bx bx-bug'></i>
+                                <span>{{ getRelatedProblemsCount(project) }} problems</span>
+                            </div>
+                            <div class="stat-item-list">
+                                <i class='bx bx-code-alt'></i>
+                                <span>{{ getRelatedSolutionsCount(project) }} solutions</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="list-actions">
+                        <button class="explore-btn list" (click)="viewProjectStructure(project.ProjectId)">
+                            Explore <i class='bx bx-right-arrow-alt'></i>
+                        </button>
+                        <button class="favorite-btn list" [class.favorited]="isProjectFavorited(project.ProjectId)"
+                            (click)="toggleFavorite(project.ProjectId, $event)">
+                            <i class='bx'
+                                [ngClass]="isProjectFavorited(project.ProjectId) ? 'bxs-heart' : 'bx-heart'"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1 && !isLoading">
+        <button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" class="page-btn">
+            <i class='bx bx-chevron-left'></i>
+        </button>
+
+        <button *ngFor="let page of getPageNumbers()" class="page-number" [class.active]="page === currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
+        </button>
+
+        <button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" class="page-btn">
+            <i class='bx bx-chevron-right'></i>
+        </button>
+    </div>
+</div>

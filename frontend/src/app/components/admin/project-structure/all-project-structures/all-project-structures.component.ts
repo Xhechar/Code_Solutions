@@ -50,6 +50,9 @@ export class AllProjectStructuresComponent implements OnInit {
   selectedImageIndex: number = 0;
   currentImageIndex: number = 0;
 
+  totalPSGs: number = 0;
+  totalRelatedProblems: number = 0;
+
   constructor(
     private sanitizer: DomSanitizer,
     private projectStructureService: ProjectStructureService,
@@ -100,6 +103,8 @@ export class AllProjectStructuresComponent implements OnInit {
       next: (response) => {
         if (response.success && response.projects) {
           this.projectStructures = response.projects;
+          this.totalPSGs = this.getTotalPSGs();
+          this.totalRelatedProblems = this.getTotalRelatedProblems();
         } else {
           // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
@@ -176,7 +181,7 @@ export class AllProjectStructuresComponent implements OnInit {
   }
 
   getTotalPSGs(): number {
-    return this.projectStructures.reduce((total, project) => {
+    return this.projectStructures.reduce((total, project: ProjectStructure) => {
       return total + (project.PSG ? project.PSG.length : 0);
     }, 0);
   }

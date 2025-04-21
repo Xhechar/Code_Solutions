@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { User } from '../../../interfaces/solutions.interfaces';
 import { UserService } from '../../../services/user.service';
+import { LogoutComponent } from '../../logout/logout.component';
+import { ModalService } from '../../../services/modifiers/modal.service';
 
 @Component({
   selector: 'app-a-side-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterModule, RouterLink, RouterLinkActive, LogoutComponent],
   templateUrl: './a-side-bar.component.html',
   styleUrl: './a-side-bar.component.css'
 })
@@ -20,7 +22,7 @@ export class ASideBarComponent {
 
   user!: User;
 
-  constructor(private us: UserService) {}
+  constructor(private us: UserService, private ms: ModalService) {}
 
   ngOnInit(): void {
     this.getUser();
@@ -86,6 +88,10 @@ export class ASideBarComponent {
         this.expandedMenus.push(menuName);
       }
     }
+  }
+
+  logout(): void {
+    this.ms.showModal();
   }
 
   filterNavItems(): void {

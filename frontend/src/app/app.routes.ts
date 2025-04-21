@@ -32,6 +32,7 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { LogoutComponent } from './components/logout/logout.component';
 import { SingleProblemComponent } from './components/single-problem/single-problem.component';
 import { SingleProjectStructureComponent } from './components/single-project-structure/single-project-structure.component';
+import { UserPSComponent } from './components/user/user-ps/user-ps.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -110,7 +111,7 @@ export const routes: Routes = [
       { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
       { path: 'create-problem', component: CreateProblemComponent },
       { path: 'create-solution', component: CreateSolutionComponent },
-      { path: 'single-problem/:ProblemId', component: SingleProblemComponent },
+      { path: 'single-project-structure/:ProjectId', component: SingleProjectStructureComponent },
       {
         path: 'contributions',
         component: ContributionsComponent,
@@ -123,6 +124,7 @@ export const routes: Routes = [
       { path: 'favourites', component: FavouritesComponent },
       { path: 'history', component: HistoryComponent },
       { path: 'my-profile', component: ProfileComponent },
+      {path: 'project-structures', component: UserPSComponent}
     ],
   },
   { path: '**', component: NotFoundComponent },
