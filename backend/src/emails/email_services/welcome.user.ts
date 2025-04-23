@@ -18,17 +18,15 @@ export const welcomeUser = async () => {
 
   if (users == null) {
     console.log("Unable to locate users inorder to send mail");
-    
   }
 
   if (users.length === 0) {
-    console.log("All users have recieved mails");
-    
+    // No users to send welcome email to
   }
 
   for (let user of users) {
 
-    let mailPath = path.resolve(__dirname, '../email_templates/welcome.ejs');
+    let mailPath = './email_templates/welcome.ejs';
 
     ejs.renderFile(mailPath, { UserName: user.FullName }, async (err, data) => {
       try {
@@ -66,11 +64,7 @@ export const welcomeUser = async () => {
           data: {
             IsWelcomed: false
           }
-        });
-    
-        console.error(`Retrying email sending for ${user.FullName}`);
-        await welcomeUser();
-    
+        });    
       }
     });
   }

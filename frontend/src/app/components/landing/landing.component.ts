@@ -3,35 +3,20 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {Problem, Category, ProjectStructure, Stack, ContactData, Testimonial, SuccessType } from '../../interfaces/solutions.interfaces';
+import { Chat, User, Problem, Category, ProjectStructure, Stack, ContactData, Testimonial, SuccessType } from '../../interfaces/solutions.interfaces';
 import { ProblemService } from '../../services/problem.service';
 import { ProjectStructureService } from '../../services/project-structure.service';
 import { StackService } from '../../services/stack.service';
 import { CategoryService } from '../../services/category.service';
 import { NotificationsService } from '../../services/modifiers/notifications.service';
-
-interface Message {
-  id: number;
-  sender: string;
-  avatarUrl: string;
-  text: string;
-  time: string;
-  isOutgoing: boolean;
-  imageUrl?: string;
-  isRead?: boolean;
-}
-
-interface User {
-  id: number;
-  name: string;
-  avatarUrl: string;
-  isOnline: boolean;
-}
+import { ChatService } from '../../services/chat.service';
+import { UserService } from '../../services/user.service';
+import { NotificationsComponent } from "../notifications/notifications.component";
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, NotificationsComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
   animations: [
@@ -54,11 +39,12 @@ interface User {
 export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('messageInput') private messageInput!: ElementRef;
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   title = '';
   groupName = 'Dev Team';
   members: User[] = [];
-  messages: Message[] = [];
+  currentUserId: string = '';
   currentMessage = '';
   isInTyping = false;
   typingUser: User | null = null;
@@ -66,6 +52,14 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   mediaOverlayActive = false;
   selectedImage = '';
   currentDate = new Date();
+  
+  // New chat properties
+  chats: Chat[] = [];
+  hoveredMessage: Chat | null = null;
+  updatingMessage: Chat | null = null;
+  isEditMode = false;
+  showDeleteModal = false;
+  messageToDelete: Chat | null = null;
 
   currentPage = 1;
   itemsPerPage = 9;
@@ -129,12 +123,21 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   private typingSpeed = 100;
   private pauseDuration = 1000;
 
-  constructor(private router: Router, private cs: CategoryService, private ps: ProblemService, private pss: ProjectStructureService, private ss: StackService, private ns: NotificationsService) {}
+  constructor(
+    private router: Router, 
+    private cs: CategoryService, 
+    private ps: ProblemService, 
+    private pss: ProjectStructureService, 
+    private ss: StackService, 
+    private ns: NotificationsService,
+    private chatService: ChatService,
+    private us: UserService
+  ) {}
 
   ngOnInit() {
     this.startTypingAnimation();
-    this.initMembers();
-    this.initMessages();
+    this.getCurrentUser();
+    this.fetchAllChats();
     this.loadCategories();
     this.loadStacks();
     this.loadProblems();
@@ -150,6 +153,204 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Add animation classes to elements on scroll
     this.setupScrollAnimations();
+  }
+
+  private getCurrentUser(): void {
+    this.us.getSingleUser().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.currentUserId = (response.user as User).UserId as string;
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+
+  }
+
+  private fetchAllChats(): void {
+    this.chatService.getChats().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.chats = response.chats as Chat[];
+          setTimeout(() => this.scrollToBottom(), 100);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  private scrollToBottom(): void {
+    if (this.messagesContainer) {
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }
+  }
+
+  showActionIcons(message: Chat): void {
+    this.hoveredMessage = message;
+  }
+
+  hideActionIcons(): void {
+    this.hoveredMessage = null;
+  }
+
+  isWithinOneHour(dateCreated: Date): boolean {
+    const now = new Date();
+    const messageDate = new Date(dateCreated);
+    const diffInMs = now.getTime() - messageDate.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    return diffInHours < 1;
+  }
+
+  editMessage(message: Chat): void {
+    this.isEditMode = true;
+    this.currentMessage = message.Message as string;
+    this.messageInput.nativeElement.focus();
+    this.messageInput.nativeElement.setSelectionRange(this.currentMessage.length, this.currentMessage.length);
+    // Store the message ID for update
+    this.hoveredMessage = message;
+    this.updatingMessage = message;
+  }
+
+  confirmDeleteMessage(message: Chat): void {
+    this.messageToDelete = message;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.messageToDelete = null;
+  }
+
+  deleteMessage(): void {
+    if (this.messageToDelete) {
+      this.chatService.deleteChat(this.messageToDelete.ChatId).subscribe({
+        next: (response) => {
+          if(response.success) {
+            // Remove the message from the array
+            this.chats = this.chats.filter(m => m.ChatId !== this.messageToDelete?.ChatId);
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+          this.closeDeleteModal();
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+          this.closeDeleteModal();
+        }
+      });
+    }
+  }
+
+  sendMessage(): void {
+    if (!this.currentMessage.trim()) return;
+    
+    if (this.isEditMode && this.updatingMessage) {
+      // Update existing message
+      const updatedChat: Chat = {
+        ...this.updatingMessage,
+        Message: this.currentMessage.trim(),
+      };
+      
+      this.chatService.updateChat(updatedChat.ChatId, updatedChat.Message).subscribe({
+        next: (response) => {
+          if(response.success) {
+            // Update the message in the array
+            const index = this.chats.findIndex(m => m.ChatId === updatedChat.ChatId);
+            if (index !== -1) {
+              this.chats[index] = updatedChat;
+            }
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+          // Reset state
+          this.isEditMode = false;
+          this.hoveredMessage = null;
+          this.currentMessage = '';
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
+    } else {
+      // Create new message
+      const newChat: Chat = {
+        UserId: this.currentUserId,
+        Message: this.currentMessage.trim(),
+        Pinned: false,
+        DateCreated: new Date(),
+        ChatId: ''
+      };
+      
+      this.chatService.createChat(newChat.Message).subscribe({
+        next: (response) => {
+          if(response.success) {
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+            this.fetchAllChats();
+            setTimeout(() => this.scrollToBottom(), 100);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+          this.currentMessage = '';
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
+    }
+    this.messageInput.nativeElement.textContent = '';
+  }
+
+  handleKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.sendMessage();
+    }
+  }
+
+  toggleEmojiPicker(): void {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  selectEmoji(emoji: string): void {
+    this.currentMessage += emoji;
+    this.messageInput.nativeElement.focus();
+  }
+
+  setActiveEmojiCategory(category: string): void {
+    this.activeEmojiCategory = category;
+  }
+
+  openImageOverlay(imageUrl: string): void {
+    this.selectedImage = imageUrl;
+    this.mediaOverlayActive = true;
+  }
+
+  closeImageOverlay(): void {
+    this.mediaOverlayActive = false;
+    this.selectedImage = '';
+  }
+
+  onDocumentClicks(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const emojiPicker = document.querySelector('.emoji-picker');
+    const emojiButton = document.querySelector('#emoji-btn');
+    
+    if (this.showEmojiPicker && 
+        emojiPicker && 
+        emojiButton && 
+        !emojiPicker.contains(target) && 
+        !emojiButton.contains(target)) {
+      this.showEmojiPicker = false;
+    }
   }
 
   async startTypingAnimation() {
@@ -207,6 +408,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.startAnimation();
+    this.scrollToBottom();
   }
 
   ngOnDestroy(): void {
@@ -241,180 +443,6 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.animationPaused = false;
     }, 1000);
-  }
-
-  private initMembers(): void {
-    this.members = [
-      { id: 1, name: 'Alex Johnson', avatarUrl: '/api/placeholder/40/40', isOnline: true },
-      { id: 2, name: 'Sarah Parker', avatarUrl: '/api/placeholder/40/40', isOnline: true },
-      { id: 3, name: 'Mike Chen', avatarUrl: '/api/placeholder/40/40', isOnline: true },
-      { id: 4, name: 'Emma Williams', avatarUrl: '/api/placeholder/40/40', isOnline: false },
-      { id: 5, name: 'Jason Smith', avatarUrl: '/api/placeholder/40/40', isOnline: false }
-    ];
-  }
-
-  private initMessages(): void {
-    const todayDate = new Date();
-    
-    this.messages = [
-      {
-        id: 1,
-        sender: 'Alex Johnson',
-        avatarUrl: '/api/placeholder/40/40',
-        text: 'Hey team! I\'ve just uploaded the new designs for the homepage 🎨',
-        time: '10:24 AM',
-        isOutgoing: false
-      },
-      {
-        id: 2,
-        sender: 'Alex Johnson',
-        avatarUrl: '/api/placeholder/40/40',
-        text: 'What do you all think?',
-        time: '10:25 AM',
-        isOutgoing: false,
-        imageUrl: '/api/placeholder/300/200'
-      },
-      {
-        id: 3,
-        sender: 'You',
-        avatarUrl: '',
-        text: 'Looks amazing! I love the color scheme 😍',
-        time: '10:30 AM',
-        isOutgoing: true,
-        isRead: true
-      },
-      {
-        id: 4,
-        sender: 'Sarah Parker',
-        avatarUrl: '/api/placeholder/40/40',
-        text: 'Thanks! I was thinking we could implement this next week. What\'s everyone\'s schedule like?',
-        time: '10:32 AM',
-        isOutgoing: false
-      },
-      {
-        id: 5,
-        sender: 'You',
-        avatarUrl: '',
-        text: 'I\'m free all week. Can we start on Monday? 📅',
-        time: '10:35 AM',
-        isOutgoing: true,
-        isRead: true
-      },
-      {
-        id: 6,
-        sender: 'Mike Chen',
-        avatarUrl: '/api/placeholder/40/40',
-        text: 'Here\'s another angle:',
-        time: '10:40 AM',
-        isOutgoing: false,
-        imageUrl: '/api/placeholder/300/200'
-      }
-    ];
-  }
-
-  sendMessage(): void {
-    if (!this.currentMessage.trim()) return;
-    
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const timeString = `${hours}:${minutes}`;
-    
-    const newMessage: Message = {
-      id: this.messages.length + 1,
-      sender: 'You',
-      avatarUrl: '',
-      text: this.currentMessage.trim(),
-      time: timeString,
-      isOutgoing: true,
-      isRead: false
-    };
-    
-    this.messages.push(newMessage);
-    this.currentMessage = '';
-    
-    // Simulate response
-    this.simulateResponse();
-  }
-
-  simulateResponse(): void {
-    this.isInTyping = true;
-    const randomUserIndex = Math.floor(Math.random() * 3);
-    this.typingUser = this.members[randomUserIndex];
-
-    setTimeout(() => {
-      this.isInTyping = false;
-
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const timeString = `${hours}:${minutes}`;
-
-      const responses = [
-        "Great idea! Let me think about it.",
-        "I agree with your approach.",
-        "Could you provide more details?",
-        "Thanks for sharing that! 👍",
-        "Let's discuss this further in our next meeting."
-      ];
-
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-      const responseMessage: Message = {
-        id: this.messages.length + 1,
-        sender: this.typingUser!.name,
-        avatarUrl: this.typingUser!.avatarUrl,
-        text: randomResponse,
-        time: timeString,
-        isOutgoing: false
-      };
-
-      this.messages.push(responseMessage);
-    }, 2000);
-  }
-
-
-  handleKeyPress(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.sendMessage();
-    }
-  }
-
-  toggleEmojiPicker(): void {
-    this.showEmojiPicker = !this.showEmojiPicker;
-  }
-
-  selectEmoji(emoji: string): void {
-    this.currentMessage += emoji;
-    this.messageInput.nativeElement.focus();
-  }
-
-  setActiveEmojiCategory(category: string): void {
-    this.activeEmojiCategory = category;
-  }
-
-  openImageOverlay(imageUrl: string): void {
-    this.selectedImage = imageUrl;
-    this.mediaOverlayActive = true;
-  }
-
-  closeImageOverlay(): void {
-    this.mediaOverlayActive = false;
-    this.selectedImage = '';
-  }
-
-  onDocumentClicks(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const emojiPicker = document.querySelector('.emoji-picker');
-    const emojiButton = document.querySelector('#emoji-btn');
-    
-    if (this.showEmojiPicker && 
-        emojiPicker && 
-        emojiButton && 
-        !emojiPicker.contains(target) && 
-        !emojiButton.contains(target)) {
-      this.showEmojiPicker = false;
-    }
   }
 
   get filteredProblems(): Problem[] {

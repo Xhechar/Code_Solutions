@@ -17,7 +17,7 @@ export class CommentController {
         });
       };
 
-      res.status(201).json(await commentService.createComment(getIdFromToken(req), req.params.problemId, req.body));
+      res.status(201).json(await commentService.createComment(getIdFromToken(req), req.params.ProblemId, req.body.Content));
       
     } catch (error) {
       res.status(501).json({

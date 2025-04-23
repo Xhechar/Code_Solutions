@@ -10,10 +10,10 @@ export class CommentsService {
   
   constructor(private http: HttpClient) { }
   
-  createComment(comment: Comment): Observable<{ success: boolean, error?: string, message?: string }> {
+  createComment(ProblemId: string, Content: string): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.post<{ success: boolean, error?: string, message?: string }>(
-      `${this.API_URL}create-comment`,
-      comment, 
+      `${this.API_URL}create-comment/${ProblemId}`,
+      {Content}, 
       { withCredentials: true }
     );
   }

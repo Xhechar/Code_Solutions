@@ -7,7 +7,7 @@ export class CommentService implements CommentInterface{
     log: ["error"]
   });
 
-  async createComment(userId: string, problemId: string, comment: Comment): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async createComment(userId: string, problemId: string, Content: string): Promise<{ success: boolean; message?: string; error?: string; }> {
 
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -41,15 +41,13 @@ export class CommentService implements CommentInterface{
         'error': 'Problem specified does not exist'
       }
     }
- 
-    let {CommentId, UserId, ProblemId, DatePosted, ...r_comment} = comment;
 
     let create = await this.prisma.comment.create({
       data: {
         CommentId: v4(),
         ProblemId: problemExists.ProblemId,
         UserId: userExists.UserId,
-        ...r_comment
+        Content: Content
       }
     });
 

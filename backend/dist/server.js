@@ -39,6 +39,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const node_cron_1 = __importDefault(require("node-cron"));
+const notify_badge_status_1 = require("./emails/email_services/notify.badge.status");
+const welcome_user_1 = require("./emails/email_services/welcome.user");
+const account_termination_1 = require("./emails/email_services/account.termination");
+const account_retrieval_1 = require("./emails/email_services/account.retrieval");
 const auth_routes_1 = require("./routers/auth.routes");
 const category_routes_1 = require("./routers/category.routes");
 const comment_routes_1 = require("./routers/comment.routes");
@@ -78,18 +83,13 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
-// const email = Express();
-// email.listen(3001, async () => {
-//   console.log("Email server is running on port 3001");
-//   cron.schedule('*/5 * * * * *', async () => {
-//     console.log("Checking the database");
-//     await updateUserBadge();
-//     console.log("Badge check completed");
-//     await welcomeUser();
-//     console.log("Welcome email sent");
-//     await notifyAccountTermination();
-//     console.log("Account termination notification sent");
-//     await notifyAccountDeactivation();
-//     console.log("Account retrieval notification sent");
-//   });
-// });
+const email = (0, express_1.default)();
+email.listen(3001, async () => {
+    console.log("Email server is running on port 3001");
+    node_cron_1.default.schedule('*/10 * * * * *', async () => {
+        await (0, notify_badge_status_1.updateUserBadge)();
+        await (0, welcome_user_1.welcomeUser)();
+        await (0, account_termination_1.notifyAccountTermination)();
+        await (0, account_retrieval_1.notifyAccountDeactivation)();
+    });
+});

@@ -20,7 +20,7 @@ export class ChatService {
   }
   
   updateChat(ChatId: string, Message: string): Observable<{ success: boolean, error?: string, message?: string }> {
-    return this.http.post<{ success: boolean, error?: string, message?: string }>(
+    return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-chat/${ChatId}`, 
       {Message}, 
       { withCredentials: true }

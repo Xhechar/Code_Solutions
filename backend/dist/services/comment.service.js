@@ -7,7 +7,7 @@ class CommentService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
-    async createComment(userId, problemId, comment) {
+    async createComment(userId, problemId, Content) {
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId: userId
@@ -36,13 +36,12 @@ class CommentService {
                 'error': 'Problem specified does not exist'
             };
         }
-        let { CommentId, UserId, ProblemId, DatePosted, ...r_comment } = comment;
         let create = await this.prisma.comment.create({
             data: {
                 CommentId: (0, uuid_1.v4)(),
                 ProblemId: problemExists.ProblemId,
                 UserId: userExists.UserId,
-                ...r_comment
+                Content: Content
             }
         });
         if (create == null) {

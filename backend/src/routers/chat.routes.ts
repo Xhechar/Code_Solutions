@@ -6,7 +6,7 @@ export const chatRouter = Router();
 const chatController = new ChatController();
 
 chatRouter.post('/create-chat', verifyToken, verifyUser, chatController.createChat);
-chatRouter.post('/update-chat/:ChatId', verifyToken, verifyUser, chatController.updateChat);
+chatRouter.put('/update-chat/:ChatId', verifyToken, verifyUser, chatController.updateChat);
 chatRouter.put('/toggle-pin/:ChatId', verifyToken, verifyUser, chatController.toggleChatPinStatus);
 chatRouter.delete('/delete-chat/:ChatId', verifyToken, verifyAdmin, chatController.deleteChat);
 chatRouter.get('/single-chat/:ChatId', verifyToken, verifyUser, chatController.getSingleChat);

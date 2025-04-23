@@ -6,7 +6,7 @@ const comment_controller_1 = require("../controllers/comment.controller");
 const verify_tokens_1 = require("../middlewares/verify.tokens");
 exports.commentRouter = (0, express_1.Router)();
 const commentController = new comment_controller_1.CommentController();
-exports.commentRouter.post('/create-comment', verify_tokens_1.verifyUser, commentController.createComment);
+exports.commentRouter.post('/create-comment/:ProblemId', verify_tokens_1.verifyUser, commentController.createComment);
 exports.commentRouter.post('/update-comment/:CommentId', verify_tokens_1.verifyUser, commentController.updateComment);
 exports.commentRouter.delete('/delete-comment/:CommentId', verify_tokens_1.verifyAdmin, commentController.deleteComment);
 exports.commentRouter.get('get-comment-by-problem/:ProblemId', commentController.getCommentsByProblem);

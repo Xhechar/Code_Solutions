@@ -203,8 +203,8 @@ export interface RecoveryDetails {
 
 export interface Chat {
   ChatId : string,
-  UserId : String,
-  Message: String,
+  UserId : string,
+  Message: string,
   Pinned : Boolean,
   DateCreated : Date,
   User ?: User

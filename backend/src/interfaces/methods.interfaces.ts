@@ -57,7 +57,7 @@ export interface SolutionInterface {
 
 export interface CommentInterface {
   prisma: PrismaClient;
-  createComment(UserId: string, ProjectId: string, comment: Comment): Promise<{ success: boolean; message?: string; error?: string }>;
+  createComment(UserId: string, ProjectId: string, Content: string): Promise<{ success: boolean; message?: string; error?: string }>;
   updateComment(UserId: string, CommentId: string, content: string): Promise<{ success: boolean; message?: string; error?: string }>;
   deleteComment(CommentId: string): Promise<{ success: boolean; message?: string; error?: string }>;
   getCommentsByProblem(ProblemId: string): Promise<{ success: boolean; message?: string; error?: string; comments?: Comment[] }>;
