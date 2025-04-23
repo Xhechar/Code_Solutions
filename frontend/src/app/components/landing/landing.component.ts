@@ -1,9 +1,14 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {Problem, Category, ProjectStructure, Stack, ContactData, Testimonial } from '../../interfaces/solutions.interfaces';
+import {Problem, Category, ProjectStructure, Stack, ContactData, Testimonial, SuccessType } from '../../interfaces/solutions.interfaces';
+import { ProblemService } from '../../services/problem.service';
+import { ProjectStructureService } from '../../services/project-structure.service';
+import { StackService } from '../../services/stack.service';
+import { CategoryService } from '../../services/category.service';
+import { NotificationsService } from '../../services/modifiers/notifications.service';
 
 interface Message {
   id: number;
@@ -48,7 +53,6 @@ interface User {
 })
 export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('messageInput') private messageInput!: ElementRef;
 
   title = '';
@@ -125,13 +129,16 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   private typingSpeed = 100;
   private pauseDuration = 1000;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cs: CategoryService, private ps: ProblemService, private pss: ProjectStructureService, private ss: StackService, private ns: NotificationsService) {}
 
   ngOnInit() {
     this.startTypingAnimation();
     this.initMembers();
     this.initMessages();
-    this.loadDummyData();
+    this.loadCategories();
+    this.loadStacks();
+    this.loadProblems();
+    this.loadProjectStructures();
     this.calculateTotalPages();
     // Initialize testimonial dots
     this.testimonialDots = Array(this.testimonials.length).fill(0).map((_, i) => i);
@@ -519,328 +526,65 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     return count;
   }
-
-  loadDummyData(): void {
-    // Categories Data
-    this.categories = [
-      { CategoryId: 'cat1', Name: 'Runtime', Description: 'Runtime errors that occur during execution' },
-      { CategoryId: 'cat2', Name: 'Database', Description: 'Database connection and query errors' },
-      { CategoryId: 'cat3', Name: 'API', Description: 'REST API and endpoint errors' },
-      { CategoryId: 'cat4', Name: 'Syntax', Description: 'Code syntax and formatting errors' }
-    ];
-
-    // Stacks Data
-    this.stacks = [
-      { StackId: 'stack1', Name: 'JavaScript', Description: 'JavaScript language', Version: 'ES6+' },
-      { StackId: 'stack2', Name: 'React', Description: 'React framework', Version: '18.0' },
-      { StackId: 'stack3', Name: 'Angular', Description: 'Angular framework', Version: '15.0' },
-      { StackId: 'stack4', Name: 'Node.js', Description: 'Node.js runtime', Version: '16.x' },
-      { StackId: 'stack5', Name: 'Python', Description: 'Python language', Version: '3.9' }
-    ];
-
-    // Problems Data
-    this.problems = [
-      {
-        ProblemId: 'prob1',
-        Title: 'TypeError: Cannot read property of undefined',
-        Description: 'Getting a TypeError when trying to access a property of an object that is undefined during React component rendering.',
-        ErrorCode: "TypeError: Cannot read property 'length' of undefined at Component.render",
-        Context: 'React component that displays a list of items',
-        Environment: 'Chrome 90, React 17',
-        Tags: 'React,Frontend,TypeError',
-        Reproducibility: true,
-        Logs: 'Full error stack trace...',
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-11-05'),
-        StackId: 'stack2',
-        CategoryId: 'cat1',
-        IsApproved: true,
-        UserId: 'user1'
+  
+  loadCategories(): void {
+    this.cs.getAllCategories().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.categories = response.categories as Category[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
       },
-      {
-        ProblemId: 'prob2',
-        Title: 'Database Connection Refused Error',
-        Description: 'PostgreSQL connection is being refused when trying to connect from Node.js application.',
-        ErrorCode: "Error: Connection refused at Database.connect (postgres://localhost:5432)",
-        Context: 'Node.js backend API startup',
-        Environment: 'Node.js 16, PostgreSQL 13',
-        Tags: 'PostgreSQL,Backend,Connection',
-        Reproducibility: true,
-        PriorityLevel: 1,
-        DateCreated: new Date('2024-11-10'),
-        StackId: 'stack4',
-        CategoryId: 'cat2',
-        IsApproved: true,
-        UserId: 'user2'
-      },
-      {
-        ProblemId: 'prob3',
-        Title: 'API Endpoint 404 Not Found',
-        Description: 'Getting 404 errors when trying to access a REST API endpoint that should exist.',
-        ErrorCode: "404 Not Found: API endpoint /api/users not found",
-        Context: 'Frontend making AJAX calls to backend',
-        Environment: 'Production server',
-        Tags: 'API,REST,HTTP',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-11-15'),
-        StackId: 'stack1',
-        CategoryId: 'cat3',
-        IsApproved: true,
-        UserId: 'user3'
-      },
-      {
-        ProblemId: 'prob4',
-        Title: 'Syntax Error in Python Import Statement',
-        Description: 'Getting a syntax error when trying to import a module in Python.',
-        ErrorCode: "SyntaxError: invalid syntax at line 5, from module import Class as Cls",
-        Context: 'Python module initialization',
-        Environment: 'Python 3.9',
-        Tags: 'Python,Import,Syntax',
-        Reproducibility: true,
-        PriorityLevel: 3,
-        DateCreated: new Date('2024-11-20'),
-        StackId: 'stack5',
-        CategoryId: 'cat4',
-        IsApproved: true,
-        UserId: 'user1'
-      },
-      {
-        ProblemId: 'prob5',
-        Title: 'React Hooks Rules Violation',
-        Description: 'Getting a warning about React Hooks rules being violated - hooks must be called in the same order.',
-        ErrorCode: "Warning: React Hook useEffect has a conditional dependency",
-        Context: 'React functional component with hooks',
-        Environment: 'React 17',
-        Tags: 'React,Hooks,ESLint',
-        Reproducibility: true,
-        PriorityLevel: 3,
-        DateCreated: new Date('2024-11-25'),
-        StackId: 'stack2',
-        CategoryId: 'cat4',
-        IsApproved: true,
-        UserId: 'user2'
-      },
-      {
-        ProblemId: 'prob6',
-        Title: 'Angular Change Detection Error',
-        Description: 'Angular application throws ExpressionChangedAfterItHasBeenCheckedError during development.',
-        ErrorCode: "ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked",
-        Context: 'Angular component lifecycle',
-        Environment: 'Angular 15, Chrome',
-        Tags: 'Angular,ChangeDetection,DevMode',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-12-01'),
-        StackId: 'stack3',
-        CategoryId: 'cat1',
-        IsApproved: true,
-        UserId: 'user3'
-      },
-      {
-        ProblemId: 'prob7',
-        Title: 'MongoDB Connection Timeout',
-        Description: 'Node.js application fails to connect to MongoDB with a timeout error after deployment.',
-        ErrorCode: "MongoTimeoutError: Server selection timed out after 30000ms",
-        Context: 'Node.js API server startup in production',
-        Environment: 'Node.js 16, MongoDB 5.0',
-        Tags: 'MongoDB,Connection,Timeout,Node.js',
-        Reproducibility: true,
-        PriorityLevel: 1,
-        DateCreated: new Date('2024-12-05'),
-        StackId: 'stack4',
-        CategoryId: 'cat2',
-        IsApproved: true,
-        UserId: 'user1'
-      },
-      {
-        ProblemId: 'prob8',
-        Title: 'CORS Policy Blocked Request',
-        Description: 'Browser blocks API requests due to CORS policy when frontend tries to access backend API.',
-        ErrorCode: "Access to fetch at 'https://api.example.com' from origin 'https://app.example.com' has been blocked by CORS policy",
-        Context: 'Frontend application making API calls',
-        Environment: 'Chrome, Firefox',
-        Tags: 'CORS,API,Security,Frontend',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-12-10'),
-        StackId: 'stack1',
-        CategoryId: 'cat3',
-        IsApproved: true,
-        UserId: 'user2'
-      },
-      {
-        ProblemId: 'prob9',
-        Title: 'Memory Leak in React Application',
-        Description: 'React application gradually consumes more memory leading to performance degradation.',
-        ErrorCode: "Warning: Can't perform a React state update on an unmounted component",
-        Context: 'React components with subscriptions or timers',
-        Environment: 'React 17, Chrome',
-        Tags: 'React,MemoryLeak,Performance,useEffect',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-12-15'),
-        StackId: 'stack2',
-        CategoryId: 'cat1',
-        IsApproved: true,
-        UserId: 'user3'
-      },
-      {
-        ProblemId: 'prob10',
-        Title: 'Python Dependency Version Conflict',
-        Description: 'Python application crashes due to incompatible dependency versions.',
-        ErrorCode: "ImportError: cannot import name 'utils' from 'package'",
-        Context: 'Python application startup',
-        Environment: 'Python 3.9, pip',
-        Tags: 'Python,Dependencies,Versioning',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2024-12-20'),
-        StackId: 'stack5',
-        CategoryId: 'cat4',
-        IsApproved: true,
-        UserId: 'user1'
-      },
-      {
-        ProblemId: 'prob11',
-        Title: 'JWT Authentication Token Expired',
-        Description: 'Users are being logged out unexpectedly due to JWT token expiration issues.',
-        ErrorCode: "Error: jwt expired at TokenExpiredError",
-        Context: 'User authentication flow',
-        Environment: 'Node.js backend, React frontend',
-        Tags: 'Authentication,JWT,Security',
-        Reproducibility: true,
-        PriorityLevel: 1,
-        DateCreated: new Date('2025-01-05'),
-        StackId: 'stack4',
-        CategoryId: 'cat3',
-        IsApproved: true,
-        UserId: 'user2'
-      },
-      {
-        ProblemId: 'prob12',
-        Title: 'Angular Route Navigation Failed',
-        Description: 'Angular application fails to navigate between routes with cryptic error messages.',
-        ErrorCode: "Error: Navigation triggered outside Angular zone, did you forget to use NgZone.run()?",
-        Context: 'Angular router navigation',
-        Environment: 'Angular 15',
-        Tags: 'Angular,Routing,Zone.js',
-        Reproducibility: true,
-        PriorityLevel: 2,
-        DateCreated: new Date('2025-01-10'),
-        StackId: 'stack3',
-        CategoryId: 'cat1',
-        IsApproved: true,
-        UserId: 'user3'
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
       }
-    ];
+    });
+  }
 
-    // Project Structures Data
-    this.projectStructures = [
-      {
-        ProjectId: 'proj1',
-        Title: 'React Authentication Boilerplate',
-        Description: 'Complete authentication system using React, Redux, and JWT with protected routes and refreshing tokens',
-        StackId: 'stack2',
-        DateCreated: new Date('2024-10-15'),
-        LastUpdated: new Date('2025-01-10'),
-        PSG: [
-          {
-            PSGId: 'psg1',
-            Title: 'Setting up JWT Authentication',
-            ProjectId: 'proj1',
-            TextInstructions: 'Detailed steps for JWT implementation...',
-            RelatedProblemIds: ['prob11']
-          },
-          {
-            PSGId: 'psg2',
-            Title: 'Protected Routes Implementation',
-            ProjectId: 'proj1',
-            TextInstructions: 'How to set up protected routes in React...',
-            RelatedProblemIds: ['prob1', 'prob9']
-          }
-        ]
+  loadStacks(): void {
+    this.ss.getAllStacks().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.stacks = response.stacks as Stack[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
       },
-      {
-        ProjectId: 'proj2',
-        Title: 'MERN Stack E-commerce Platform',
-        Description: 'Full-featured e-commerce platform with MongoDB, Express, React, and Node.js including payment processing',
-        StackId: 'stack4',
-        DateCreated: new Date('2024-11-20'),
-        LastUpdated: new Date('2025-02-05'),
-        PSG: [
-          {
-            PSGId: 'psg3',
-            Title: 'MongoDB Schema Design',
-            ProjectId: 'proj2',
-            TextInstructions: 'Optimal schema design for e-commerce...',
-            RelatedProblemIds: ['prob2', 'prob7']
-          },
-          {
-            PSGId: 'psg4',
-            Title: 'API Integration with Frontend',
-            ProjectId: 'proj2',
-            TextInstructions: 'Connecting React frontend with Node.js API...',
-            RelatedProblemIds: ['prob3', 'prob8']
-          },
-          {
-            PSGId: 'psg5',
-            Title: 'Payment Gateway Implementation',
-            ProjectId: 'proj2',
-            TextInstructions: 'Setting up Stripe payment processing...',
-            RelatedProblemIds: ['prob3']
-          }
-        ]
-      },
-      {
-        ProjectId: 'proj3',
-        Title: 'Angular Enterprise Dashboard',
-        Description: 'Comprehensive dashboard application with Angular Material, NgRx state management, and real-time data',
-        StackId: 'stack3',
-        DateCreated: new Date('2024-12-10'),
-        LastUpdated: new Date('2025-03-01'),
-        PSG: [
-          {
-            PSGId: 'psg6',
-            Title: 'NgRx Store Implementation',
-            ProjectId: 'proj3',
-            TextInstructions: 'State management patterns with NgRx...',
-            RelatedProblemIds: ['prob6']
-          },
-          {
-            PSGId: 'psg7',
-            Title: 'Angular Material Components',
-            ProjectId: 'proj3',
-            TextInstructions: 'Using Material Design components effectively...',
-            RelatedProblemIds: ['prob12']
-          }
-        ]
-      },
-      {
-        ProjectId: 'proj4',
-        Title: 'Python Data Processing Pipeline',
-        Description: 'Efficient data processing system using Python, Pandas, and PostgreSQL for ETL operations',
-        StackId: 'stack5',
-        DateCreated: new Date('2025-01-05'),
-        LastUpdated: new Date('2025-02-20'),
-        PSG: [
-          {
-            PSGId: 'psg8',
-            Title: 'ETL Process Implementation',
-            ProjectId: 'proj4',
-            TextInstructions: 'Building an Extract, Transform, Load pipeline...',
-            RelatedProblemIds: ['prob4', 'prob10']
-          },
-          {
-            PSGId: 'psg9',
-            Title: 'Database Integration with Pandas',
-            ProjectId: 'proj4',
-            TextInstructions: 'Efficient data transfer between Pandas and PostgreSQL...',
-            RelatedProblemIds: ['prob2', 'prob10']
-          }
-        ]
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
       }
-    ];
+    });
+  }
+
+  loadProblems(): void {
+    this.ps.getApprovedProblems().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.problems = response.problems as Problem[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
+  }
+
+  loadProjectStructures(): void {
+    this.pss.getAllProjectStructures().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.projectStructures = response.projects as ProjectStructure[];
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   onSubmit(): void {

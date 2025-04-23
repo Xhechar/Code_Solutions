@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { User, History, RecentActivities, SuccessType } from '../../interfaces/solutions.interfaces';
 import { UserService } from '../../services/user.service';
 import { NotificationsService } from '../../services/modifiers/notifications.service';
 import { NotificationsComponent } from "../notifications/notifications.component";
+import { HistoryService } from '../../services/history.service';
 
 @Component({
   selector: 'app-profile',
@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
   ];
   isProfileUploading: boolean = false;
 
-  constructor(private us: UserService, private ns: NotificationsService) { }
+  constructor(private us: UserService, private ns: NotificationsService, private hs: HistoryService) { }
 
   ngOnInit(): void {
     this.loadUserData();
@@ -96,9 +96,18 @@ export class ProfileComponent implements OnInit {
   }
 
   loadRecentHistory(): void {
-    if (this.user.Histories && this.user.Histories.length > 0) {
-      this.recentHistory = this.user.Histories.slice(0, 5);
-    }
+    this.hs.getHistoryByUser().subscribe({
+      next: (response) => {
+        if(response.success) {
+          this.recentHistory = (response.histories as History[]).slice(0, 10).reverse();
+        } else {
+          // this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    })
   }
 
   getActivityIcon(type: string): string {
@@ -165,7 +174,7 @@ export class ProfileComponent implements OnInit {
       return;
     } else {
       this.isProfileUploading = true;
-
+      this.ns.showAlert(SuccessType.Info, 'Uploading your profile image...');
       let formData = new FormData();
 
       formData.append('file', image);
@@ -180,7 +189,7 @@ export class ProfileComponent implements OnInit {
           next: (response) => {
             if (response.success) {
               
-              this.user.ProfileImage = res.url;
+              this.user.ProfileImage = res.secure_url;
               this.ns.showAlert(SuccessType.Success, response.message as string);
               this.loadUserData();
               this.isProfileUploading = false;

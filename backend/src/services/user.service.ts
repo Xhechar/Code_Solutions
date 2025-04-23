@@ -313,7 +313,9 @@ export class UserService implements UserInterface {
     
     let users = await this.prisma.user.findMany({
       where: {
-        IsDeleted: false
+        Role: {
+          not: 'admin'
+        }
       }
     });
 

@@ -289,7 +289,9 @@ class UserService {
     async getAllUsers() {
         let users = await this.prisma.user.findMany({
             where: {
-                IsDeleted: false
+                Role: {
+                    not: 'admin'
+                }
             }
         });
         if (users == null) {
