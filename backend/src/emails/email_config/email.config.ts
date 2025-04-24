@@ -14,13 +14,7 @@ let mailConfigurations: MailConfigurations = ({
 });
 
 function createTransporter(config: MailConfigurations) {
-  return nodemailer.createTransport({
-    service: config.service,
-    host: config.host,
-    port: config.port,
-    secure: config.requireTLS,
-    auth: config.auth
-  });
+  return nodemailer.createTransport(config);
 }
 
 export const sendMail = async (messageOptions: MessageOptions) => {

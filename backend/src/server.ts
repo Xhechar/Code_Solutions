@@ -53,15 +53,16 @@ app.listen(3000, () => {
   console.log("Server is running on port 3000");
 })
 
-const email = Express();
+// const email = Express();
 
-email.listen(3001, async () => {
-  console.log("Email server is running on port 3001");
+// email.listen(3001, async () => {
+//   console.log("Email server is running on port 3001");
 
-  cron.schedule('*/10 * * * * *', async () => {
-    await updateUserBadge();
-    await welcomeUser();
-    await notifyAccountTermination();
-    await notifyAccountDeactivation();
-  });
-});
+//   cron.schedule('*/10 * * * * *', async () => {
+//     // await updateUserBadge();
+//     // await welcomeUser();
+//     // await notifyAccountTermination();
+//     // await notifyAccountDeactivation();
+//   console.log("cron job running every 10 seconds");
+//   });
+// });
