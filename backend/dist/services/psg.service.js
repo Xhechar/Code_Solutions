@@ -3,11 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PSGService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const body_input_validators_1 = require("../validators/body.input.validators");
 class PSGService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createPSG(ProjectId, psg) {
+        let { error } = body_input_validators_1.PSGSchema.validate(psg);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.message
+            });
+        }
+        ;
         let projectExists = await this.prisma.projectStructure.findUnique({
             where: {
                 ProjectId
@@ -36,11 +45,20 @@ class PSGService {
         else {
             return {
                 'success': true,
-                'message': 'Structure guide created successfully.'
+                'message': 'Structure guide created successfully.',
+                'psg': create
             };
         }
     }
     async updatePSG(pSGId, psg) {
+        let { error } = body_input_validators_1.PSGSchema.validate(psg);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.message
+            });
+        }
+        ;
         let psgExists = await this.prisma.pSG.findUnique({
             where: {
                 PSGId: pSGId

@@ -11,7 +11,7 @@ import { NotificationsComponent } from "../notifications/notifications.component
 @Component({
   selector: 'app-create-solution',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, NotificationsComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NotificationsComponent],
   templateUrl: './create-solution.component.html',
   styleUrl: './create-solution.component.css'
 })
@@ -170,10 +170,10 @@ export class CreateSolutionComponent implements OnInit {
 
   onCancel() {
     this.solutionForm.reset();
-    // this.imageFiles = [];
     this.imagePreviewUrls = [];
     this.mainPreviewImage = null;
     this.ms.clearSolvedProblemData();
+    history.back();
   }
 
   markFormGroupTouched(formGroup: FormGroup) {

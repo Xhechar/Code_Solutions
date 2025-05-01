@@ -1,13 +1,23 @@
 import { PrismaClient, PSG } from "@prisma/client";
 import { PSGInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
+import { PSGSchema } from "../validators/body.input.validators";
 
 export class PSGService implements PSGInterface {
   prisma = new PrismaClient({
     log: ["error"]
   });
 
-  async createPSG(ProjectId: string, psg: PSG): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async createPSG(ProjectId: string, psg: PSG): Promise<{ success: boolean; message?: string; error?: string; psg?: PSG }> {
+
+    let { error } = PSGSchema.validate(psg);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.message
+      });
+    };
     
     let projectExists = await this.prisma.projectStructure.findUnique({
       where: {
@@ -40,11 +50,21 @@ export class PSGService implements PSGInterface {
     } else {
       return {
         'success': true,
-        'message': 'Structure guide created successfully.'
+        'message': 'Structure guide created successfully.',
+        'psg': create
       };
     }
   }
   async updatePSG(pSGId: string, psg: Partial<PSG>): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = PSGSchema.validate(psg);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.message
+      });
+    };
     
     let psgExists = await this.prisma.pSG.findUnique({
       where: {

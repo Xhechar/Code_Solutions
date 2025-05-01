@@ -8,12 +8,22 @@ import { v4 } from "uuid";
 import path from "path";
 import { sendMail } from "../emails/email_config/email.config";
 import ejs from "ejs";
+import { LoginDetailsSchema, RecoveryDetailsSchema } from "../validators/body.input.validators";
 
 export class AuthService implements AuthInterface{
   prisma = new PrismaClient({
     log: ["error"]
   });
   async loginUser(Logins: LoginDetails): Promise<{ success: boolean; error?: string; message?: string; role?: string; token?: string; }> {
+
+    
+    let { error } = LoginDetailsSchema.validate(Logins);
+    if (error) {
+      return {
+        'success': false,
+        'error': error.details[0].message
+      };
+    }
     
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -47,7 +57,7 @@ export class AuthService implements AuthInterface{
     let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, DateCreated, ...r_user } = userExists;
 
     let token = jwt.sign({ ...r_user }, process.env.SECRET_KEY as string, {
-      expiresIn: '15m'
+      expiresIn: '45m'
     });
 
     return {
@@ -58,6 +68,15 @@ export class AuthService implements AuthInterface{
     }
   }
   async changePassword(Details: RecoveryDetails): Promise<{ success: boolean; error?: string; message?: string; }> {
+
+    let { error } = RecoveryDetailsSchema.validate(Details);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let userExists = await this.prisma.user.findUnique({
       where: {

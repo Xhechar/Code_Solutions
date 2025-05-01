@@ -8,7 +8,7 @@ export class ProjectStructureService implements ProjectStructureInterface {
     log: ["error"]
   });
 
-  async createProjectStructure(project: ProjectStructureDto): Promise<{ success: boolean; message?: string; error?: string; }> {
+  async createProjectStructure(project: ProjectStructureDto): Promise<{ success: boolean; message?: string; error?: string; project?: ProjectStructure }> {
     
     let create = await this.prisma.projectStructure.create({
       data: {
@@ -27,7 +27,8 @@ export class ProjectStructureService implements ProjectStructureInterface {
     } else {
       return {
         'success': true,
-        'message': 'Project structure created successfully'
+        'message': 'Project structure created successfully',
+        'project': create
       }
     } 
   }

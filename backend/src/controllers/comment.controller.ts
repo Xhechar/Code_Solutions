@@ -1,21 +1,12 @@
 import { Request, Response } from "express";
 import { CommentService } from "../services/comment.service";
-import { CommentSchema } from "../validators/body.input.validators";
 import { ExtendedRequest, getIdFromToken } from "../middlewares/verify.tokens";
 
-const commentService = new CommentService();
+export const commentService = new CommentService();
 
 export class CommentController {
   async createComment(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = CommentSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await commentService.createComment(getIdFromToken(req), req.params.ProblemId, req.body.Content));
       
@@ -27,14 +18,6 @@ export class CommentController {
   }
   async updateComment(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = CommentSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await commentService.updateComment(getIdFromToken(req), req.params.CommentId, req.body.content));
       

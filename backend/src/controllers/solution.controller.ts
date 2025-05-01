@@ -1,21 +1,12 @@
 import { Response } from "express";
 import { ExtendedRequest, getIdFromToken } from "../middlewares/verify.tokens";
 import { SolutionService } from "../services/solution.service";
-import { SolutionSchema } from "../validators/body.input.validators";
 
 const solutionService = new SolutionService();
 
 export class SolutionController {
   async createSolution(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = SolutionSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await solutionService.createSolution(getIdFromToken(req), req.params.ProblemId, req.body));
       
@@ -27,14 +18,6 @@ export class SolutionController {
   }
   async updateSolution(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = SolutionSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await solutionService.updateSolution(getIdFromToken(req), req.params.SolutionId, req.body));
       

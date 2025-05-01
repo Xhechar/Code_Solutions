@@ -1,21 +1,12 @@
 import { Response } from "express";
 import { ExtendedRequest } from "../middlewares/verify.tokens";
 import { StackService } from "../services/stack.service";
-import { StackSchema } from "../validators/body.input.validators";
 
 const stackService = new StackService();
 
 export class StackController {
   async createStack(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = StackSchema.validate(req.body);
-
-      if (error) {
-        res.status(400).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await stackService.createStack(req.body));
       
@@ -27,14 +18,6 @@ export class StackController {
   }
   async updateStack(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = StackSchema.validate(req.body);
-
-      if (error) {
-        res.status(400).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await stackService.updateStack(req.params.StackId, req.body));
       

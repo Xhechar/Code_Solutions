@@ -3,11 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const body_input_validators_1 = require("../validators/body.input.validators");
 class CommentService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createComment(userId, problemId, Content) {
+        let { error } = body_input_validators_1.CommentSchema.validate(Content);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId: userId

@@ -1,21 +1,12 @@
 import { Response } from "express";
 import { ExtendedRequest, getIdFromToken } from "../middlewares/verify.tokens";
 import { UserService } from "../services/user.service";
-import { UserRegisterationSchema, UserUpdateSchema } from "../validators/body.input.validators";
 
 const userService = new UserService();
 
 export class UserController {
   async createUser(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = UserRegisterationSchema.validate(req.body);
-
-      if (error) {
-        res.status(400).json({
-          'error': error.message
-        });
-      };
       
       res.status(201).json(await userService.createUser(req.body));
       
@@ -27,14 +18,6 @@ export class UserController {
   }
   async updateUser(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = UserUpdateSchema.validate(req.body);
-
-      if (error) {
-        res.status(400).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await userService.updateUser(getIdFromToken(req), req.body));
       

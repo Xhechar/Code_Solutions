@@ -11,6 +11,11 @@ import { StackService } from '../../../../services/stack.service';
 import { PsgService } from '../../../../services/psg.service';
 import { NotificationsComponent } from "../../../notifications/notifications.component";
 
+type PSGWithComputed = PSG & {
+  pictorialImages: string[];
+  relatedProblemsCount: number;
+  truncatedInstructions: string;
+};
 
 @Component({
   selector: 'app-all-project-structures',
@@ -31,7 +36,7 @@ export class AllProjectStructuresComponent implements OnInit {
 
   // Selection states
   selectedProjectId: string = '';
-  selectedProject!: ProjectStructure;
+  selectedProject!: ProjectStructure & { PSG: PSGWithComputed[] };
   selectedPSG: PSG | null = null;
 
   // Modal states
@@ -48,10 +53,12 @@ export class AllProjectStructuresComponent implements OnInit {
   // Image handling
   previewImages: string[] = [];
   selectedImageIndex: number = 0;
-  currentImageIndex: number = 0;
+  currentImageIndices: { [psgId: string]: number } = {};
 
   totalPSGs: number = 0;
   totalRelatedProblems: number = 0;
+
+  public problemTitleMap: { [problemId: string]: string } = {};
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -88,6 +95,10 @@ export class AllProjectStructuresComponent implements OnInit {
       next: (response) => {
         if (response.success && response.problems) {
           this.problems = response.problems as Problem[];
+          this.problemTitleMap = {};
+          this.problems.forEach(problem => {
+            this.problemTitleMap[problem.ProblemId] = problem.Title;
+          });
         } else {
           // this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
@@ -147,7 +158,6 @@ export class AllProjectStructuresComponent implements OnInit {
 
   formatInstructions(text: string): any {
     if (!text) return '';
-
     let formatted = text
       .replace(/# (.*?)(?:\n|$)/g, '<h2>$1</h2>')
       .replace(/## (.*?)(?:\n|$)/g, '<h3>$1</h3>')
@@ -157,7 +167,6 @@ export class AllProjectStructuresComponent implements OnInit {
       .replace(/^\d+\. (.*?)(?:\n|$)/gm, '<li>$1</li>')
       .replace(/^- (.*?)(?:\n|$)/gm, '<li>$1</li>')
       .replace(/\n\n/g, '</p><p>');
-
     return this.sanitizer.bypassSecurityTrustHtml('<p>' + formatted + '</p>');
   }
 
@@ -188,45 +197,67 @@ export class AllProjectStructuresComponent implements OnInit {
 
   getTotalRelatedProblems(): number {
     let uniqueProblemIds = new Set<string>();
-
     this.projectStructures.forEach((project) => {
       if (project.PSG) {
         project.PSG.forEach((guide) => {
           if (guide.RelatedProblemIds) {
             guide.RelatedProblemIds.split(',').forEach((id: string) => {
-              if (id.trim() !== '') {
-                uniqueProblemIds.add(id.trim());
-              }
+              if (id.trim() !== '') uniqueProblemIds.add(id.trim());
             });
           }
         });
       }
     });
-
     return uniqueProblemIds.size;
   }
 
   selectProject(): void {
     if (!this.selectedProjectId) {
+      this.selectedProject = undefined as any;
       this.selectedPSG = null;
+      this.currentImageIndices = {};
       return;
     }
+    this.fetchProjectStructureById(this.selectedProjectId);
+  }
 
-    this.selectedProject =
-      this.projectStructures.find(
-        (p) => p.ProjectId === this.selectedProjectId
-      )!;
-
-    this.selectedPSG = null;
+  fetchProjectStructureById(projectId: string): void {
+    this.projectStructureService.getSingleProjectStructure(projectId).subscribe({
+      next: (response) => {
+        if (response.success && response.project) {
+          const project = response.project;
+          const processedPSGs = (project.PSG || []).map(psg => ({
+            ...psg,
+            pictorialImages: this.getPictorialImages(psg),
+            relatedProblemsCount: this.getRelatedProblemsCount(psg),
+            truncatedInstructions: this.truncateText(psg.TextInstructions, 50)
+          }));
+          this.selectedProject = {
+            ...project,
+            PSG: processedPSGs
+          };
+          this.selectedProjectId = projectId;
+          this.selectedPSG = null;
+          this.currentImageIndices = {};
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
+        }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
 
   selectPSG(psg: PSG): void {
     this.selectedPSG = psg;
-    this.currentImageIndex = 0;
+    if (!this.currentImageIndices[psg.PSGId]) {
+      this.currentImageIndices[psg.PSGId] = 0;
+    }
   }
 
-  selectImage(index: number): void {
-    this.currentImageIndex = index;
+  selectImage(psgId: string, index: number): void {
+    this.currentImageIndices[psgId] = index;
   }
 
   selectPreviewImage(index: number): void {
@@ -247,13 +278,12 @@ export class AllProjectStructuresComponent implements OnInit {
       Title: this.newProject.Title,
       Description: this.newProject.Description,
       StackId: this.newProject.StackId
-    }
-
+    };
     this.projectStructureService.createProjectStructure(newPs).subscribe({
       next: (response) => {
         if (response.success) {
-          this.projectStructures.push();
-          this.selectedProjectId = this.newProject.ProjectId;
+          this.projectStructures.push(response.project!);
+          this.selectedProjectId = response.project!.ProjectId;
           this.selectProject();
           this.showNewProjectModal = false;
           this.ns.showAlert(SuccessType.Success, response.message as string);
@@ -269,13 +299,11 @@ export class AllProjectStructuresComponent implements OnInit {
 
   updateProjectStructure(): void {
     if (!this.selectedProject) this.ns.showAlert(SuccessType.Warning, 'No project selected');
-
     let updatedPs: ProjectStructureDto = {
       Title: this.selectedProject!.Title,
       Description: this.selectedProject!.Description,
       StackId: this.selectedProject!.StackId
-    }
-
+    };
     this.projectStructureService.updateProjectStructure(this.selectedProject.ProjectId, updatedPs).subscribe({
       next: (response) => {
         if (response.success) {
@@ -283,7 +311,7 @@ export class AllProjectStructuresComponent implements OnInit {
             (p) => p.ProjectId === this.selectedProject?.ProjectId
           );
           if (index !== -1) {
-            this.projectStructures[index] = { ...this.selectedProject! };
+            this.projectStructures[index] = { ...this.selectedProject };
             this.ns.showAlert(SuccessType.Success, response.message as string);
           }
         } else {
@@ -298,7 +326,6 @@ export class AllProjectStructuresComponent implements OnInit {
 
   openNewPSGForm(): void {
     if (!this.selectedProject) return;
-
     this.psgForm = this.createEmptyPSG();
     this.psgForm.ProjectId = this.selectedProject.ProjectId;
     this.editingPSG = false;
@@ -311,14 +338,11 @@ export class AllProjectStructuresComponent implements OnInit {
   openEditPSGForm(psg: PSG): void {
     this.psgForm = { ...psg };
     this.editingPSG = true;
-
     this.selectedProblems = psg.RelatedProblemIds
       ? psg.RelatedProblemIds.split(',').filter((id: string) => id.trim() !== '')
       : [];
-
     this.previewImages = this.getPictorialImages(psg);
     this.selectedImageIndex = 0;
-
     this.showPSGFormModal = true;
   }
 
@@ -329,11 +353,9 @@ export class AllProjectStructuresComponent implements OnInit {
 
   submitPSGForm(): void {
     this.psgForm.RelatedProblemIds = this.selectedProblems.join(',');
-
     if (this.previewImages.length > 0) {
       this.psgForm.PictorialGuide = this.previewImages.join(',');
     }
-
     if (this.editingPSG) {
       let { PSGId, Project, RelatedProblemIds, RelatedProblems, RelatedSolutions, ...rest } = this.psgForm;
       let updatePSG: PSGDto = {
@@ -347,9 +369,15 @@ export class AllProjectStructuresComponent implements OnInit {
               (p) => p.PSGId === this.psgForm.PSGId
             );
             if (index !== -1) {
-              this.selectedProject.PSG[index] = { ...this.psgForm };
+              const updatedPSG = {
+                ...this.psgForm,
+                pictorialImages: this.getPictorialImages(this.psgForm),
+                relatedProblemsCount: this.getRelatedProblemsCount(this.psgForm),
+                truncatedInstructions: this.truncateText(this.psgForm.TextInstructions, 50)
+              };
+              this.selectedProject.PSG[index] = updatedPSG;
               if (this.selectedPSG && this.selectedPSG.PSGId === this.psgForm.PSGId) {
-                this.selectedPSG = this.selectedProject.PSG[index];
+                this.selectedPSG = updatedPSG;
               }
               this.showPSGFormModal = false;
               this.showProblemSelector = false;
@@ -372,9 +400,14 @@ export class AllProjectStructuresComponent implements OnInit {
       this.psgs.createPsg(this.selectedProject.ProjectId, createPSG).subscribe({
         next: (response) => {
           if (response.success && this.selectedProject) {
-            if (!this.selectedProject.PSG) {
-              this.selectedProject.PSG = [];
-            }
+            const newPSG = response.psg!;
+            const processedPSG = {
+              ...newPSG,
+              pictorialImages: this.getPictorialImages(newPSG),
+              relatedProblemsCount: this.getRelatedProblemsCount(newPSG),
+              truncatedInstructions: this.truncateText(newPSG.TextInstructions, 50)
+            };
+            this.selectedProject.PSG.push(processedPSG);
             this.selectedProject.LastUpdated = new Date();
             this.showPSGFormModal = false;
             this.showProblemSelector = false;
@@ -405,14 +438,17 @@ export class AllProjectStructuresComponent implements OnInit {
       this.showDeleteConfirmation = false;
       return;
     }
-
     this.psgs.deletePsg(this.psgToDelete.PSGId).subscribe({
       next: (response) => {
         if (response.success) {
-          this.selectedProject!.PSG = this.selectedProject!.PSG!.filter(
-            (p) => p.PSGId !== this.psgToDelete?.PSGId
-          );
-
+          this.selectedProject!.PSG = this.selectedProject!.PSG
+            .filter((p) => p.PSGId !== this.psgToDelete?.PSGId)
+            .map((psg) => ({
+              ...psg,
+              pictorialImages: this.getPictorialImages(psg),
+              relatedProblemsCount: this.getRelatedProblemsCount(psg),
+              truncatedInstructions: this.truncateText(psg.TextInstructions, 50),
+            }));
           this.selectedProject!.LastUpdated = new Date();
           this.showDeleteConfirmation = false;
           this.psgToDelete = null;
@@ -430,15 +466,12 @@ export class AllProjectStructuresComponent implements OnInit {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
-
     this.isLoading = true;
-
     Array.from(input.files).forEach((file) => {
       const formData: FormData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', 'Code_Solutions');
       formData.append('cloud_name', 'dakyiye2e');
-
       fetch('https://api.cloudinary.com/v1_1/dakyiye2e/image/upload', {
         method: 'POST',
         body: formData
@@ -475,7 +508,7 @@ export class AllProjectStructuresComponent implements OnInit {
   isSelectedProblem(problemId: string): boolean {
     return this.selectedProblems.includes(problemId);
   }
-  
+
   addProblem(problemId: string): void {
     if (!this.selectedProblems.includes(problemId)) {
       this.selectedProblems.push(problemId);
@@ -483,19 +516,26 @@ export class AllProjectStructuresComponent implements OnInit {
       this.removeProblem(problemId);
     }
   }
-  
+
   removeProblem(problemId: string): void {
     this.selectedProblems = this.selectedProblems.filter(id => id !== problemId);
   }
-  
+
   filteredProblems(): Problem[] {
     if (!this.problemSearchTerm.trim()) {
       return this.problems;
     }
-    
-    return this.problems.filter(problem => 
+    return this.problems.filter(problem =>
       problem.Title.toLowerCase().includes(this.problemSearchTerm.toLowerCase()) ||
       (problem.Description && problem.Description.toLowerCase().includes(this.problemSearchTerm.toLowerCase()))
     );
   }
-} 
+
+  trackByProjectId(index: number, project: ProjectStructure): string {
+    return project.ProjectId;
+  }
+
+  trackByPSGId(index: number, guide: PSGWithComputed): string {
+    return guide.PSGId;
+  }
+}

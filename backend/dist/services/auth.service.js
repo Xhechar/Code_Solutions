@@ -45,11 +45,19 @@ const uuid_1 = require("uuid");
 const path_1 = __importDefault(require("path"));
 const email_config_1 = require("../emails/email_config/email.config");
 const ejs_1 = __importDefault(require("ejs"));
+const body_input_validators_1 = require("../validators/body.input.validators");
 class AuthService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async loginUser(Logins) {
+        let { error } = body_input_validators_1.LoginDetailsSchema.validate(Logins);
+        if (error) {
+            return {
+                'success': false,
+                'error': error.details[0].message
+            };
+        }
         let userExists = await this.prisma.user.findUnique({
             where: {
                 Email: Logins.Email
@@ -76,7 +84,7 @@ class AuthService {
         }
         let { FullName, Username, Password, ProfileImage, IsDeleted, IsSolver, IsWelcomed, Notified, Badge, PreviousBadge, ProblemsCount, DateCreated, ...r_user } = userExists;
         let token = jsonwebtoken_1.default.sign({ ...r_user }, process.env.SECRET_KEY, {
-            expiresIn: '15m'
+            expiresIn: '45m'
         });
         return {
             "success": true,
@@ -86,6 +94,14 @@ class AuthService {
         };
     }
     async changePassword(Details) {
+        let { error } = body_input_validators_1.RecoveryDetailsSchema.validate(Details);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let userExists = await this.prisma.user.findUnique({
             where: {
                 Email: Details.Email

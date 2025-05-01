@@ -11,8 +11,8 @@ export class ProjectStructureService {
 
   constructor(private http: HttpClient) { }
 
-  createProjectStructure(projectStructure: ProjectStructureDto): Observable<{ success: boolean, error?: string, message?: string }> {
-    return this.http.post<{ success: boolean, error?: string, message?: string }>(
+  createProjectStructure(projectStructure: ProjectStructureDto): Observable<{ success: boolean, error?: string, message?: string; project?: ProjectStructure  }> {
+    return this.http.post<{ success: boolean, error?: string, message?: string; project?: ProjectStructure  }>(
       `${this.API_URL}create-project-structure`,
       projectStructure,
       { withCredentials: true }
@@ -41,8 +41,8 @@ export class ProjectStructureService {
     );
   }
 
-  getSingleProjectStructure(ProjectId: string): Observable<{ success: boolean, error?: string, message?: string, projectStructure?: ProjectStructure }> {
-    return this.http.get<{ success: boolean, error?: string, message?: string, projectStructure?: ProjectStructure }>(
+  getSingleProjectStructure(ProjectId: string): Observable<{ success: boolean, error?: string, message?: string, project?: ProjectStructure }> {
+    return this.http.get<{ success: boolean, error?: string, message?: string, project?: ProjectStructure }>(
       `${this.API_URL}get-single-project-structure/${ProjectId}`,
       { withCredentials: true }
     );

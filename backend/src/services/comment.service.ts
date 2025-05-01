@@ -1,6 +1,7 @@
 import { Comment, PrismaClient } from "@prisma/client";
 import { CommentInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
+import { CommentSchema } from "../validators/body.input.validators";
 
 export class CommentService implements CommentInterface{
   prisma = new PrismaClient({
@@ -8,6 +9,15 @@ export class CommentService implements CommentInterface{
   });
 
   async createComment(userId: string, problemId: string, Content: string): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+      let { error } = CommentSchema.validate(Content);
+
+      if (error) {
+        return ({
+          'success': false,
+          'error': error.details[0].message
+        });
+      };
 
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -64,7 +74,7 @@ export class CommentService implements CommentInterface{
     }
   }
   async updateComment(UserId: string, CommentId: string, content: string): Promise<{ success: boolean; message?: string; error?: string; }> {
-    
+   
     let userExists = await this.prisma.user.findUnique({
       where: {
         UserId

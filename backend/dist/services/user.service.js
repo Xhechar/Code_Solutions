@@ -7,11 +7,20 @@ exports.UserService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const body_input_validators_1 = require("../validators/body.input.validators");
 class UserService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createUser(user) {
+        let { error } = body_input_validators_1.UserRegisterationSchema.validate(user);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let emailExists = await this.prisma.user.findUnique({
             where: {
                 Email: user.Email
@@ -72,6 +81,14 @@ class UserService {
         }
     }
     async updateUser(userId, user) {
+        let { error } = body_input_validators_1.UserUpdateSchema.validate(user);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId: userId
@@ -266,6 +283,13 @@ class UserService {
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId
+            },
+            include: {
+                Problems: true,
+                Comments: true,
+                Solutions: true,
+                Histories: true,
+                Favourites: true
             }
         });
         if (userExists == null) {
@@ -292,6 +316,12 @@ class UserService {
                 Role: {
                     not: 'admin'
                 }
+            },
+            include: {
+                Problems: true,
+                Favourites: true,
+                Solutions: true,
+                Histories: true
             }
         });
         if (users == null) {
@@ -310,6 +340,12 @@ class UserService {
         let users = await this.prisma.user.findMany({
             where: {
                 IsDeleted: true
+            },
+            include: {
+                Problems: true,
+                Favourites: true,
+                Solutions: true,
+                Histories: true
             }
         });
         if (users == null) {

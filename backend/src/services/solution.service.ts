@@ -1,6 +1,7 @@
 import { PrismaClient, Solution } from "@prisma/client";
 import { SolutionInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
+import { SolutionSchema } from "../validators/body.input.validators";
 
 export class SolutionService implements SolutionInterface {
   prisma = new PrismaClient({
@@ -8,6 +9,15 @@ export class SolutionService implements SolutionInterface {
   });
 
   async createSolution(userId: string, problemId: string, solution: Solution): Promise<{ success: boolean; message?: string; error?: string; }> {
+  
+        let { error } = SolutionSchema.validate(solution);
+  
+        if (error) {
+          return ({
+            'success': false,
+            'error': error.details[0].message
+          });
+        };
     
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -69,6 +79,15 @@ export class SolutionService implements SolutionInterface {
     }
   }
   async updateSolution(UserId: string, SolutionId: string, solution: Partial<Solution>): Promise<{ success: boolean; message?: string; error?: string; }> {
+  
+    let { error } = SolutionSchema.validate(solution);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let userExists = await this.prisma.user.findUnique({
       where: {

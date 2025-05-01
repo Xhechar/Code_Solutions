@@ -2,24 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const auth_service_1 = require("../services/auth.service");
-const body_input_validators_1 = require("../validators/body.input.validators");
 const authService = new auth_service_1.AuthService();
 class AuthController {
     async loginUser(req, res) {
         try {
-            let { error } = body_input_validators_1.LoginDetailsSchema.validate(req.body);
-            if (error) {
-                return res.status(401).json({
-                    'error': error.message
-                });
-            }
             let result = await authService.loginUser(req.body);
             if (result.success) {
                 res.cookie('token', result.token, {
                     httpOnly: true,
                     secure: false,
                     sameSite: 'strict',
-                    maxAge: 15 * 60 * 1000,
+                    maxAge: 45 * 60 * 1000,
                     signed: true
                 });
                 let { token, ...rest } = result;
@@ -49,13 +42,6 @@ class AuthController {
     }
     async changePassword(req, res) {
         try {
-            let { error } = body_input_validators_1.RecoveryDetailsSchema.validate(req.body);
-            if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            ;
             let result = await authService.changePassword(req.body);
             res.status(201).json(result);
         }

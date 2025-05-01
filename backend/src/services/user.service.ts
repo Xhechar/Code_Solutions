@@ -3,13 +3,22 @@ import { UserInterface } from "../interfaces/methods.interfaces";
 import { User } from "../interfaces/solutions.interfaces";
 import { v4 } from "uuid";
 import bcrypt from 'bcrypt';
-import { Badge } from "../enums/enum";
+import { UserRegisterationSchema, UserUpdateSchema } from "../validators/body.input.validators";
 
 export class UserService implements UserInterface {
   prisma = new PrismaClient({
     log: ["error"]
   });
   async createUser(user: User): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = UserRegisterationSchema.validate(user);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let emailExists = await this.prisma.user.findUnique({
       where: {
@@ -74,6 +83,15 @@ export class UserService implements UserInterface {
     }
   }
   async updateUser(userId: string, user: Partial<User>): Promise<{ success: boolean; message?: string; error?: string; }> {
+  
+    let { error } = UserUpdateSchema.validate(user);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -286,6 +304,13 @@ export class UserService implements UserInterface {
     let userExists = await this.prisma.user.findUnique({
       where: {
         UserId
+      },
+      include: {
+        Problems: true,
+        Comments: true,
+        Solutions: true,
+        Histories: true,
+        Favourites: true
       }
     });
 
@@ -316,6 +341,12 @@ export class UserService implements UserInterface {
         Role: {
           not: 'admin'
         }
+      },
+      include: {
+        Problems: true,
+        Favourites: true,
+        Solutions: true,
+        Histories: true
       }
     });
 
@@ -337,6 +368,12 @@ export class UserService implements UserInterface {
     let users = await this.prisma.user.findMany({
       where: {
         IsDeleted: true
+      },
+      include: {
+        Problems: true,
+        Favourites: true,
+        Solutions: true,
+        Histories: true
       }
     });
 

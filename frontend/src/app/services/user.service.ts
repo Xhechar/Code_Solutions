@@ -58,10 +58,9 @@ export class UserService {
     );
   }
 
-  updateUserRole(UserId: string, role: string): Observable<{ success: boolean, error?: string, message?: string }> {
+  updateUserRole(UserId: string): Observable<{ success: boolean, error?: string, message?: string }> {
     return this.http.put<{ success: boolean, error?: string, message?: string }>(
       `${this.API_URL}update-user-role/${UserId}`,
-      { role },
       { withCredentials: true }
     );
   }

@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { PrismaClient } from "@prisma/client";
 import { StackInterface } from "../interfaces/methods.interfaces";
 import { Stack, StackDto } from "../interfaces/solutions.interfaces";
 import { v4 } from "uuid";
+import { StackSchema } from "../validators/body.input.validators";
 
 export class StackService implements StackInterface {
   prisma = new PrismaClient({
@@ -10,6 +10,15 @@ export class StackService implements StackInterface {
   });
 
   async createStack(stack: Stack): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = StackSchema.validate(stack);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
 
     let stackExists = await this.prisma.stack.findUnique({ where: { Name: stack.Name.toLocaleLowerCase() } });
 
@@ -43,6 +52,15 @@ export class StackService implements StackInterface {
     }
   }
   async updateStack(StackId: string, stack: StackDto): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = StackSchema.validate(stack);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let stackExists = await this.prisma.stack.findUnique({ where: { StackId } });
 

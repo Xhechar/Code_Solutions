@@ -2,6 +2,9 @@ import { PrismaClient, Problem } from "@prisma/client";
 import { ProblemInterface } from "../interfaces/methods.interfaces";
 import { v4 } from "uuid";
 import { ProblemDto } from "../interfaces/solutions.interfaces";
+import { ProblemSchema } from "../validators/body.input.validators";
+import { problemService } from "../controllers/problem.controller";
+import { getIdFromToken } from "../middlewares/verify.tokens";
 
 export class ProblemService implements ProblemInterface {
   prisma = new PrismaClient({
@@ -9,6 +12,15 @@ export class ProblemService implements ProblemInterface {
   });
 
   async createProblem(userId: string, problem: Problem): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = ProblemSchema.validate(problem);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    }
  
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -91,6 +103,15 @@ export class ProblemService implements ProblemInterface {
     }
   }
   async updateProblem(userId: string, problemId: string, problem: ProblemDto): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+      let { error } = ProblemSchema.validate(problem);
+
+      if (error) {
+        return ({
+          'success': false,
+          'error': error.details[0].message
+        });
+      }
     
     let userExists = await this.prisma.user.findUnique({
       where: {
@@ -444,8 +465,17 @@ export class ProblemService implements ProblemInterface {
       include: {
         Stack: true,
         Category: true,
-        Solutions: true,
-        Comments: true,
+        Solutions: {
+          include: {
+            User: true,
+            Problem:true
+          }
+        },
+        Comments: {
+          include: {
+            User: true
+          }
+        },
         User: true
       }
     });

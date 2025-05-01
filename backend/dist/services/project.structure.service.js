@@ -25,7 +25,8 @@ class ProjectStructureService {
         else {
             return {
                 'success': true,
-                'message': 'Project structure created successfully'
+                'message': 'Project structure created successfully',
+                'project': create
             };
         }
     }

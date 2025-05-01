@@ -11,8 +11,8 @@ export class PsgService {
 
   constructor(private http: HttpClient) { }
 
-  createPsg(ProjectId: string , psg: PSGDto): Observable<{ success: boolean, error?: string, message?: string }> {
-    return this.http.post<{ success: boolean, error?: string, message?: string }>(
+  createPsg(ProjectId: string, psg: PSGDto): Observable<{ success: boolean, error?: string, message?: string; psg?: PSG }> {
+    return this.http.post<{ success: boolean, error?: string, message?: string; psg?: PSG }>(
       `${this.API_URL}create-psg/${ProjectId}`,
       psg,
       { withCredentials: true }

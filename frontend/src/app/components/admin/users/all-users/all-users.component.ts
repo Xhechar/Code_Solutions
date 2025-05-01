@@ -199,51 +199,47 @@ export class AllUsersComponent implements OnInit {
   }
   
   bulkDelete(): void {
-    if (confirm(`Are you sure you want to delete ${this.selectedUsers.length} users?`)) {
-      this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.users = this.users.map(user => 
-              this.selectedUsers.includes(user.UserId) 
-                ? { ...user, IsDeleted: true } 
-                : user
-            );
-            this.calculateStats();
-            this.filterUsers(this.currentFilter);
-            this.ns.showAlert(SuccessType.Success, response.message as string);
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
-          }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+    this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.users = this.users.map(user => 
+            this.selectedUsers.includes(user.UserId) 
+              ? { ...user, IsDeleted: true } 
+              : user
+          );
+          this.calculateStats();
+          this.filterUsers(this.currentFilter);
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
   
   bulkDeactivate(): void {
-    if (confirm(`Are you sure you want to deactivate ${this.selectedUsers.length} users?`)) {
-      this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.users = this.users.map(user => 
-              this.selectedUsers.includes(user.UserId) 
-                ? { ...user, IsDeleted: true } 
-                : user
-            );
-            this.calculateStats();
-            this.filterUsers(this.currentFilter);
-            this.ns.showAlert(SuccessType.Success, response.message as string);
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
-          }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+    this.userService.bulkDeleteUsers(this.selectedUsers).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.users = this.users.map(user => 
+            this.selectedUsers.includes(user.UserId) 
+              ? { ...user, IsDeleted: true } 
+              : user
+          );
+          this.calculateStats();
+          this.filterUsers(this.currentFilter);
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
   
   editUser(user: User): void {
@@ -251,22 +247,19 @@ export class AllUsersComponent implements OnInit {
   }
   
   makeAdmin(user: User): void {
-    if (confirm(`Are you sure you want to make ${user.FullName} an admin?`)) {
-      const updatedUser = { ...user, Role: 'Admin' };
-      this.userService.updateUser(updatedUser).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.updateUser(updatedUser);
-            this.ns.showAlert(SuccessType.Success, response.message as string);
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
-          }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+    this.userService.updateUserRole(user.UserId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.fetchUsers();
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
   
   removeAdmin(user: User): void {
@@ -290,12 +283,25 @@ export class AllUsersComponent implements OnInit {
   
   toggleUserStatus(user: User): void {
     const action = user.IsDeleted ? 'activate' : 'deactivate';
-    if (confirm(`Are you sure you want to ${action} ${user.FullName}'s account?`)) {
-      const updatedUser = { ...user, IsDeleted: !user.IsDeleted };
-      this.userService.updateUser(updatedUser).subscribe({
+    if (action === 'deactivate') {
+      this.userService.softDeleteUser(user.UserId).subscribe({
         next: (response) => {
           if (response.success) {
-            this.updateUser(updatedUser);
+            this.fetchUsers();
+            this.ns.showAlert(SuccessType.Success, response.message as string);
+          } else {
+            this.ns.showAlert(SuccessType.Warning, response.error as string);
+          }
+        },
+        error: (error) => {
+          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+        }
+      });
+    } else {
+      this.userService.restoreUser(user.UserId).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.fetchUsers();
             this.ns.showAlert(SuccessType.Success, response.message as string);
           } else {
             this.ns.showAlert(SuccessType.Warning, response.error as string);
@@ -309,22 +315,20 @@ export class AllUsersComponent implements OnInit {
   }
   
   deleteUser(user: User): void {
-    if (confirm(`Are you sure you want to delete ${user.FullName}?`)) {
-      this.userService.deleteUser(user.UserId).subscribe({
-        next: (response) => {
-          if (response.success) {
-            const updatedUser = { ...user, IsDeleted: true };
-            this.updateUser(updatedUser);
-            this.ns.showAlert(SuccessType.Success, response.message as string);
-          } else {
-            this.ns.showAlert(SuccessType.Warning, response.error as string);
-          }
-        },
-        error: (error) => {
-          this.ns.showAlert(SuccessType.Error, error.error.error as string);
+    this.userService.deleteUser(user.UserId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const updatedUser = { ...user, IsDeleted: true };
+          this.updateUser(updatedUser);
+          this.ns.showAlert(SuccessType.Success, response.message as string);
+        } else {
+          this.ns.showAlert(SuccessType.Warning, response.error as string);
         }
-      });
-    }
+      },
+      error: (error) => {
+        this.ns.showAlert(SuccessType.Error, error.error.error as string);
+      }
+    });
   }
   
   updateUser(updatedUser: User): void {

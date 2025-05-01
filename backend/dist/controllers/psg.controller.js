@@ -2,18 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PSGController = void 0;
 const psg_service_1 = require("../services/psg.service");
-const body_input_validators_1 = require("../validators/body.input.validators");
 const psgService = new psg_service_1.PSGService();
 class PSGController {
     async createPSG(req, res) {
         try {
-            let { error } = body_input_validators_1.PSGSchema.validate(req.body);
-            if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await psgService.createPSG(req.params.ProjectId, req.body));
         }
         catch (error) {
@@ -24,13 +16,6 @@ class PSGController {
     }
     async updatePSG(req, res) {
         try {
-            let { error } = body_input_validators_1.PSGSchema.validate(req.body);
-            if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await psgService.updatePSG(req.params.PSGId, req.body));
         }
         catch (error) {

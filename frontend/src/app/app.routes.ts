@@ -127,5 +127,5 @@ export const routes: Routes = [
       {path: 'project-structures', component: UserPSComponent}
     ],
   },
-  { path: '**', component: NotFoundComponent },
+  { path: '**', component: LoginComponent },
 ];

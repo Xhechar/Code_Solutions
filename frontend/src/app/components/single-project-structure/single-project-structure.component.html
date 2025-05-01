@@ -3,7 +3,7 @@
   <!-- Hero Section -->
   <div class="hero-section">
     <div class="breadcrumb">
-      <a routerLink="/project-structures"><i class="bx bx-arrow-back"></i> Back to Structures</a>
+      <a (click)="navigateBack()"><i class="bx bx-arrow-back"></i> Back to Structures</a>
     </div>
     <div class="project-meta" *ngIf="projectStructure">
       <h1 class="project-title">{{projectStructure.Title}}</h1>
@@ -148,10 +148,10 @@
       </div>
       
       <div class="action-buttons">
-        <button class="btn-primary" [routerLink]="['/project-structures']">
+        <button class="btn-primary" (click)="navigateBack()">
           <i class="bx bx-list-ul"></i> All Projects
         </button>
-        <button class="btn-secondary" (click)="downloadProject()" *ngIf="projectStructure">
+        <button class="btn-secondary" (click)="downloadProjectAsPDF()" *ngIf="projectStructure">
           <i class="bx bx-download"></i> Export
         </button>
       </div>

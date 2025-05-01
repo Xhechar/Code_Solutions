@@ -1,21 +1,12 @@
 import { Response } from "express";
 import { ExtendedRequest, getIdFromToken } from "../middlewares/verify.tokens";
 import { ProblemService } from "../services/problem.service";
-import { ProblemSchema } from "../validators/body.input.validators";
 
-const problemService = new ProblemService();
+export const problemService = new ProblemService();
 
 export class ProblemController {
   async createProblem(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = ProblemSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      }
       
       res.status(201).json(await problemService.createProblem(getIdFromToken(req), req.body));
       
@@ -27,14 +18,6 @@ export class ProblemController {
   }
   async updateProblem(req: ExtendedRequest, res: Response) {
     try {
-
-      let { error } = ProblemSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      }
       
       res.status(201).json(await problemService.updateProblem(getIdFromToken(req), req.params.ProblemId, req.body));
       

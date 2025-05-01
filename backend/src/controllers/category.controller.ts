@@ -1,20 +1,11 @@
 import { Request, Response } from "express";
 import { CategoryService } from "../services/category.service";
-import { CategorySchema } from "../validators/body.input.validators";
 
 const categoryService = new CategoryService();
 
 export class CategoryController{
   async createCategory(req: Request, res: Response) {
     try {
-
-      let { error } = CategorySchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await categoryService.createCategory(req.body));
       
@@ -26,14 +17,6 @@ export class CategoryController{
   }
   async updateCategory(req: Request, res: Response) {
     try {
-
-      let { error } = CategorySchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       res.status(201).json(await categoryService.updateCategory(req.params.CategoryId, req.body));
       

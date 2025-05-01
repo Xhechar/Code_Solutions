@@ -1,22 +1,5 @@
 <app-notifications></app-notifications>
 <div class="problems-container">
-    <!-- <div class="test-summary">
-        <div class="test-stats">
-            <span class="test-count">{{ testCount }}</span>
-            <span class="test-label">Sharpen Your Coding Skills</span>
-        </div>
-        <div class="test-actions">
-            <button class="test-of-day-btn" (click)="viewTestOfDay()">
-                <i class="fas fa-calendar-check"></i> Test of the Day
-            </button>
-            <div class="test-info-icon">
-                <i class="fas fa-info-circle"></i>
-                <div class="test-tooltip">
-                    Daily challenges to push your coding limits and track your progress!
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <!-- Filter Section -->
     <div class="filter-section" [ngClass]="{'filter-expanded': filtersVisible}">
@@ -187,7 +170,8 @@
                 class="error-search-input" 
                 placeholder="Paste your error message to find solutions..." 
                 [(ngModel)]="errorSearchQuery"
-                (keyup.enter)="searchError()">
+                (keyup.enter)="searchError()"
+                (change)="searchError()">
             <button class="error-search-btn" (click)="searchError()">
                 <i class="fas fa-search"></i>
             </button>

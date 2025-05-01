@@ -2,18 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackController = void 0;
 const stack_service_1 = require("../services/stack.service");
-const body_input_validators_1 = require("../validators/body.input.validators");
 const stackService = new stack_service_1.StackService();
 class StackController {
     async createStack(req, res) {
         try {
-            let { error } = body_input_validators_1.StackSchema.validate(req.body);
-            if (error) {
-                res.status(400).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await stackService.createStack(req.body));
         }
         catch (error) {
@@ -24,13 +16,6 @@ class StackController {
     }
     async updateStack(req, res) {
         try {
-            let { error } = body_input_validators_1.StackSchema.validate(req.body);
-            if (error) {
-                res.status(400).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await stackService.updateStack(req.params.StackId, req.body));
         }
         catch (error) {

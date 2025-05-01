@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Category, Problem, Stack, SuccessType } from '../../interfaces/solutions.interfaces';
 import { StackService } from '../../services/stack.service';
 import { CategoryService } from '../../services/category.service';
@@ -13,7 +12,7 @@ import { ModalService } from '../../services/modifiers/modal.service';
 @Component({
   selector: 'app-create-problem',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, NotificationsComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NotificationsComponent],
   templateUrl: './create-problem.component.html',
   styleUrl: './create-problem.component.css'
 })
@@ -232,6 +231,7 @@ export class CreateProblemComponent implements OnInit{
   onCancel(): void {
     this.resetForm();
     this.ms.clearUpdateProblemData();
+    history.back();
   }
 
   private resetForm(): void {

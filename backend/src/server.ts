@@ -28,7 +28,7 @@ const app = Express();
 app.use(json());
 app.use(cors({
   origin: 'http://localhost:4200',
-  credentials: true //important
+  credentials: true
 }));
 app.use(cookieParser(process.env.SECRET as string));
 

@@ -1,22 +1,11 @@
 import { Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
-import { LoginDetailsSchema, RecoveryDetailsSchema } from "../validators/body.input.validators";
-import { TokenDetails } from "../interfaces/solutions.interfaces";
-import { rest } from "lodash";
-import { log } from "console";
 
 const authService = new AuthService();
 
 export class AuthController {
   async loginUser(req: Request, res: Response) {
-    try {
-      let { error } = LoginDetailsSchema.validate(req.body);
-      if (error) {
-        return res.status(401).json({
-          'error': error.message
-        });
-      }
-      
+    try {      
       
       let result = await authService.loginUser(req.body);
       
@@ -25,7 +14,7 @@ export class AuthController {
           httpOnly: true,
           secure: false,
           sameSite: 'strict',
-          maxAge: 15*60*1000,
+          maxAge: 45*60*1000,
           signed: true
         });
         
@@ -58,14 +47,6 @@ export class AuthController {
 
   async changePassword(req: Request, res: Response) {
     try {
-
-      let { error } = RecoveryDetailsSchema.validate(req.body);
-
-      if (error) {
-        res.status(401).json({
-          'error': error.message
-        });
-      };
 
       let result = await authService.changePassword(req.body);
 

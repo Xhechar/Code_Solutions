@@ -96,7 +96,7 @@
       <div class="table-cell cell-title">
         <span class="mobile-label">Problem:</span>
         <div class="problem-title-container">
-          <img *ngIf="favorite.Problem?.ImagePath" [src]="favorite.Problem?.ImagePath" alt="Problem Image" class="problem-thumbnail">
+          <img *ngIf="favorite.Problem?.ImagePath " [src]="(favorite.Problem?.ImagePath || '').split(', ')[0]" alt="Problem Image" class="problem-thumbnail">
           <div class="problem-info">
             <a class="problem-title" (click)="viewProblem(favorite.Problem)">
               {{ favorite.Problem?.Title }}

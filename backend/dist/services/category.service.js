@@ -3,11 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const body_input_validators_1 = require("../validators/body.input.validators");
 class CategoryService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createCategory(category) {
+        let { error } = body_input_validators_1.CategorySchema.validate(category);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let categoryExists = await this.prisma.category.findUnique({
             where: {
                 Name: category.Name
@@ -40,6 +49,14 @@ class CategoryService {
         }
     }
     async updateCategory(CategoryId, category) {
+        let { error } = body_input_validators_1.CategorySchema.validate(category);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let categoryExists = await this.prisma.category.findUnique({
             where: {
                 CategoryId

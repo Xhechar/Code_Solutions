@@ -617,6 +617,10 @@
   .filter-content {
     grid-template-columns: 1fr;
   }
+
+  .error-search-container{
+    width: 100%;
+  }
 }
 
 /* Loading State */

@@ -276,12 +276,14 @@ export class HomeComponent implements OnInit {
     
     this.isLoading = true;
     
-    // Filter problems that match the error message in error code, logs, or description
     const query = this.errorSearchQuery.toLowerCase();
     this.filteredProblems = this.problems.filter(problem => 
       problem.ErrorCode?.toLowerCase().includes(query) || 
       problem.Logs?.toLowerCase().includes(query) ||
-      problem.Description?.toLowerCase().includes(query)
+      problem.Description?.toLowerCase().includes(query) ||
+      problem.Title.toLowerCase().includes(query) ||
+      problem.Context?.toLocaleLowerCase().includes(query) ||
+      problem.Environment?.toLocaleLowerCase().includes(query)
     );
     
     // Reset other filters to avoid confusion

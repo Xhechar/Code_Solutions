@@ -3,18 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const verify_tokens_1 = require("../middlewares/verify.tokens");
 const user_service_1 = require("../services/user.service");
-const body_input_validators_1 = require("../validators/body.input.validators");
 const userService = new user_service_1.UserService();
 class UserController {
     async createUser(req, res) {
         try {
-            let { error } = body_input_validators_1.UserRegisterationSchema.validate(req.body);
-            if (error) {
-                res.status(400).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await userService.createUser(req.body));
         }
         catch (error) {
@@ -25,13 +17,6 @@ class UserController {
     }
     async updateUser(req, res) {
         try {
-            let { error } = body_input_validators_1.UserUpdateSchema.validate(req.body);
-            if (error) {
-                res.status(400).json({
-                    'error': error.message
-                });
-            }
-            ;
             res.status(201).json(await userService.updateUser((0, verify_tokens_1.getIdFromToken)(req), req.body));
         }
         catch (error) {

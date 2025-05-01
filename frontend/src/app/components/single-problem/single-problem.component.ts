@@ -87,6 +87,10 @@ export class SingleProblemComponent implements OnInit {
     });
   }
 
+  back() {
+    history.back();
+  }
+
   shareProblem(): void {
     navigator.clipboard.writeText(window.location.href);
     this.ns.showAlert(SuccessType.Success, 'Problem link copied to clipboard!');

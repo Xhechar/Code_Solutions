@@ -34,22 +34,22 @@
       <div class="project-selector">
         <select [(ngModel)]="selectedProjectId" (change)="selectProject()">
           <option value="">Select Project Structure</option>
-          <option *ngFor="let project of projectStructures" [value]="project.ProjectId">
+          <option *ngFor="let project of projectStructures; trackBy: trackByProjectId" [value]="project.ProjectId">
             {{project.Title}}
           </option>
         </select>
       </div>
       
       <div class="guides-list" *ngIf="selectedProject">
-        <div class="guide-item" *ngFor="let guide of selectedProject.PSG" 
+        <div class="guide-item" *ngFor="let guide of selectedProject.PSG; trackBy: trackByPSGId" 
             [class.active]="selectedPSG && selectedPSG.PSGId === guide.PSGId"
             (click)="selectPSG(guide)">
           <div class="guide-content">
             <h4 class="guide-title">{{guide.Title}}</h4>
-            <p class="guide-preview">{{truncateText(guide.TextInstructions, 50)}}</p>
+            <p class="guide-preview">{{guide.truncatedInstructions}}</p>
             <div class="guide-meta">
-              <span class="related-count" *ngIf="guide.RelatedProblemIds">
-                <i class="fas fa-link"></i> {{getRelatedProblemsCount(guide)}} Problems
+              <span class="related-count" *ngIf="guide.relatedProblemsCount > 0">
+                <i class="fas fa-link"></i> {{guide.relatedProblemsCount}} Problems
               </span>
             </div>
           </div>
@@ -107,21 +107,21 @@
         </div>
 
         <div class="guides-documentation" *ngIf="selectedProject.PSG && selectedProject.PSG.length > 0">
-          <div class="guide-section" *ngFor="let guide of selectedProject.PSG; let i = index">
+          <div class="guide-section" *ngFor="let guide of selectedProject.PSG; trackBy: trackByPSGId; let i = index">
             <div class="guide-number">Step {{i + 1}}</div>
             <h2 class="guide-title">{{guide.Title}}</h2>
             
-            <div class="guide-pictorials" *ngIf="guide.PictorialGuide">
+            <div class="guide-pictorials" *ngIf="guide.pictorialImages.length > 0">
               <div class="pictorial-gallery">
                 <div class="pictorial-thumbnails">
-                  <div class="thumbnail" *ngFor="let img of getPictorialImages(guide); let j = index"
-                       [class.active]="j === currentImageIndex"
-                       (click)="selectImage(j)">
+                  <div class="thumbnail" *ngFor="let img of guide.pictorialImages; let j = index"
+                       [class.active]="j === currentImageIndices[guide.PSGId]"
+                       (click)="selectImage(guide.PSGId, j)">
                     <img [src]="img" [alt]="'Guide image ' + (j+1)">
                   </div>
                 </div>
-                <div class="pictorial-main" *ngIf="getPictorialImages(guide).length > 0">
-                  <img [src]="getPictorialImages(guide)[currentImageIndex]" alt="Selected guide image">
+                <div class="pictorial-main" *ngIf="guide.pictorialImages.length > 0">
+                  <img [src]="guide.pictorialImages[currentImageIndices[guide.PSGId] || 0]" alt="Selected guide image">
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@
               <h3>Related Problems</h3>
               <ul class="problem-list">
                 <li *ngFor="let problemId of guide.RelatedProblemIds.split(',')">
-                  <a [routerLink]="['/problems', problemId]">{{getProblemTitle(problemId)}}</a>
+                  <a [routerLink]="['/problems', problemId]">{{problemTitleMap[problemId] || 'Unknown Problem'}}</a>
                 </li>
               </ul>
             </div>
@@ -246,7 +246,7 @@
           <div class="related-problems-selector">
             <div class="selected-problems">
               <div class="problem-tag" *ngFor="let problemId of selectedProblems">
-                <span>{{getProblemTitle(problemId)}}</span>
+                <span>{{problemTitleMap[problemId] || 'Unknown Problem'}}</span>
                 <button type="button" class="btn-remove" (click)="removeProblem(problemId)">
                   <i class="fas fa-times"></i>
                 </button>

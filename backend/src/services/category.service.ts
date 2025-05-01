@@ -3,6 +3,7 @@ import { DefaultArgs } from "@prisma/client/runtime/library";
 import { CategoryInterface } from "../interfaces/methods.interfaces";
 import { Category } from "../interfaces/solutions.interfaces";
 import { v4 } from "uuid";
+import { CategorySchema } from "../validators/body.input.validators";
 
 export class CategoryService implements CategoryInterface {
   prisma = new PrismaClient({
@@ -10,6 +11,15 @@ export class CategoryService implements CategoryInterface {
   });
 
   async createCategory(category: Category): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = CategorySchema.validate(category);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let categoryExists = await this.prisma.category.findUnique({
       where: {
@@ -45,6 +55,15 @@ export class CategoryService implements CategoryInterface {
     }
   }
   async updateCategory(CategoryId: string, category: Partial<Category>): Promise<{ success: boolean; message?: string; error?: string; }> {
+
+    let { error } = CategorySchema.validate(category);
+
+    if (error) {
+      return ({
+        'success': false,
+        'error': error.details[0].message
+      });
+    };
     
     let categoryExists = await this.prisma.category.findUnique({
       where: {

@@ -3,11 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProblemService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const body_input_validators_1 = require("../validators/body.input.validators");
 class ProblemService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createProblem(userId, problem) {
+        let { error } = body_input_validators_1.ProblemSchema.validate(problem);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId: userId
@@ -84,6 +92,13 @@ class ProblemService {
         }
     }
     async updateProblem(userId, problemId, problem) {
+        let { error } = body_input_validators_1.ProblemSchema.validate(problem);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
         let userExists = await this.prisma.user.findUnique({
             where: {
                 UserId: userId
@@ -403,8 +418,17 @@ class ProblemService {
             include: {
                 Stack: true,
                 Category: true,
-                Solutions: true,
-                Comments: true,
+                Solutions: {
+                    include: {
+                        User: true,
+                        Problem: true
+                    }
+                },
+                Comments: {
+                    include: {
+                        User: true
+                    }
+                },
                 User: true
             }
         });

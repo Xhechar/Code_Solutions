@@ -1,20 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProblemController = void 0;
+exports.ProblemController = exports.problemService = void 0;
 const verify_tokens_1 = require("../middlewares/verify.tokens");
 const problem_service_1 = require("../services/problem.service");
-const body_input_validators_1 = require("../validators/body.input.validators");
-const problemService = new problem_service_1.ProblemService();
+exports.problemService = new problem_service_1.ProblemService();
 class ProblemController {
     async createProblem(req, res) {
         try {
-            let { error } = body_input_validators_1.ProblemSchema.validate(req.body);
-            if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            res.status(201).json(await problemService.createProblem((0, verify_tokens_1.getIdFromToken)(req), req.body));
+            res.status(201).json(await exports.problemService.createProblem((0, verify_tokens_1.getIdFromToken)(req), req.body));
         }
         catch (error) {
             res.status(501).json({
@@ -24,13 +17,7 @@ class ProblemController {
     }
     async updateProblem(req, res) {
         try {
-            let { error } = body_input_validators_1.ProblemSchema.validate(req.body);
-            if (error) {
-                res.status(401).json({
-                    'error': error.message
-                });
-            }
-            res.status(201).json(await problemService.updateProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId, req.body));
+            res.status(201).json(await exports.problemService.updateProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId, req.body));
         }
         catch (error) {
             res.status(501).json({
@@ -40,7 +27,7 @@ class ProblemController {
     }
     async approveProblem(req, res) {
         try {
-            res.status(201).json(await problemService.approveProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
+            res.status(201).json(await exports.problemService.approveProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
         }
         catch (error) {
             res.status(501).json({
@@ -50,7 +37,7 @@ class ProblemController {
     }
     async deleteProblem(req, res) {
         try {
-            res.status(201).json(await problemService.deleteProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
+            res.status(201).json(await exports.problemService.deleteProblem((0, verify_tokens_1.getIdFromToken)(req), req.params.ProblemId));
         }
         catch (error) {
             res.status(501).json({
@@ -60,7 +47,7 @@ class ProblemController {
     }
     async getUserProblems(req, res) {
         try {
-            res.status(201).json(await problemService.getUserProblems((0, verify_tokens_1.getIdFromToken)(req)));
+            res.status(201).json(await exports.problemService.getUserProblems((0, verify_tokens_1.getIdFromToken)(req)));
         }
         catch (error) {
             res.status(501).json({
@@ -70,7 +57,7 @@ class ProblemController {
     }
     async getAllProblems(req, res) {
         try {
-            res.status(201).json(await problemService.getAllProblems());
+            res.status(201).json(await exports.problemService.getAllProblems());
         }
         catch (error) {
             res.status(501).json({
@@ -80,7 +67,7 @@ class ProblemController {
     }
     async getAdminProblems(req, res) {
         try {
-            res.status(201).json(await problemService.getAdminProblems((0, verify_tokens_1.getIdFromToken)(req)));
+            res.status(201).json(await exports.problemService.getAdminProblems((0, verify_tokens_1.getIdFromToken)(req)));
         }
         catch (error) {
             res.status(501).json({
@@ -90,7 +77,7 @@ class ProblemController {
     }
     async getApprovedProblems(req, res) {
         try {
-            res.status(201).json(await problemService.getApprovedProblems());
+            res.status(201).json(await exports.problemService.getApprovedProblems());
         }
         catch (error) {
             res.status(501).json({
@@ -100,7 +87,7 @@ class ProblemController {
     }
     async getSingleProblem(req, res) {
         try {
-            res.status(201).json(await problemService.getSingleProblem(req.params.ProblemId));
+            res.status(201).json(await exports.problemService.getSingleProblem(req.params.ProblemId));
         }
         catch (error) {
             res.status(501).json({

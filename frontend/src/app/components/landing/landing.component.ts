@@ -97,7 +97,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
       name: 'Felix Okoth',
       role: 'Senior Developer',
       message: 'Code Solutions has been a game-changer for our team. The error database saved us countless hours debugging complex issues. The daily challenges keep our skills sharp!',
-      image: 'https://randomuser.me/api/portraits/men/32.jpgg'
+      image: 'https://res.cloudinary.com/dakyiye2e/image/upload/v1744290285/htth9fj1o0fh70lpamem.jpg'
     }
   ];
 
@@ -484,11 +484,11 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   viewProblem(problemId: string): void {
-    this.router.navigate(['/problems', problemId]);
+    this.router.navigate(['/single-problem', problemId]);
   }
 
   viewProjectStructure(projectId: string): void {
-    this.router.navigate(['/project-structures', projectId]);
+    this.router.navigate(['/single-project-structure', projectId]);
   }
 
   getCategoryClass(categoryId: string): string {

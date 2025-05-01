@@ -3,11 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackService = void 0;
 const client_1 = require("@prisma/client");
 const uuid_1 = require("uuid");
+const body_input_validators_1 = require("../validators/body.input.validators");
 class StackService {
     prisma = new client_1.PrismaClient({
         log: ["error"]
     });
     async createStack(stack) {
+        let { error } = body_input_validators_1.StackSchema.validate(stack);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let stackExists = await this.prisma.stack.findUnique({ where: { Name: stack.Name.toLocaleLowerCase() } });
         if (stackExists) {
             return {
@@ -37,6 +46,14 @@ class StackService {
         }
     }
     async updateStack(StackId, stack) {
+        let { error } = body_input_validators_1.StackSchema.validate(stack);
+        if (error) {
+            return ({
+                'success': false,
+                'error': error.details[0].message
+            });
+        }
+        ;
         let stackExists = await this.prisma.stack.findUnique({ where: { StackId } });
         if (stackExists == null) {
             return {
