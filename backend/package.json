@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
+    "build": "tsc",
     "start:build": "tsc -w",
     "start:xhr": "nodemon dist/server.js",
     "start": "concurrently npm:start:*",
