@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Stack, StackDto } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StackService {
-  API_URL: string = 'http://localhost:3000/stack/';
+  // API_URL: string = 'http://localhost:3000/stack/';
+  API_URL: string = `${SharedService.API_URL}stack/`;
 
   constructor(private http: HttpClient) { }
 

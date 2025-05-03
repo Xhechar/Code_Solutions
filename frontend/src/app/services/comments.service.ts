@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentsService {
-  API_URL: string = 'http://localhost:3000/comment/';
+  // API_URL: string = 'http://localhost:3000/comment/';
+  API_URL: string = `${SharedService.API_URL}comment/`;
+
   
   constructor(private http: HttpClient) { }
   

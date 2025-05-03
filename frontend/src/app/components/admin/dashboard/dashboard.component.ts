@@ -223,7 +223,7 @@ export class DashboardComponent implements OnInit {
   }
 
   viewProblem(problemId: string): void {
-    this.router.navigate(['/admin/single-problem', problemId]);
+    this.router.navigate(['/single-problem', problemId]);
   }
 
   viewUserProfile(userId: string): void {
@@ -235,7 +235,7 @@ export class DashboardComponent implements OnInit {
   }
 
   viewProjectStructure(projectId: String): void {
-    this.router.navigate(['/admin/single-project', projectId]);
+    this.router.navigate(['/single-project-structure', projectId]);
   }
 
   getBadgeClass(badge: string): string {

@@ -6,6 +6,7 @@ import { SuccessType, User } from '../../../interfaces/solutions.interfaces';
 import { UserService } from '../../../services/user.service';
 import { NotificationsService } from '../../../services/modifiers/notifications.service';
 import { NotificationsComponent } from "../../notifications/notifications.component";
+import { SidebarService } from '../../../services/modifiers/sidebar.service';
 
 @Component({
   selector: 'app-u-top-bar',
@@ -21,7 +22,7 @@ export class UTopBarComponent implements OnInit {
 
   user!: User;
 
-  constructor(private us: UserService, private ns: NotificationsService) { }
+  constructor(private us: UserService, private ns: NotificationsService, private ss: SidebarService) { }
 
   ngOnInit(): void {
     this.fetchUserDetails();
@@ -40,6 +41,10 @@ export class UTopBarComponent implements OnInit {
         this.ns.showAlert(SuccessType.Error, error.error.error as string);
       }
     });
+  }
+
+  toggleSIdebarVisibility(): void {
+    this.ss.toggleSidebar();
   }
 
   toggleProfileMenu(): void {

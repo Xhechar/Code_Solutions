@@ -9,6 +9,7 @@ import { UserService } from '../../../services/user.service';
 import { LogoutComponent } from "../../logout/logout.component";
 import { NotificationsComponent } from "../../notifications/notifications.component";
 import { NotificationsService } from '../../../services/modifiers/notifications.service';
+import { SidebarService } from '../../../services/modifiers/sidebar.service';
 
 @Component({
   selector: 'app-u-side-bar',
@@ -41,6 +42,7 @@ export class USideBarComponent {
   };
   user: User | null = null;
   screenWidth: number = window.innerWidth;
+  sidebarVisibility: boolean = false;
 
   constructor(
     private router: Router, 
@@ -48,12 +50,19 @@ export class USideBarComponent {
     private el: ElementRef,
     private ms: ModalService,
     private us: UserService,
-    private ns: NotificationsService
+    private ns: NotificationsService,
+    private ss: SidebarService
   ) {}
 
   ngOnInit(): void {
     // Check screen width on init and adjust sidebar accordingly
     this.checkScreenWidth();
+
+    this.ss.sidebarState$.subscribe(res => {
+      if (this.screenWidth < 768) {
+        this.sidebarVisibility = res;
+      }
+    });
     
     // Simulate fetching user data from a service
     this.fetchUserData();
@@ -63,6 +72,12 @@ export class USideBarComponent {
     
     // Add CSS class to body based on initial sidebar state
     this.updateBodyClass();
+  }
+
+  autoAdjustSidebar(): void {
+    if (this.screenWidth < 768) {
+      this.ss.toggleSidebar();
+    }
   }
 
   @HostListener('window:resize')

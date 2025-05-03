@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { History } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HistoryService {
-  API_URL: string = 'http://localhost:3000/history/';
+  // API_URL: string = 'http://localhost:3000/history/';
+  API_URL: string = `${SharedService.API_URL}history/`;
   
   constructor(private http: HttpClient) { }
   

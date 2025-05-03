@@ -2,7 +2,6 @@
   margin-left: var(--sidebar-width);
   margin-top: var(--nav-height);
   min-height: calc(100vh - var(--nav-height));
-  padding: 1rem;
   transition: margin-left var(--transition-speed) ease;
 }
 
@@ -15,22 +14,5 @@
 @media (max-width: 991px) {
   .user-contents {
     margin-left: 0;
-  }
-  
-  /* When sidebar is visible on mobile */
-  :host.sidebar-visible .user-contents {
-    margin-left: var(--sidebar-width);
-  }
-}
-
-@media (max-width: 768px) {
-  .user-contents {
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .user-contents {
-    padding: 0.5rem;
   }
 }

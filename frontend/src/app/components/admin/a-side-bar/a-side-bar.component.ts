@@ -6,6 +6,7 @@ import { User } from '../../../interfaces/solutions.interfaces';
 import { UserService } from '../../../services/user.service';
 import { LogoutComponent } from '../../logout/logout.component';
 import { ModalService } from '../../../services/modifiers/modal.service';
+import { SidebarService } from '../../../services/modifiers/sidebar.service';
 
 @Component({
   selector: 'app-a-side-bar',
@@ -19,14 +20,25 @@ export class ASideBarComponent {
   isMobileView = false;
   expandedMenus: string[] = [];
   searchTerm = '';
+  show: boolean = false;
 
   user!: User;
 
-  constructor(private us: UserService, private ms: ModalService) {}
+  constructor(private us: UserService, private ms: ModalService, private ss: SidebarService) {}
 
   ngOnInit(): void {
     this.getUser();
     this.checkScreenSize();
+
+    this.ss.sidebarState$.subscribe(res => {
+      this.show = res;
+    });
+  }
+
+  autoAdjustSidebar(): void {
+    if (window.innerWidth < 768) {
+      this.ss.toggleSidebar();
+    }
   }
 
   getUser(): void {

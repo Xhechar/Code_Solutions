@@ -15,12 +15,12 @@
   --accent: hsl(110, 59%, 43%);
   --accent-hover: hsl(110, 59%, 38%);
   --bg-color: hsl(0, 0%, 100%);
-  --nav-height: 70px;
   --border-radius: 12px;
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   --transition-speed: 0.3s;
   --sidebar-width: 260px;
   --sidebar-collapsed-width: 70px;
+  --nav-height: 70px;
 
   --text-primary: hsl(36, 50%, 10%);
   --text-secondary: hsl(36, 20%, 40%);

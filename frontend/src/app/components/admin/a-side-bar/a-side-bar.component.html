@@ -1,5 +1,5 @@
 <app-logout></app-logout>
-<div class="sidebar-container" [class.collapsed]="isCollapsed">
+<div class="sidebar-container" [class.collapsed]="isCollapsed" *ngIf="!show">
   <div class="sidebar-header">
     <a routerLink="dashboard" class="logo-link">
       <div class="logo">
@@ -36,7 +36,7 @@
   <nav class="sidebar-nav">
     <ul>
       <!-- Dashboard -->
-      <li>
+      <li (click)="autoAdjustSidebar()">
         <a 
           routerLink="/admin/dashboard" 
           routerLinkActive="active"
@@ -67,7 +67,7 @@
           class="submenu" 
           [class.expanded]="expandedMenus.includes('problems')"
         >
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
               routerLink="/admin/problems/admin-problems" 
               routerLinkActive="active"
@@ -99,7 +99,7 @@
           class="submenu" 
           [class.expanded]="expandedMenus.includes('project-structure')"
         >
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
               routerLink="/admin/project-structure/all-project-structures" 
               routerLinkActive="active"
@@ -108,9 +108,9 @@
               <span class="nav-text">All Structures</span>
             </a>
           </li>
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
-              routerLink="/admin/project-structure/preview" 
+              routerLink="/admin/project-structure" 
               routerLinkActive="active"
             >
               <i class="fas fa-eye"></i>
@@ -140,7 +140,7 @@
           class="submenu" 
           [class.expanded]="expandedMenus.includes('tech-tools')"
         >
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
               routerLink="/admin/tech-tools/categories" 
               routerLinkActive="active"
@@ -149,7 +149,7 @@
               <span class="nav-text">Categories</span>
             </a>
           </li>
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
               routerLink="/admin/tech-tools/stacks" 
               routerLinkActive="active"
@@ -181,7 +181,7 @@
           class="submenu" 
           [class.expanded]="expandedMenus.includes('users')"
         >
-          <li>
+          <li (click)="autoAdjustSidebar()">
             <a 
               routerLink="/admin/users/all-users" 
               routerLinkActive="active"
@@ -194,9 +194,9 @@
       </li>
 
       <!-- Comments -->
-      <li>
+      <li (click)="autoAdjustSidebar()">
         <a 
-          routerLink="/admin/comments" 
+          routerLink="/admin" 
           routerLinkActive="active"
         >
           <i class='bx bxs-chat'></i>
@@ -207,7 +207,7 @@
   </nav>
 
   <div class="sidebar-footer">
-    <a routerLink="/admin" class="settings-link">
+    <a routerLink="/admin" class="settings-link" (click)="autoAdjustSidebar()">
       <i class="fas fa-cog"></i>
       <span class="nav-text">Settings</span>
     </a>

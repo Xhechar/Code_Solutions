@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Solution, SolutionDto } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SolutionService {
-  private API_URL: string = 'http://localhost:3000/solution/';
+  // private API_URL: string = 'http://localhost:3000/solution/';
+  API_URL: string = `${SharedService.API_URL}solution/`;
 
   constructor(private http: HttpClient) { }
 

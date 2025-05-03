@@ -1,31 +1,37 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SidebarService {
+  private sidebarState = new BehaviorSubject<boolean>(false);
+  sidebarState$: Observable<boolean> = this.sidebarState.asObservable();
 
-  private _sidebarCollapsed = new BehaviorSubject<boolean>(false);
-  
-  // Observable for components to subscribe to
-  public sidebarState = this._sidebarCollapsed.asObservable();
-  
-  // Toggle sidebar state
-  toggleSidebar(): void {
-    this._sidebarCollapsed.next(!this._sidebarCollapsed.value);
+  private increaseWidth = new BehaviorSubject<boolean>(false);
+  increaseWidth$: Observable<boolean> = this.increaseWidth.asObservable();
+
+  constructor() {
+    window.addEventListener('resize', () => this.onResize());
   }
-  
-  // Set specific state
-  setSidebarState(isCollapsed: boolean): void {
-    this._sidebarCollapsed.next(isCollapsed);
+
+  toggleIncreaseWidth(): void {
+    window.innerWidth > 768
+      ? this.increaseWidth.next(!this.increaseWidth.value)
+      : this.increaseWidth.next(this.increaseWidth.value);
   }
-  
-  // Handle window resize
+
+  toggleSidebar() {
+    this.sidebarState.next(!this.sidebarState.value);
+  }
+
+  resizeSideBar(resizer: boolean): void {
+    this.sidebarState.next(resizer);
+  }
+
   private onResize(): void {
-    if (window.innerWidth < 992) {
-      // Always collapse on small screens
-      this._sidebarCollapsed.next(true);
-    }
+    window.innerWidth <= 768
+      ? this.resizeSideBar(true)
+      : this.resizeSideBar(false);
   }
 }

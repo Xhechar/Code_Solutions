@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Chat } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  API_URL: string = 'http://localhost:3000/chats/';
+  // API_URL: string = 'http://localhost:3000/chats/';
+  API_URL: string = `${SharedService.API_URL}chats/`;
   
   constructor(private http: HttpClient) { }
   

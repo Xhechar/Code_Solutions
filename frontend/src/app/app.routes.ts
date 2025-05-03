@@ -68,6 +68,7 @@ export const routes: Routes = [
             path: 'single-problem/:ProblemId',
             component: SingleProblemComponent,
           },
+          { path: 'single-project-structure/:ProjectId', component: SingleProjectStructureComponent },
         ],
       },
       {

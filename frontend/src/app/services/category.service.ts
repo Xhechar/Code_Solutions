@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Category } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
-  API_URL: string = 'http://localhost:3000/category/';
+  // API_URL: string = 'http://localhost:3000/category/';
+  API_URL: string = `${SharedService.API_URL}category/`;
   
   constructor(private http: HttpClient) { }
   

@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoginDetails, RecoveryDetails } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  API_URL: string = 'http://localhost:3000/auth/';
+  // API_URL: string = 'http://localhost:3000/auth/';
+  API_URL: string = `${SharedService.API_URL}auth/`;
 
   constructor(private http: HttpClient) { }
 

@@ -24,10 +24,9 @@
       <span class="tooltip">Solutions</span>
     </button>
     
-    <button class="action-btn notifications-btn" (click)="toggleNotifications($event)">
-      <i class='bx bxs-bell' ></i>
-      <span class="badge" *ngIf="unreadNotifications > 0">{{unreadNotifications}}</span>
-      <span class="tooltip">Notifications</span>
+    <button class="action-btn notifications-btn" (click)="switchSidebarVisibility()">
+      <i class='bx bx-menu' ></i>
+      <span class="tooltip">Toggle Side Menu</span>
     </button>
     
     <div class="user-profile">

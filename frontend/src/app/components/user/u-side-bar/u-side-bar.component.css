@@ -492,9 +492,9 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .sidebar {
+  /* .sidebar {
     width: var(--sidebar-collapsed-width);
-  }
+  } */
   
   .sidebar.sidebar-expanded {
     width: var(--sidebar-width);

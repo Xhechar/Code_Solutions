@@ -8,9 +8,6 @@
   </div>
   
   <div class="top-bar-right">
-    <div class="notification-icon">
-      <i class='bx bx-menu'></i>
-    </div>
 
     <div class="action-btn" routerLink="/home">
       <i class='bx bx-home'></i>
@@ -23,6 +20,10 @@
         <a routerLink="create-problem"><i class="bx bx-error"></i> New Error</a>
         <a routerLink="contributions/my-solutions"><i class="bx bx-check-shield"></i> New Solution</a>
       </div>
+    </div>
+      
+    <div class="notification-icon">
+      <i class='bx bx-menu' (click)="toggleSIdebarVisibility()"></i>
     </div>
     
     <div class="profile-section" (click)="toggleProfileMenu()">

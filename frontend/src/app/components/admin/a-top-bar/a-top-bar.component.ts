@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { User } from '../../../interfaces/solutions.interfaces';
 import { UserService } from '../../../services/user.service';
+import { SidebarService } from '../../../services/modifiers/sidebar.service';
 
 interface Notification {
   id: number;
@@ -58,7 +59,7 @@ export class ATopBarComponent implements OnInit {
   showNotifications: boolean = false;
   unreadNotifications: number = 0;
 
-  constructor(private us: UserService) { }
+  constructor(private us: UserService, private ss: SidebarService) { }
 
   ngOnInit(): void {
     this.getUser();
@@ -78,6 +79,12 @@ export class ATopBarComponent implements OnInit {
         // console.error(error.error.error);
       }
     });
+  }
+
+  switchSidebarVisibility(): void {
+    if (window.innerWidth < 768) {
+      this.ss.toggleSidebar();
+    }
   }
 
   updateUnreadCount(): void {

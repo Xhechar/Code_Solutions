@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProjectStructure, ProjectStructureDto } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectStructureService {
-  API_URL: string = 'http://localhost:3000/p_structure/';
+  // API_URL: string = 'http://localhost:3000/p_structure/';
+  API_URL: string = `${SharedService.API_URL}p_structure/`;
 
   constructor(private http: HttpClient) { }
 

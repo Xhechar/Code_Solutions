@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PSG, PSGDto } from '../interfaces/solutions.interfaces';
+import { SharedService } from './modifiers/shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PsgService {
-  private API_URL: string = 'http://localhost:3000/psg/';
+  // private API_URL: string = 'http://localhost:3000/psg/';
+  API_URL: string = `${SharedService.API_URL}psg/`;
 
   constructor(private http: HttpClient) { }
 
